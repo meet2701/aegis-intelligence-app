@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}CP0 Admin Console - AEGIS{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Override theme for RED ALERT style */
+    :root[data-theme="dark"] {
+        --bg-primary: #220000;
+        --bg-secondary: #330000;
+        --bg-tertiary: #440000;
+        --text-primary: #ff3333;
+        --text-secondary: #ff6666;
+        --border-color: #ff0000;
+        --card-bg: rgba(51, 0, 0, 0.9);
+    }
+    
+    :root[data-theme="light"] {
+        --bg-primary: #ffe0e0;
+        --bg-secondary: #ffcccc;
+        --bg-tertiary: #ffb3b3;
+        --text-primary: #990000;
+        --text-secondary: #cc0000;
+        --border-color: #cc0000;
+        --card-bg: rgba(255, 255, 255, 0.95);
+    }
+    
+    body {
+        background-image: 
+            repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 0, 0, 0.05) 2px,
+                rgba(255, 0, 0, 0.05) 4px
+            );
+    }
+    
+    .admin-warning {
+        background: repeating-linear-gradient(
+            45deg,
+            #660000,
+            #660000 10px,
+            #990000 10px,
+            #990000 20px
+        );
+        color: #ffffff;
+        text-align: center;
+        padding: 1rem;
+        font-weight: bold;
+        letter-spacing: 3px;
+        border: 3px solid #ff0000;
+        margin-bottom: 2rem;
+        box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
+        animation: pulse-red 2s infinite;
+    }
+    
+    @keyframes pulse-red {
+        0%, 100% {
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
+        }
+        50% {
+            box-shadow: 0 0 60px rgba(255, 0, 0, 1);
+        }
+    }
+    
+    .danger-zone {
+        background: rgba(255, 0, 0, 0.1);
+        border: 3px solid #ff0000;
+        border-radius: 10px;
+        padding: 2rem;
+        margin: 2rem 0;
+        box-shadow: 0 0 40px rgba(255, 0, 0, 0.3);
+    }
+    
+    .skull-icon {
+        font-size: 4rem;
+        animation: skull-shake 3s infinite;
+    }
+    
+    @keyframes skull-shake {
+        0%, 100% { transform: rotate(0deg); }
+        10% { transform: rotate(-10deg); }
+        20% { transform: rotate(10deg); }
+        30% { transform: rotate(-10deg); }
+        40% { transform: rotate(10deg); }
+        50% { transform: rotate(0deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-warning">
+    ☠️ CP0 ADMINISTRATIVE CONSOLE - UNRESTRICTED ACCESS ☠️
+</div>
+
+<div class="card-custom">
+    <div class="card-header-custom" style="text-align: center;">
+        <div class="skull-icon">💀</div>
+        <div>CIPHER POL AEGIS-0</div>
+        <div style="font-size: 0.8rem; margin-top: 0.5rem; letter-spacing: 1px;">
+            DARK JUSTICE PROTOCOL
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <p style="color: var(--text-primary); font-size: 1.1rem;">
+            Welcome, <strong>{{ session.full_name }}</strong>
+        </p>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            Security Clearance: <span style="color: #ff0000; font-weight: bold;">MAXIMUM</span> | 
+            All DDL Operations Authorized
+        </p>
+    </div>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- BUSTER CALL SECTION -->
+    <div class="danger-zone">
+        <h3 style="color: #ff0000; text-align: center; margin-bottom: 1.5rem;">
+            ☠️ BUSTER CALL PROTOCOL ☠️
+        </h3>
+        
+        <p style="color: var(--text-secondary); text-align: center; margin-bottom: 2rem;">
+            <strong>WARNING:</strong> This will DROP ALL TABLES in the database. This action is IRREVERSIBLE.
+        </p>
+        
+        <form method="POST" action="{{ url_for('buster_call') }}" onsubmit="return confirmBusterCall();">
+            <div class="mb-3">
+                <label for="confirmation" class="form-label" style="color: #ff0000;">
+                    Enter Confirmation Code: <strong>EXECUTE_BUSTER_CALL</strong>
+                </label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="confirmation" 
+                    name="confirmation"
+                    placeholder="Type the confirmation code"
+                    style="background: #1a0000; color: #ff0000; border-color: #ff0000;"
+                    required
+                >
+            </div>
+            
+            <button type="submit" class="btn btn-danger-custom w-100" style="padding: 1rem; font-size: 1.2rem;">
+                💣 INITIATE BUSTER CALL
+            </button>
+        </form>
+    </div>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- TABLE OPERATIONS -->
+    <div style="margin: 2rem 0;">
+        <h3 style="color: var(--text-primary); margin-bottom: 1.5rem;">
+            🗑️ TABLE OPERATIONS
+        </h3>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div style="background: rgba(255, 0, 0, 0.05); padding: 1.5rem; border: 2px solid #ff0000; border-radius: 8px;">
+                    <h5 style="color: #ff0000;">TRUNCATE TABLE</h5>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        Remove all data from a table while preserving structure.
+                    </p>
+                    
+                    <form method="POST" action="{{ url_for('truncate_table') }}">
+                        <div class="mb-2">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="table_name"
+                                placeholder="Enter table name (e.g., Bounty_Record)"
+                                required
+                            >
+                        </div>
+                        <button type="submit" class="btn btn-danger-custom w-100">
+                            🗑️ TRUNCATE
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <div style="background: rgba(255, 0, 0, 0.05); padding: 1.5rem; border: 2px solid #ff0000; border-radius: 8px;">
+                    <h5 style="color: #ff0000;">VIEW TABLES</h5>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        Display all tables and their row counts.
+                    </p>
+                    <a href="{{ url_for('view_tables') }}" class="btn btn-custom w-100" style="background: #660000; border-color: #ff0000;">
+                        📊 VIEW ALL TABLES
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- SCHEMA ALTERATION -->
+    <div style="margin: 2rem 0;">
+        <h3 style="color: var(--text-primary); margin-bottom: 1.5rem;">
+            🔧 SCHEMA ALTERATION
+        </h3>
+        
+        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            Execute custom DDL commands. Only ALTER, CREATE INDEX, and DROP INDEX are permitted.
+        </p>
+        
+        <form method="POST" action="{{ url_for('alter_schema') }}">
+            <div class="mb-3">
+                <label for="ddl_command" class="form-label">DDL Command</label>
+                <textarea 
+                    class="form-control" 
+                    id="ddl_command" 
+                    name="ddl_command"
+                    rows="5"
+                    placeholder="Example: ALTER TABLE Person ADD COLUMN Execution_Date DATE"
+                    required
+                ></textarea>
+            </div>
+            
+            <div style="background: rgba(255, 170, 0, 0.1); border: 2px solid #ff6600; border-radius: 5px; padding: 1rem; margin-bottom: 1rem;">
+                <p style="color: #ff6600; margin: 0; font-weight: bold;">
+                    ⚠️ CAUTION: Structural changes may break existing queries and relationships.
+                </p>
+            </div>
+            
+            <button type="submit" class="btn btn-custom w-100" style="background: #663300; border-color: #ff6600;">
+                ⚡ EXECUTE DDL
+            </button>
+        </form>
+    </div>
+    
+    <div style="text-align: center; margin-top: 3rem; padding: 1.5rem; background: rgba(255, 0, 0, 0.05); border: 1px solid #ff0000; border-radius: 5px;">
+        <p style="color: var(--text-secondary); margin: 0;">
+            ☠️ "Dark Justice is true justice." - Rob Lucci
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmBusterCall() {
+        const confirmation = document.getElementById('confirmation').value;
+        
+        if (confirmation !== 'EXECUTE_BUSTER_CALL') {
+            alert('❌ INCORRECT CONFIRMATION CODE');
+            return false;
+        }
+        
+        const finalConfirm = confirm(
+            '⚠️⚠️⚠️ FINAL WARNING ⚠️⚠️⚠️\n\n' +
+            'You are about to DROP ALL TABLES in the database.\n\n' +
+            'This action will:\n' +
+            '• Delete all data permanently\n' +
+            '• Remove all table structures\n' +
+            '• Cannot be undone\n\n' +
+            'Are you absolutely sure you want to proceed?'
+        );
+        
+        return finalConfirm;
+    }
+    
+    // Easter egg console message
+    console.log(`
+    ╔═══════════════════════════════════════════════════════════╗
+    ║                                                           ║
+    ║          CP0 ADMINISTRATIVE CONSOLE ACCESSED              ║
+    ║                                                           ║
+    ║   "The weak don't get to decide anything, not even       ║
+    ║    how they die."                                         ║
+    ║                                        - Rob Lucci        ║
+    ║                                                           ║
+    ╚═══════════════════════════════════════════════════════════╝
+    `);
+</script>
+{% endblock %}

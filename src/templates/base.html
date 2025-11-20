@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AEGIS Intelligence Database{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        /* CSS Variables for Theme Switching */
+        :root[data-theme="dark"] {
+            --bg-primary: #001f3f;
+            --bg-secondary: #003366;
+            --bg-tertiary: #004080;
+            --text-primary: #00ffff;
+            --text-secondary: #00cccc;
+            --text-muted: #66ccff;
+            --border-color: #00ffff;
+            --btn-primary-bg: #003366;
+            --btn-primary-hover: #004080;
+            --input-bg: #002244;
+            --input-border: #00cccc;
+            --success-color: #00ff00;
+            --warning-color: #ffaa00;
+            --danger-color: #ff3333;
+            --card-bg: rgba(0, 51, 102, 0.8);
+        }
+        
+        :root[data-theme="light"] {
+            --bg-primary: #f5f5dc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e8e8d0;
+            --text-primary: #003366;
+            --text-secondary: #004080;
+            --text-muted: #666666;
+            --border-color: #d4af37;
+            --btn-primary-bg: #003366;
+            --btn-primary-hover: #004080;
+            --input-bg: #ffffff;
+            --input-border: #d4af37;
+            --success-color: #006600;
+            --warning-color: #cc8800;
+            --danger-color: #cc0000;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 255, 0.03) 2px,
+                    rgba(0, 255, 255, 0.03) 4px
+                );
+        }
+        
+        /* Navigation Bar */
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+            border-bottom: 2px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
+            padding: 1rem 2rem;
+        }
+        
+        .navbar-brand {
+            color: var(--text-primary) !important;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--border-color);
+            letter-spacing: 2px;
+        }
+        
+        .navbar-brand:hover {
+            text-shadow: 0 0 20px var(--border-color);
+        }
+        
+        .nav-link {
+            color: var(--text-secondary) !important;
+            margin: 0 0.5rem;
+            padding: 0.5rem 1rem !important;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--text-primary) !important;
+            border-color: var(--border-color);
+            background-color: rgba(0, 255, 255, 0.1);
+        }
+        
+        /* Theme Toggle Switch */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            margin-left: 2rem;
+        }
+        
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 3px;
+            background-color: var(--text-primary);
+            transition: 0.4s;
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--text-primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(28px);
+        }
+        
+        .theme-label {
+            margin: 0 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* Container */
+        .container-custom {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        /* Card Styles */
+        .card-custom {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .card-header-custom {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            text-shadow: 0 0 10px var(--border-color);
+        }
+        
+        /* Form Styles */
+        .form-label {
+            color: var(--text-secondary);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            border: 2px solid var(--input-border);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: var(--input-bg);
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+        
+        /* Button Styles */
+        .btn-custom {
+            background: linear-gradient(135deg, var(--btn-primary-bg), var(--btn-primary-hover));
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+        }
+        
+        .btn-custom:hover {
+            background: var(--btn-primary-hover);
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger-custom {
+            background: linear-gradient(135deg, #660000, #990000);
+            border-color: #ff3333;
+        }
+        
+        .btn-danger-custom:hover {
+            background: #990000;
+            border-color: #ff6666;
+            box-shadow: 0 0 30px rgba(255, 51, 51, 0.5);
+        }
+        
+        /* Table Styles */
+        .table-custom {
+            width: 100%;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table-custom thead {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+        }
+        
+        .table-custom th {
+            color: var(--text-primary);
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px var(--border-color);
+        }
+        
+        .table-custom td {
+            color: var(--text-secondary);
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .table-custom tbody tr:hover {
+            background: rgba(0, 255, 255, 0.1);
+        }
+        
+        /* Alert Styles */
+        .alert-custom {
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            border: 2px solid;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .alert-success-custom {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+        
+        .alert-danger-custom {
+            background: rgba(255, 51, 51, 0.1);
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+        
+        .alert-info-custom {
+            background: rgba(0, 204, 255, 0.1);
+            border-color: var(--text-secondary);
+            color: var(--text-secondary);
+        }
+        
+        .alert-warning-custom {
+            background: rgba(255, 170, 0, 0.1);
+            border-color: var(--warning-color);
+            color: var(--warning-color);
+        }
+        
+        /* Loading Animation */
+        .loading-text {
+            text-align: center;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Scanline Effect */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--text-primary);
+            opacity: 0.1;
+            animation: scan 4s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100vh); }
+        }
+        
+        /* Footer */
+        .footer-custom {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            border-top: 2px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            
+            .card-header-custom {
+                font-size: 1.2rem;
+            }
+            
+            .container-custom {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Scanline Effect -->
+    <div class="scanline"></div>
+    
+    <!-- Navigation Bar -->
+    {% if session.username %}
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                ⚓ AEGIS INTELLIGENCE DATABASE
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if session.role == 'marine' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('dashboard') }}">DASHBOARD</a>
+                        </li>
+                    {% elif session.role == 'admin' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('admin_console') }}">ADMIN CONSOLE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('view_tables') }}">VIEW TABLES</a>
+                        </li>
+                    {% endif %}
+                    
+                    <li class="nav-item">
+                        <span class="nav-link">USER: {{ session.username }}</span>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">LOGOUT</a>
+                    </li>
+                    
+                    <!-- Theme Toggle -->
+                    <li class="nav-item">
+                        <div class="theme-switch-wrapper">
+                            <span class="theme-label">🌙</span>
+                            <label class="theme-switch">
+                                <input type="checkbox" id="theme-toggle">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="theme-label">☀️</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+    
+    <!-- Main Content -->
+    <div class="container-custom">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert-custom alert-{{ category }}-custom" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Page Content -->
+        {% block content %}{% endblock %}
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer-custom">
+        <p>WORLD GOVERNMENT INTELLIGENCE SYSTEM | CLASSIFIED - AUTHORIZED PERSONNEL ONLY</p>
+        <p>Team Big Three | Phase 4 Submission | Justice Will Prevail</p>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Theme Toggle Script -->
+    <script>
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+        
+        // Load saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        htmlElement.setAttribute('data-theme', savedTheme);
+        themeToggle.checked = (savedTheme === 'light');
+        
+        // Toggle theme
+        themeToggle.addEventListener('change', function() {
+            const newTheme = this.checked ? 'light' : 'dark';
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Optional: Add sound effect or animation
+            console.log(`Theme switched to: ${newTheme.toUpperCase()} MODE`);
+        });
+        
+        // Loading animation for forms
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function() {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.innerHTML = '⚓ Connecting to Den Den Mushi...';
+                    submitBtn.disabled = true;
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

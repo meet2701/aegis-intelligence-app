@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Wanted Poster Search - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <div class="card-header-custom">
+        🎯 WANTED POSTER SEARCH
+    </div>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Search for active pirates by name, bounty range, or sea region. All data is real-time and verified by Cipher Pol.
+    </p>
+    
+    <form method="POST" action="{{ url_for('wanted_poster_search') }}">
+        <!-- Search Type Selector -->
+        <div class="mb-4">
+            <label class="form-label" style="color: var(--accent-color); font-weight: bold;">SEARCH MODE:</label>
+            <div class="btn-group w-100" role="group">
+                <input type="radio" class="btn-check" name="search_type" id="search_name" value="name" 
+                    {% if search_type == 'name' %}checked{% endif %}>
+                <label class="btn btn-outline-info" for="search_name" style="border: 2px solid var(--accent-color);">
+                    📝 Search by Name
+                </label>
+                
+                <input type="radio" class="btn-check" name="search_type" id="search_bounty" value="bounty"
+                    {% if search_type == 'bounty' %}checked{% endif %}>
+                <label class="btn btn-outline-info" for="search_bounty" style="border: 2px solid var(--accent-color);">
+                    💰 Search by Bounty
+                </label>
+                
+                <input type="radio" class="btn-check" name="search_type" id="search_region" value="region"
+                    {% if search_type == 'region' %}checked{% endif %}>
+                <label class="btn btn-outline-info" for="search_region" style="border: 2px solid var(--accent-color);">
+                    🌊 Search by Sea Region
+                </label>
+            </div>
+        </div>
+        
+        <!-- Name Search Section -->
+        <div id="name_search_section" class="search-section" {% if search_type != 'name' %}style="display: none;"{% endif %}>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="pirate_name" class="form-label">Pirate Name</label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="pirate_name" 
+                        name="pirate_name"
+                        placeholder="e.g., Luffy, Zoro, Monkey D. Luffy"
+                        value="{{ search_name }}"
+                    >
+                    <small class="form-text text-muted">Enter any part of the name (first, last, or full name)</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bounty Search Section -->
+        <div id="bounty_search_section" class="search-section" {% if search_type != 'bounty' %}style="display: none;"{% endif %}>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="min_bounty" class="form-label">Minimum Bounty (₿)</label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="min_bounty" 
+                        name="min_bounty"
+                        placeholder="e.g., 100000000"
+                        min="0"
+                        value="{{ min_bounty }}"
+                    >
+                    <small class="form-text text-muted">Leave empty for no minimum</small>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="max_bounty" class="form-label">Maximum Bounty (₿)</label>
+                    <input 
+                        type="number" 
+                        class="form-control" 
+                        id="max_bounty" 
+                        name="max_bounty"
+                        placeholder="e.g., 5000000000"
+                        value="{{ max_bounty }}"
+                    >
+                    <small class="form-text text-muted">Leave empty for no maximum</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sea Region Search Section -->
+        <div id="region_search_section" class="search-section" {% if search_type != 'region' %}style="display: none;"{% endif %}>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="region_id_main" class="form-label">Sea Region</label>
+                    <select class="form-control" id="region_id_main" name="region_id" style="font-size: 1.1em; padding: 0.75rem;">
+                        <option value="">-- Select a Sea Region --</option>
+                        {% if regions %}
+                            {% for region in regions %}
+                                <option value="{{ region.Region_ID }}" {% if region_id|string == region.Region_ID|string %}selected{% endif %}>
+                                    {{ region.Region_Name }}
+                                </option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <small class="form-text text-muted">Show all pirates from the selected region</small>
+                </div>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-custom">
+            🔍 EXECUTE SEARCH
+        </button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-custom" style="background: #666;">
+            ← BACK TO DASHBOARD
+        </a>
+    </form>
+    
+    {% if results is not none %}
+        <hr style="border-color: var(--border-color); margin: 2rem 0;">
+        
+        {% if results == "INTELLIGENCE NOT FOUND" %}
+            <div class="alert-custom alert-warning-custom">
+                {{ results }}
+            </div>
+        {% elif results is string %}
+            <div class="alert-custom alert-danger-custom">
+                {{ results }}
+            </div>
+        {% else %}
+            <h4 style="color: var(--text-primary); margin-bottom: 1rem;">
+                📋 Search Results: {{ results|length }} Pirates Found
+            </h4>
+            
+            <div style="overflow-x: auto;">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Bounty (₿)</th>
+                            <th>Issue Date</th>
+                            <th>Infamy Level</th>
+                            <th>Status</th>
+                            <th>Crew</th>
+                            <th>Home Region</th>
+                            <th>Last Seen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pirate in results %}
+                        <tr>
+                            <td>{{ pirate.Person_ID }}</td>
+                            <td><strong>{{ pirate.First_Name }} {{ pirate.Last_Name if pirate.Last_Name else '' }}</strong></td>
+                            <td style="color: var(--warning-color); font-weight: bold; font-size: 1.1em;">
+                                ₿{{ "{:,}".format(pirate.Bounty) }}
+                            </td>
+                            <td>{{ pirate.Bounty_Date if pirate.Bounty_Date else 'N/A' }}</td>
+                            <td>{{ pirate.Infamy_Level if pirate.Infamy_Level else 'Unknown' }}</td>
+                            <td>
+                                {% if pirate.Status == 'Active' %}
+                                    <span style="color: var(--danger-color);">● {{ pirate.Status }}</span>
+                                {% elif pirate.Status == 'Captured' %}
+                                    <span style="color: var(--success-color);">● {{ pirate.Status }}</span>
+                                {% else %}
+                                    <span style="color: var(--text-muted);">● {{ pirate.Status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ pirate.Crew_Name if pirate.Crew_Name else '<span style="color: #999;">No Crew</span>' | safe }}</td>
+                            <td>{{ pirate.Region_Name if pirate.Region_Name else 'Unknown' }}</td>
+                            <td>{{ pirate.Last_Seen_Location if pirate.Last_Seen_Location else 'Unknown' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+
+<script>
+// Initialize correct section on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the currently selected search type
+    const selectedType = document.querySelector('input[name="search_type"]:checked').value;
+    
+    // Show the correct section based on selection
+    showSearchSection(selectedType);
+});
+
+// Function to show/hide sections
+function showSearchSection(type) {
+    // Hide all sections
+    document.getElementById('name_search_section').style.display = 'none';
+    document.getElementById('bounty_search_section').style.display = 'none';
+    document.getElementById('region_search_section').style.display = 'none';
+    
+    // Show selected section
+    if (type === 'name') {
+        document.getElementById('name_search_section').style.display = 'block';
+    } else if (type === 'bounty') {
+        document.getElementById('bounty_search_section').style.display = 'block';
+    } else if (type === 'region') {
+        document.getElementById('region_search_section').style.display = 'block';
+    }
+}
+
+// Toggle between search modes when radio buttons change
+document.querySelectorAll('input[name="search_type"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        showSearchSection(this.value);
+        
+        // Clear other inputs when switching modes
+        if (this.value === 'name') {
+            document.getElementById('min_bounty').value = '';
+            document.getElementById('max_bounty').value = '';
+            document.getElementById('region_id_main').value = '';
+        } else if (this.value === 'bounty') {
+            document.getElementById('pirate_name').value = '';
+            document.getElementById('region_id_main').value = '';
+        } else if (this.value === 'region') {
+            document.getElementById('pirate_name').value = '';
+            document.getElementById('min_bounty').value = '';
+            document.getElementById('max_bounty').value = '';
+        }
+    });
+});
+</script>
+{% endblock %}
+

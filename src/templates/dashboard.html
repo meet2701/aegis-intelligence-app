@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Marine Dashboard - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <div class="card-header-custom">
+        ⚓ MARINE HEADQUARTERS OPERATIONS DASHBOARD
+    </div>
+    
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <p style="color: var(--text-secondary); font-size: 1.1rem;">
+            Welcome, <strong>{{ session.full_name }}</strong>
+        </p>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Security Clearance: <span style="color: var(--success-color);">GRANTED</span> | 
+            Session Active | 
+            Justice Prevails
+        </p>
+    </div>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- READ OPERATIONS Section -->
+    <div style="margin-bottom: 3rem;">
+        <h3 style="color: var(--text-primary); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px;">
+            📊 Intelligence Retrieval Operations
+        </h3>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <a href="{{ url_for('wanted_poster_search') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
+                    <div style="font-size: 1.1rem; font-weight: bold;">WANTED POSTER SEARCH</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
+                        Search pirates by name or bounty range
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <a href="{{ url_for('devil_fruit_encyclopedia') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🍎</div>
+                    <div style="font-size: 1.1rem; font-weight: bold;">DEVIL FRUIT ENCYCLOPEDIA</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
+                        Database of Devil Fruits and their users
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <a href="{{ url_for('territory_map') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🗺️</div>
+                    <div style="font-size: 1.1rem; font-weight: bold;">TERRITORY CONTROL MAP</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
+                        View islands and their controlling factions
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <a href="{{ url_for('crew_manifest') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
+                    <div style="font-size: 1.1rem; font-weight: bold;">CREW MANIFEST</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
+                        Detailed crew member and ship information
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <a href="{{ url_for('regional_threat_report') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+                    <div style="font-size: 1.1rem; font-weight: bold;">REGIONAL THREAT REPORT</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
+                        Pirate activity analysis by sea region
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- WRITE OPERATIONS Section -->
+    <div>
+        <h3 style="color: var(--text-primary); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px;">
+            ✏️ Database Modification Operations
+        </h3>
+        
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('register_criminal') }}" class="btn btn-custom w-100" style="padding: 1.5rem; background: linear-gradient(135deg, #004400, #006600);">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">➕</div>
+                    <div style="font-size: 1.1rem; font-weight: bold;">REGISTER CRIMINAL</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
+                        Add new pirate to database (INSERT)
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('update_status') }}" class="btn btn-custom w-100" style="padding: 1.5rem; background: linear-gradient(135deg, #664400, #996600);">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔄</div>
+                    <div style="font-size: 1.1rem; font-weight: bold;">UPDATE STATUS</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
+                        Change person's status (UPDATE)
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('revoke_bounty') }}" class="btn btn-danger-custom w-100" style="padding: 1.5rem;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">❌</div>
+                    <div style="font-size: 1.1rem; font-weight: bold;">REVOKE BOUNTY</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
+                        Delete bounty record (DELETE)
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 3rem; padding: 1.5rem; background: rgba(0, 255, 255, 0.05); border: 1px solid var(--border-color); border-radius: 5px;">
+        <p style="color: var(--text-secondary); margin: 0;">
+            ⚓ "Absolute Justice" - Fleet Admiral Akainu
+        </p>
+    </div>
+</div>
+{% endblock %}

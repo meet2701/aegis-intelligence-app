@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}ERROR {{ error_code }} - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom" style="text-align: center; padding: 4rem 2rem;">
+    <div style="font-size: 6rem; color: var(--danger-color); margin-bottom: 1rem;">
+        ⚠️
+    </div>
+    
+    <h1 style="color: var(--text-primary); font-size: 3rem; margin-bottom: 1rem;">
+        ERROR {{ error_code }}
+    </h1>
+    
+    <h2 style="color: var(--text-secondary); font-size: 1.5rem; margin-bottom: 1.5rem;">
+        {{ error_message }}
+    </h2>
+    
+    <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem;">
+        {{ error_detail }}
+    </p>
+    
+    <div style="background: rgba(255, 0, 0, 0.1); border: 2px solid var(--danger-color); border-radius: 8px; padding: 1.5rem; margin: 2rem auto; max-width: 600px;">
+        <p style="color: var(--danger-color); margin: 0; font-weight: bold;">
+            SYSTEM STATUS: COMPROMISED
+        </p>
+        <p style="color: var(--text-secondary); margin: 0.5rem 0 0 0;">
+            Contact Cipher Pol IT Division for assistance
+        </p>
+    </div>
+    
+    <div style="margin-top: 2rem;">
+        <a href="{{ url_for('index') }}" class="btn btn-custom">
+            🏠 RETURN TO HOME
+        </a>
+        
+        <a href="{{ url_for('logout') }}" class="btn btn-custom" style="background: #666;">
+            🚪 LOGOUT
+        </a>
+    </div>
+</div>
+{% endblock %}

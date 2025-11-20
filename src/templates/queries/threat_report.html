@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Regional Threat Report - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <div class="card-header-custom">
+        ⚠️ REGIONAL THREAT ASSESSMENT
+    </div>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Analysis of pirate activity and threat levels across the Four Seas and Grand Line.
+    </p>
+    
+    <form method="POST" action="{{ url_for('regional_threat_report') }}">
+        <div class="mb-3">
+            <label for="region_id" class="form-label">Select Sea Region (Leave empty for all regions)</label>
+            <select class="form-select" id="region_id" name="region_id">
+                <option value="">-- All Regions --</option>
+                {% if regions %}
+                    {% for region in regions %}
+                        <option value="{{ region.Region_ID }}">{{ region.Region_Name }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-custom">
+            📊 GENERATE REPORT
+        </button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-custom" style="background: #666;">
+            ← BACK TO DASHBOARD
+        </a>
+    </form>
+    
+    {% if results is not none %}
+        <hr style="border-color: var(--border-color); margin: 2rem 0;">
+        
+        {% if results == "INTELLIGENCE NOT FOUND" %}
+            <div class="alert-custom alert-warning-custom">
+                {{ results }}
+            </div>
+        {% elif results is string %}
+            <div class="alert-custom alert-danger-custom">
+                {{ results }}
+            </div>
+        {% else %}
+            <h4 style="color: var(--text-primary); margin-bottom: 1rem;">
+                📈 Threat Analysis Results
+            </h4>
+            
+            <div style="overflow-x: auto;">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>Region Name</th>
+                            <th>Threat Level</th>
+                            <th>Active Pirates</th>
+                            <th>Total Bounties</th>
+                            {% if results[0].get('Avg_Bounty') %}
+                                <th>Avg Bounty</th>
+                                <th>Highest Bounty</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for region in results %}
+                        <tr>
+                            <td style="font-weight: bold; color: var(--text-primary);">
+                                {{ region.Region_Name }}
+                            </td>
+                            <td>
+                                {% if region.Threat_Level == 'Extreme' %}
+                                    <span style="color: var(--danger-color); font-weight: bold;">⚠️⚠️⚠️ {{ region.Threat_Level }}</span>
+                                {% elif region.Threat_Level == 'High' %}
+                                    <span style="color: var(--warning-color); font-weight: bold;">⚠️⚠️ {{ region.Threat_Level }}</span>
+                                {% elif region.Threat_Level == 'Moderate' %}
+                                    <span style="color: #ffcc00;">⚠️ {{ region.Threat_Level }}</span>
+                                {% else %}
+                                    <span style="color: var(--success-color);">✓ {{ region.Threat_Level }}</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-size: 1.1rem; font-weight: bold;">
+                                {{ region.Pirate_Count if region.Pirate_Count else 0 }}
+                            </td>
+                            <td style="color: var(--warning-color); font-weight: bold;">
+                                ₿{{ "{:,}".format(region.Total_Bounties) if region.Total_Bounties else '0' }}
+                            </td>
+                            {% if region.get('Avg_Bounty') %}
+                                <td>₿{{ "{:,.0f}".format(region.Avg_Bounty) if region.Avg_Bounty else '0' }}</td>
+                                <td style="color: var(--danger-color);">
+                                    ₿{{ "{:,}".format(region.Highest_Bounty) if region.Highest_Bounty else '0' }}
+                                </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

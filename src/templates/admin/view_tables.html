@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}View Tables - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <div class="card-header-custom">
+        📊 DATABASE TABLE OVERVIEW
+    </div>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Complete listing of all tables in the Aegis Intelligence Database with row counts.
+    </p>
+    
+    <a href="{{ url_for('admin_console') }}" class="btn btn-custom" style="background: #660000; border-color: #ff0000; margin-bottom: 2rem;">
+        ← BACK TO ADMIN CONSOLE
+    </a>
+    
+    {% if tables %}
+        <h4 style="color: var(--text-primary); margin-bottom: 1rem;">
+            Total Tables: {{ tables|length }}
+        </h4>
+        
+        <div style="overflow-x: auto;">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Table Name</th>
+                        <th>Row Count</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for table in tables %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td style="font-weight: bold; color: var(--text-primary);">
+                            {{ table.name }}
+                        </td>
+                        <td style="font-size: 1.1rem;">
+                            {{ "{:,}".format(table.row_count) }}
+                        </td>
+                        <td>
+                            {% if table.row_count == 0 %}
+                                <span style="color: var(--text-muted);">Empty</span>
+                            {% elif table.row_count < 10 %}
+                                <span style="color: var(--success-color);">Low</span>
+                            {% elif table.row_count < 100 %}
+                                <span style="color: var(--warning-color);">Medium</span>
+                            {% else %}
+                                <span style="color: var(--danger-color);">High</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="margin-top: 2rem; padding: 1rem; background: rgba(0, 255, 255, 0.05); border: 1px solid var(--border-color); border-radius: 5px;">
+            <p style="color: var(--text-secondary); margin: 0;">
+                Total Records: <strong>{{ tables|sum(attribute='row_count') }}</strong>
+            </p>
+        </div>
+    {% else %}
+        <div class="alert-custom alert-warning-custom">
+            No tables found in the database.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Crew Manifest - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <div class="card-header-custom">
+        👥 CREW MANIFEST
+    </div>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Comprehensive dossier on pirate crew composition, ship details, and aggregate bounty information.
+    </p>
+    
+    <form method="POST" action="{{ url_for('crew_manifest') }}">
+        <div class="mb-3">
+            <label for="crew_id" class="form-label">Select Crew</label>
+            <select class="form-select" id="crew_id" name="crew_id" required>
+                <option value="">-- Choose a crew --</option>
+                {% if crew_list %}
+                    {% for crew in crew_list %}
+                        <option value="{{ crew.Crew_ID }}">{{ crew.Crew_Name }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-custom">
+            📊 GENERATE MANIFEST
+        </button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-custom" style="background: #666;">
+            ← BACK TO DASHBOARD
+        </a>
+    </form>
+    
+    {% if manifest_data %}
+        <hr style="border-color: var(--border-color); margin: 2rem 0;">
+        
+        {% if manifest_data.crew_info %}
+            <div style="background: rgba(0, 255, 255, 0.05); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                <h3 style="color: var(--text-primary); margin-bottom: 1rem;">
+                    ☠️ {{ manifest_data.crew_info.Crew_Name }}
+                </h3>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Crew ID:</strong> {{ manifest_data.crew_info.Crew_ID }}</p>
+                        <p><strong>Date Formed:</strong> {{ manifest_data.crew_info.Date_Formed }}</p>
+                        <p><strong>Status:</strong> 
+                            <span style="color: {% if manifest_data.crew_info.Status == 'Active' %}var(--danger-color){% else %}var(--text-muted){% endif %};">
+                                {{ manifest_data.crew_info.Status }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Ship:</strong> {{ manifest_data.crew_info.Ship_Name if manifest_data.crew_info.Ship_Name else 'No Ship Registered' }}</p>
+                        <p><strong>Ship Class:</strong> {{ manifest_data.crew_info.Ship_Class if manifest_data.crew_info.Ship_Class else 'N/A' }}</p>
+                        <p><strong>Total Bounty:</strong> 
+                            <span style="color: var(--warning-color); font-size: 1.2rem; font-weight: bold;">
+                                ₿{{ "{:,}".format(manifest_data.total_bounty) }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            {% if manifest_data.members %}
+                <h4 style="color: var(--text-primary); margin-bottom: 1rem;">
+                    👥 Crew Members: {{ manifest_data.members|length }}
+                </h4>
+                
+                <div style="overflow-x: auto;">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Bounty</th>
+                                <th>Devil Fruit</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in manifest_data.members %}
+                            <tr>
+                                <td>{{ member.Person_ID }}</td>
+                                <td style="font-weight: bold;">{{ member.First_Name }} {{ member.Last_Name if member.Last_Name else '' }}</td>
+                                <td>{{ member.Role if member.Role else 'Member' }}</td>
+                                <td style="color: var(--warning-color); font-weight: bold;">₿{{ "{:,}".format(member.Bounty) }}</td>
+                                <td>
+                                    {% if member.Fruit_Name %}
+                                        <span style="color: var(--text-primary);">🍎 {{ member.Fruit_Name }}</span>
+                                    {% else %}
+                                        <span style="color: var(--text-muted);">None</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if member.Status == 'Active' %}
+                                        <span style="color: var(--danger-color);">● {{ member.Status }}</span>
+                                    {% elif member.Status == 'Captured' %}
+                                        <span style="color: var(--success-color);">● {{ member.Status }}</span>
+                                    {% else %}
+                                        <span style="color: var(--text-muted);">● {{ member.Status }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert-custom alert-warning-custom">
+                    No active crew members found.
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="alert-custom alert-warning-custom">
+                Crew information not found.
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

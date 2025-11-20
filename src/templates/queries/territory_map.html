@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Territory Control Map - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <div class="card-header-custom">
+        🗺️ TERRITORY CONTROL MAP
+    </div>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Real-time map of island territories and their controlling factions or pirate crews.
+    </p>
+    
+    <a href="{{ url_for('dashboard') }}" class="btn btn-custom" style="background: #666; margin-bottom: 2rem;">
+        ← BACK TO DASHBOARD
+    </a>
+    
+    {% if results == "INTELLIGENCE NOT FOUND" %}
+        <div class="alert-custom alert-warning-custom">
+            {{ results }}
+        </div>
+    {% elif results is string %}
+        <div class="alert-custom alert-danger-custom">
+            {{ results }}
+        </div>
+    {% else %}
+        <h4 style="color: var(--text-primary); margin-bottom: 1rem;">
+            🌍 Total Islands: {{ results|length }}
+        </h4>
+        
+        <div style="overflow-x: auto;">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Island ID</th>
+                        <th>Island Name</th>
+                        <th>Sea Region</th>
+                        <th>Climate</th>
+                        <th>Population</th>
+                        <th>Controller</th>
+                        <th>Type</th>
+                        <th>Control Level</th>
+                        <th>Date Acquired</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for island in results %}
+                    <tr>
+                        <td>{{ island.Island_ID }}</td>
+                        <td style="font-weight: bold; color: var(--text-primary);">
+                            {{ island.Island_Name }}
+                        </td>
+                        <td>{{ island.Region_Name }}</td>
+                        <td>{{ island.Climate }}</td>
+                        <td>{{ "{:,}".format(island.Population) if island.Population else 'Unknown' }}</td>
+                        <td>
+                            {% if island.Controller == 'Unclaimed Territory' %}
+                                <span style="color: var(--text-muted);">{{ island.Controller }}</span>
+                            {% else %}
+                                <span style="color: var(--text-primary); font-weight: bold;">
+                                    {{ island.Controller }}
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if island.Controller_Type == 'Faction' %}
+                                <span style="color: var(--success-color);">⚓ {{ island.Controller_Type }}</span>
+                            {% elif island.Controller_Type == 'Crew' %}
+                                <span style="color: var(--danger-color);">☠️ {{ island.Controller_Type }}</span>
+                            {% else %}
+                                <span style="color: var(--text-muted);">{{ island.Controller_Type }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ island.Control_Level if island.Control_Level else 'N/A' }}</td>
+                        <td>{{ island.Date_Acquired if island.Date_Acquired else 'N/A' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

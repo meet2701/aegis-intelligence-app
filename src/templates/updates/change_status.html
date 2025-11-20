@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Update Status - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <div class="card-header-custom">
+        🔄 UPDATE PERSON STATUS
+    </div>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Modify the operational status of any person in the database (Active, Captured, Deceased, Unknown).
+    </p>
+    
+    <form method="POST" action="{{ url_for('update_status') }}">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="person_id" class="form-label">Select Person *</label>
+                <select class="form-select" id="person_id" name="person_id" required>
+                    <option value="">-- Choose a person --</option>
+                    {% if people %}
+                        {% for person in people %}
+                            <option value="{{ person.Person_ID }}">
+                                [ID: {{ person.Person_ID }}] {{ person.First_Name }} {{ person.Last_Name }} 
+                                (Current: {{ person.Status }})
+                            </option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <label for="new_status" class="form-label">New Status *</label>
+                <select class="form-select" id="new_status" name="new_status" required>
+                    <option value="Active">Active</option>
+                    <option value="Captured">Captured</option>
+                    <option value="Deceased">Deceased</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+            </div>
+        </div>
+        
+        <div style="background: rgba(255, 170, 0, 0.1); border: 2px solid var(--warning-color); border-radius: 5px; padding: 1rem; margin: 1.5rem 0;">
+            <p style="color: var(--warning-color); margin: 0; font-weight: bold;">
+                ⚠️ CAUTION: Changing status to 'Captured' or 'Deceased' may trigger cascade effects in related records.
+            </p>
+        </div>
+        
+        <button type="submit" class="btn btn-custom" style="background: linear-gradient(135deg, #664400, #996600);">
+            ✅ UPDATE STATUS
+        </button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-custom" style="background: #666;">
+            ← CANCEL
+        </a>
+    </form>
+</div>
+{% endblock %}
