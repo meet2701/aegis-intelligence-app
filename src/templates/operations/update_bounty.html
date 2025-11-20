@@ -1,0 +1,37 @@
+{% extends "operations/base_operation.html" %}
+
+{% set operation_title = "Update Bounty" %}
+{% set icon = "📈" %}
+{% set description = "Increase pirate bounty with versioned record history" %}
+{% set warning = "Creates new Bounty_Record version (does not delete old records)" %}
+{% set submit_text = "Update Bounty" %}
+
+{% block form_fields %}
+<div class="form-group">
+    <label class="form-label" for="person_id">Pirate *</label>
+    <select class="form-control" id="person_id" name="person_id" required>
+        <option value="">-- Select Pirate --</option>
+        {% for pirate in pirates %}
+            <option value="{{ pirate.Person_ID }}">
+                {{ pirate.Name }} 
+                {% if pirate.Current_Bounty %}
+                    (Current: ฿{{ "{:,}".format(pirate.Current_Bounty) }})
+                {% else %}
+                    (No Bounty)
+                {% endif %}
+            </option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="new_amount">New Bounty Amount (฿) *</label>
+    <input type="number" class="form-control" id="new_amount" name="new_amount" min="0" step="1000000" required>
+    <div class="form-help">Enter new bounty in Berries (฿)</div>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="issue_date">Issue Date *</label>
+    <input type="date" class="form-control" id="issue_date" name="issue_date" required>
+</div>
+{% endblock %}

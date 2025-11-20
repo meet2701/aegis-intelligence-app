@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% block title %}Tactical Analysis Hub - Aegis Intelligence{% endblock %}
+
+{% block content %}
+<style>
+    .tactical-hub {
+        padding: 30px 0;
+    }
+
+    .hub-header {
+        background: linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%);
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        box-shadow: 0 8px 25px rgba(123, 31, 162, 0.3);
+    }
+
+    .hub-header h1 {
+        color: #fff;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .hub-header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .section-header {
+        background: linear-gradient(90deg, #7b1fa2 0%, transparent 100%);
+        padding: 15px 25px;
+        border-radius: 8px;
+        margin: 40px 0 25px 0;
+        border-left: 5px solid #ffd700;
+    }
+
+    .section-header h2 {
+        color: #fff;
+        margin: 0;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .section-description {
+        color: #bbb;
+        margin: 10px 0 30px 0;
+        font-size: 1rem;
+        padding-left: 10px;
+        border-left: 3px solid #9c27b0;
+    }
+
+    .query-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .query-card {
+        background: linear-gradient(145deg, #2a2a3e 0%, #1e1e2f 100%);
+        border: 2px solid #7b1fa2;
+        border-radius: 12px;
+        padding: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .query-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .query-card:hover {
+        transform: translateY(-5px);
+        border-color: #ffd700;
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+    }
+
+    .query-card:hover::before {
+        opacity: 1;
+    }
+
+    .query-icon {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+        display: inline-block;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .query-card:hover .query-icon {
+        animation: pulse 0.5s infinite;
+    }
+
+    .query-title {
+        color: #ffd700;
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .query-description {
+        color: #aaa;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .report-card {
+        background: linear-gradient(145deg, #3a1f4a 0%, #2a1535 100%);
+        border: 2px solid #9c27b0;
+        border-radius: 12px;
+        padding: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .report-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(156, 39, 176, 0.2) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .report-card:hover {
+        transform: translateY(-5px);
+        border-color: #ffd700;
+        box-shadow: 0 8px 30px rgba(156, 39, 176, 0.4);
+    }
+
+    .report-card:hover::before {
+        opacity: 1;
+    }
+
+    .report-icon {
+        font-size: 2.8rem;
+        margin-bottom: 15px;
+        display: inline-block;
+    }
+
+    .report-title {
+        color: #ffd700;
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-bottom: 12px;
+    }
+
+    .report-description {
+        color: #bbb;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .back-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+    }
+
+    .back-button:hover {
+        transform: translateX(-5px);
+        box-shadow: 0 5px 15px rgba(123, 31, 162, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+</style>
+
+<div class="tactical-hub">
+    <div class="container">
+        <!-- Back Button -->
+        <a href="{{ url_for('dashboard') }}" class="back-button">
+            ← Back to Command Center
+        </a>
+
+        <!-- Hub Header -->
+        <div class="hub-header">
+            <h1>
+                <span>📊</span>
+                Tactical Analysis Hub
+            </h1>
+            <p>Data aggregation and strategic intelligence reports</p>
+        </div>
+
+        <!-- SECTION 1: AGGREGATE QUERIES -->
+        <div class="section-header">
+            <h2><span>🧮</span> Aggregate Queries</h2>
+        </div>
+        <p class="section-description">
+            Statistical analysis and data aggregation operations for strategic insights
+        </p>
+
+        <div class="query-grid">
+            <!-- Aggregate Query 1 -->
+            <a href="{{ url_for('aggregate_crew_bounty') }}" class="query-card">
+                <div class="query-icon">💰</div>
+                <div class="query-title">Crew Total Bounty</div>
+                <div class="query-description">
+                    Calculate total bounty for a specific crew's members
+                </div>
+            </a>
+
+            <!-- Aggregate Query 2 -->
+            <a href="{{ url_for('aggregate_eastblue_avg') }}" class="query-card">
+                <div class="query-icon">🌊</div>
+                <div class="query-title">East Blue Average</div>
+                <div class="query-description">
+                    Average bounty of all pirates from the East Blue region
+                </div>
+            </a>
+
+            <!-- Aggregate Query 3 -->
+            <a href="{{ url_for('aggregate_islands_per_region') }}" class="query-card">
+                <div class="query-icon">🗺️</div>
+                <div class="query-title">Islands by Region</div>
+                <div class="query-description">
+                    Count of islands grouped by each sea region
+                </div>
+            </a>
+
+            <!-- Aggregate Query 4 -->
+            <a href="{{ url_for('aggregate_highest_bounty') }}" class="query-card">
+                <div class="query-icon">👑</div>
+                <div class="query-title">Highest Bounty</div>
+                <div class="query-description">
+                    Maximum bounty currently active in the database
+                </div>
+            </a>
+
+            <!-- Aggregate Query 5 -->
+            <a href="{{ url_for('aggregate_faction_ships') }}" class="query-card">
+                <div class="query-icon">⚓</div>
+                <div class="query-title">Faction Ship Count</div>
+                <div class="query-description">
+                    Number of ships controlled by a specific faction
+                </div>
+            </a>
+        </div>
+
+        <!-- SECTION 2: COMPLEX REPORTS -->
+        <div class="section-header">
+            <h2><span>📈</span> Complex Intelligence Reports</h2>
+        </div>
+        <p class="section-description">
+            Comprehensive multi-table analysis reports with strategic insights
+        </p>
+
+        <div class="query-grid">
+            <!-- Report 1 -->
+            <a href="{{ url_for('crew_manifest') }}" class="report-card">
+                <div class="report-icon">👥</div>
+                <div class="report-title">Crew Manifest Report</div>
+                <div class="report-description">
+                    Detailed crew composition with members, roles, and bounties
+                </div>
+            </a>
+
+            <!-- Report 2 -->
+            <a href="{{ url_for('faction_power_report') }}" class="report-card">
+                <div class="report-icon">⚡</div>
+                <div class="report-title">Faction Power Analysis</div>
+                <div class="report-description">
+                    Comprehensive power assessment of all major factions
+                </div>
+            </a>
+
+            <!-- Report 3 -->
+            <a href="{{ url_for('regional_threat_assessment') }}" class="report-card">
+                <div class="report-icon">🔥</div>
+                <div class="report-title">Regional Threat Assessment</div>
+                <div class="report-description">
+                    Top 10 highest bounty pirates by sea region
+                </div>
+            </a>
+
+            <!-- Report 4 -->
+            <a href="{{ url_for('devil_fruit_dossier') }}" class="report-card">
+                <div class="report-icon">🍇</div>
+                <div class="report-title">Devil Fruit Dossier</div>
+                <div class="report-description">
+                    Complete registry of Devil Fruits with current users and factions
+                </div>
+            </a>
+
+            <!-- Report 5 -->
+            <a href="{{ url_for('event_summary') }}" class="report-card">
+                <div class="report-icon">📜</div>
+                <div class="report-title">Historical Event Report</div>
+                <div class="report-description">
+                    Chronological timeline of major events and incidents
+                </div>
+            </a>
+
+            <!-- Report 6 -->
+            <a href="{{ url_for('territories_overview') }}" class="report-card">
+                <div class="report-icon">🏝️</div>
+                <div class="report-title">Territories Overview</div>
+                <div class="report-description">
+                    Island territories with controlling factions and population data
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

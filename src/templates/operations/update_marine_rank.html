@@ -1,0 +1,28 @@
+{% extends "operations/base_operation.html" %}
+
+{% set operation_title = "Update Marine Rank" %}
+{% set icon = "🎖️" %}
+{% set description = "Promote or demote Marine Officer" %}
+{% set submit_text = "Update Rank" %}
+
+{% block form_fields %}
+<div class="form-group">
+    <label class="form-label" for="person_id">Marine Officer *</label>
+    <select class="form-control" id="person_id" name="person_id" required>
+        <option value="">-- Select Marine --</option>
+        {% for marine in marines %}
+            <option value="{{ marine.Person_ID }}">{{ marine.Name }} (Current: {{ marine.Rank }})</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="new_rank">New Rank *</label>
+    <select class="form-control" id="new_rank" name="new_rank" required>
+        <option value="">-- Select Rank --</option>
+        {% for rank in ranks %}
+            <option value="{{ rank }}">{{ rank }}</option>
+        {% endfor %}
+    </select>
+</div>
+{% endblock %}

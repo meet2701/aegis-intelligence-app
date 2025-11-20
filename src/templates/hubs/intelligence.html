@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+
+{% block title %}Intelligence Hub - AEGIS{% endblock %}
+
+{% block content %}
+<div class="content-wrapper" style="max-width: 1600px; margin: 0 auto; padding: 2rem;">
+    <!-- Header -->
+    <div class="module-header" style="background: linear-gradient(135deg, #0a4d68, #05BFDB); padding: 2.5rem; border-radius: 15px; margin-bottom: 2rem; box-shadow: 0 8px 20px rgba(5, 191, 219, 0.3);">
+        <h1 style="color: white; margin: 0; font-size: 2.5rem;">
+            <span style="font-size: 3rem;">🔍</span> INTELLIGENCE HUB
+        </h1>
+        <p style="color: rgba(255,255,255,0.9); margin: 0.5rem 0 0 0; font-size: 1.1rem;">
+            Data Retrieval & Search Operations • Blue Clearance Level
+        </p>
+    </div>
+
+    <!-- Navigation -->
+    <div style="margin-bottom: 2rem;">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Command Center</a>
+    </div>
+
+    <!--=========================-->
+    <!-- SECTION 1: SELECTION QUERIES -->
+    <!--=========================-->
+    <div class="query-section" style="margin-bottom: 3rem;">
+        <div class="section-title" style="background: rgba(5, 191, 219, 0.1); padding: 1rem; border-left: 4px solid #05BFDB; margin-bottom: 1.5rem;">
+            <h2 style="margin: 0; color: #05BFDB;">📋 SELECTION QUERIES</h2>
+            <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">
+                Filter and retrieve specific records based on conditions
+            </p>
+        </div>
+
+        <div class="row">
+            <!-- S1: High Bounty Pirates -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_high_bounty_pirates') }}" class="query-card">
+                    <div class="query-icon">💰</div>
+                    <div class="query-title">High Bounty Pirates</div>
+                    <div class="query-desc">Bounty > ฿500,000,000</div>
+                </a>
+            </div>
+
+            <!-- S2: Logia Devil Fruits -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_logia_fruits') }}" class="query-card">
+                    <div class="query-icon">🔥</div>
+                    <div class="query-title">Logia Devil Fruits</div>
+                    <div class="query-desc">All Logia-type fruits</div>
+                </a>
+            </div>
+
+            <!-- S3: Admirals -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_admirals') }}" class="query-card">
+                    <div class="query-icon">⭐</div>
+                    <div class="query-title">Admiral Roster</div>
+                    <div class="query-desc">All Marine Admirals</div>
+                </a>
+            </div>
+
+            <!-- S4: Grand Line Islands -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_grandline_islands') }}" class="query-card">
+                    <div class="query-icon">🏝️</div>
+                    <div class="query-title">Grand Line Islands</div>
+                    <div class="query-desc">Islands in Paradise region</div>
+                </a>
+            </div>
+
+            <!-- S5: Old Crews -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_old_crews') }}" class="query-card">
+                    <div class="query-icon">⏰</div>
+                    <div class="query-title">Veteran Crews</div>
+                    <div class="query-desc">Crews formed before year</div>
+                </a>
+            </div>
+
+            <!-- S6: Captured Individuals -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_captured') }}" class="query-card">
+                    <div class="query-icon">⛓️</div>
+                    <div class="query-title">Captured Targets</div>
+                    <div class="query-desc">Status: Captured</div>
+                </a>
+            </div>
+
+            <!-- S7: Awakened Fruit Users -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_awakened_users') }}" class="query-card">
+                    <div class="query-icon">⚡</div>
+                    <div class="query-title">Awakened Users</div>
+                    <div class="query-desc">Pirates with awakened fruits</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!--=========================-->
+    <!-- SECTION 2: PROJECTION QUERIES -->
+    <!--=========================-->
+    <div class="query-section" style="margin-bottom: 3rem;">
+        <div class="section-title" style="background: rgba(0, 212, 255, 0.1); padding: 1rem; border-left: 4px solid #00d4ff; margin-bottom: 1.5rem;">
+            <h2 style="margin: 0; color: #00d4ff;">📊 PROJECTION QUERIES</h2>
+            <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">
+                Display specific columns from tables
+            </p>
+        </div>
+
+        <div class="row">
+            <!-- P1: Marine Names & Ranks -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_marine_ranks') }}" class="query-card">
+                    <div class="query-icon">🎖️</div>
+                    <div class="query-title">Marine Ranks</div>
+                    <div class="query-desc">Names & Ranks</div>
+                </a>
+            </div>
+
+            <!-- P2: Pirate Bounties -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_pirate_bounties') }}" class="query-card">
+                    <div class="query-icon">💵</div>
+                    <div class="query-title">Pirate Bounties</div>
+                    <div class="query-desc">Names & Amounts</div>
+                </a>
+            </div>
+
+            <!-- P3: Devil Fruit Types -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_fruit_types') }}" class="query-card">
+                    <div class="query-icon">🍇</div>
+                    <div class="query-title">Devil Fruit Catalog</div>
+                    <div class="query-desc">Names & Types</div>
+                </a>
+            </div>
+
+            <!-- P4: Crew Formation Dates -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_crew_dates') }}" class="query-card">
+                    <div class="query-icon">📅</div>
+                    <div class="query-title">Crew Timeline</div>
+                    <div class="query-desc">Name & Formation Date</div>
+                </a>
+            </div>
+
+            <!-- P5: Island Climates -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_island_climates') }}" class="query-card">
+                    <div class="query-icon">🌤️</div>
+                    <div class="query-title">Island Climates</div>
+                    <div class="query-desc">Names & Climate Types</div>
+                </a>
+            </div>
+
+            <!-- P6: Ship Registry -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_ship_registry') }}" class="query-card">
+                    <div class="query-icon">🚢</div>
+                    <div class="query-title">Ship Registry</div>
+                    <div class="query-desc">Ship Names & Owners</div>
+                </a>
+            </div>
+
+            <!-- P7: Faction Leaders -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('query_faction_leaders') }}" class="query-card">
+                    <div class="query-icon">👑</div>
+                    <div class="query-title">Faction Leadership</div>
+                    <div class="query-desc">Faction & Leader Names</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!--=========================-->
+    <!-- SECTION 3: SEARCH QUERIES -->
+    <!--=========================-->
+    <div class="query-section">
+        <div class="section-title" style="background: rgba(0, 255, 255, 0.1); padding: 1rem; border-left: 4px solid #00ffff; margin-bottom: 1.5rem;">
+            <h2 style="margin: 0; color: #00ffff;">🔎 SEARCH OPERATIONS</h2>
+            <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">
+                Dynamic search with user-defined parameters
+            </p>
+        </div>
+
+        <div class="row">
+            <!-- Search 1: Person by Name -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('search_person_name') }}" class="query-card search-card">
+                    <div class="query-icon">👤</div>
+                    <div class="query-title">Search Person</div>
+                    <div class="query-desc">Search by name pattern</div>
+                </a>
+            </div>
+
+            <!-- Search 2: Crew by Name -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('search_crew_name') }}" class="query-card search-card">
+                    <div class="query-icon">🏴‍☠️</div>
+                    <div class="query-title">Search Crew</div>
+                    <div class="query-desc">Find crews by name</div>
+                </a>
+            </div>
+
+            <!-- Search 3: Marine by Service Number -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('search_marine_service') }}" class="query-card search-card">
+                    <div class="query-icon">🔢</div>
+                    <div class="query-title">Marine Lookup</div>
+                    <div class="query-desc">By service number</div>
+                </a>
+            </div>
+
+            <!-- Search 4: Person by Ability -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('search_by_ability') }}" class="query-card search-card">
+                    <div class="query-icon">💪</div>
+                    <div class="query-title">Ability Search</div>
+                    <div class="query-desc">Find users of ability</div>
+                </a>
+            </div>
+
+            <!-- Search 5: Faction by Ideology -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('search_faction_ideology') }}" class="query-card search-card">
+                    <div class="query-icon">🎯</div>
+                    <div class="query-title">Faction Ideology</div>
+                    <div class="query-desc">Search by ideology</div>
+                </a>
+            </div>
+
+            <!-- Search 6: Log Entries -->
+            <div class="col-md-4 mb-3">
+                <a href="{{ url_for('search_log_entries') }}" class="query-card search-card">
+                    <div class="query-icon">📝</div>
+                    <div class="query-title">Log Search</div>
+                    <div class="query-desc">Search ship logs</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.query-card {
+    display: block;
+    background: var(--surface-color);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    height: 100%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.query-card:hover {
+    transform: translateY(-5px);
+    border-color: #05BFDB;
+    box-shadow: 0 8px 20px rgba(5, 191, 219, 0.3);
+}
+
+.query-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.query-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.query-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.search-card {
+    border-color: #00ffff;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(5, 191, 219, 0.05));
+}
+
+.search-card:hover {
+    border-color: #00ffff;
+    box-shadow: 0 8px 20px rgba(0, 255, 255, 0.4);
+}
+</style>
+{% endblock %}

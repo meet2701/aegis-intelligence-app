@@ -1,0 +1,29 @@
+{% extends "operations/base_operation.html" %}
+
+{% set operation_title = "Change Person Status" %}
+{% set icon = "🔒" %}
+{% set description = "Update person status (Active/Captured/Deceased)" %}
+{% set warning = "May affect bounty status if person is a pirate" %}
+{% set submit_text = "Change Status" %}
+
+{% block form_fields %}
+<div class="form-group">
+    <label class="form-label" for="person_id">Person *</label>
+    <select class="form-control" id="person_id" name="person_id" required>
+        <option value="">-- Select Person --</option>
+        {% for person in persons %}
+            <option value="{{ person.Person_ID }}">{{ person.Name }} (Current: {{ person.Status }})</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="new_status">New Status *</label>
+    <select class="form-control" id="new_status" name="new_status" required>
+        <option value="">-- Select Status --</option>
+        <option value="Active">Active</option>
+        <option value="Captured">Captured</option>
+        <option value="Deceased">Deceased</option>
+    </select>
+</div>
+{% endblock %}

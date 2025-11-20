@@ -1,0 +1,28 @@
+{% extends "operations/base_operation.html" %}
+
+{% set operation_title = "Form Crew" %}
+{% set icon = "🏴‍☠️" %}
+{% set description = "Create new crew with formation date validation" %}
+{% set warning = "Formation date cannot be in the future" %}
+
+{% block form_fields %}
+<div class="form-group">
+    <label class="form-label" for="crew_name">Crew Name *</label>
+    <input type="text" class="form-control" id="crew_name" name="crew_name" required>
+    <div class="form-help">e.g., Straw Hat Pirates, Heart Pirates</div>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="date_formed">Date Formed *</label>
+    <input type="date" class="form-control" id="date_formed" name="date_formed" required>
+    <div class="form-help">Must not be in the future</div>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="status">Status *</label>
+    <select class="form-control" id="status" name="status" required>
+        <option value="Active">Active</option>
+        <option value="Disbanded">Disbanded</option>
+    </select>
+</div>
+{% endblock %}

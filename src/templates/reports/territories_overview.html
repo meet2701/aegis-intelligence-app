@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block title %}Territories Overview - Aegis Intelligence{% endblock %}
+
+{% block content %}
+<style>
+    .report-container {
+        padding: 30px 0;
+    }
+
+    .report-header {
+        background: linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%);
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        box-shadow: 0 8px 25px rgba(123, 31, 162, 0.3);
+    }
+
+    .report-header h1 {
+        color: #fff;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .report-header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+        margin: 5px 0;
+    }
+
+    .region-section {
+        background: linear-gradient(145deg, #2a2a3e 0%, #1e1e2f 100%);
+        border: 2px solid #9c27b0;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(156, 39, 176, 0.2);
+    }
+
+    .region-header {
+        background: linear-gradient(90deg, #7b1fa2 0%, transparent 100%);
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin: -25px -25px 20px -25px;
+        border-bottom: 3px solid #ffd700;
+    }
+
+    .region-header h2 {
+        color: #fff;
+        margin: 0;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .territory-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    .territory-table thead {
+        background: rgba(123, 31, 162, 0.2);
+        border-bottom: 2px solid #9c27b0;
+    }
+
+    .territory-table th {
+        padding: 12px;
+        text-align: left;
+        color: #ffd700;
+        font-weight: bold;
+        border-bottom: 2px solid #9c27b0;
+    }
+
+    .territory-table td {
+        padding: 12px;
+        border-bottom: 1px solid #333;
+        color: #ddd;
+    }
+
+    .territory-table tr:hover {
+        background: rgba(156, 39, 176, 0.1);
+    }
+
+    .population-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .population-visual {
+        flex: 1;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .population-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #4caf50 0%, #ffd700 100%);
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+
+    .population-number {
+        font-weight: bold;
+        color: #ffd700;
+        min-width: 80px;
+        text-align: right;
+        font-family: 'Courier New', monospace;
+    }
+
+    .climate-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: bold;
+        background: rgba(156, 39, 176, 0.3);
+        color: #fff;
+        border: 1px solid #9c27b0;
+    }
+
+    .control-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: bold;
+    }
+
+    .control-faction { background: #2196f3; color: #fff; }
+    .control-crew { background: #ff9800; color: #fff; }
+    .control-none { background: #757575; color: #fff; }
+
+    .faction-leader {
+        color: #ffd700;
+        font-size: 0.85rem;
+        margin-top: 3px;
+        display: block;
+    }
+
+    .back-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+    }
+
+    .back-button:hover {
+        transform: translateX(-5px);
+        box-shadow: 0 5px 15px rgba(123, 31, 162, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 30px;
+        color: #888;
+        font-style: italic;
+    }
+
+    .summary-stats {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+
+    .stat-box {
+        background: rgba(30, 30, 47, 0.8);
+        border: 2px solid #9c27b0;
+        border-radius: 10px;
+        padding: 20px;
+        flex: 1;
+        min-width: 200px;
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        color: #ffd700;
+        font-weight: bold;
+        display: block;
+    }
+
+    .stat-label {
+        color: #bbb;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="report-container">
+    <div class="container">
+        <!-- Back Button -->
+        <a href="{{ url_for('tactical_analysis') }}" class="back-button">
+            ← Back to Tactical Analysis
+        </a>
+
+        <!-- Report Header -->
+        <div class="report-header">
+            <h1>
+                <span>🏝️</span>
+                Territories Overview
+            </h1>
+            <p>Island Territories with Controlling Factions and Population Data</p>
+            <p><small>Report Generated: {{ now.strftime('%Y-%m-%d %H:%M:%S') }}</small></p>
+        </div>
+
+        <!-- Summary Statistics -->
+        {% set total_islands = results|length %}
+        {% set controlled_islands = results|selectattr('Controlling_Faction')|list|length %}
+        {% set total_population = results|sum(attribute='Population') if results else 0 %}
+        
+        <div class="summary-stats">
+            <div class="stat-box">
+                <span class="stat-number">{{ total_islands }}</span>
+                <div class="stat-label">Total Islands</div>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">{{ controlled_islands }}</span>
+                <div class="stat-label">Controlled Territories</div>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">{{ "{:,}".format(total_population) }}</span>
+                <div class="stat-label">Total Population</div>
+            </div>
+        </div>
+
+        <!-- Results by Region -->
+        {% if results %}
+            {% set max_population = results|map(attribute='Population')|max %}
+            {% set current_region = namespace(value='') %}
+            {% for row in results %}
+                {% if row.Region_Name != current_region.value %}
+                    {% if current_region.value != '' %}
+                        </tbody></table></div>
+                    {% endif %}
+                    {% set current_region.value = row.Region_Name %}
+                    
+                    <div class="region-section">
+                        <div class="region-header">
+                            <h2>🌊 {{ row.Region_Name }}</h2>
+                        </div>
+                        <table class="territory-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">Island Name</th>
+                                    <th style="width: 15%;">Climate</th>
+                                    <th style="width: 25%;">Population</th>
+                                    <th style="width: 35%;">Control</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                {% endif %}
+                
+                <tr>
+                    <td><strong>{{ row.Island_Name }}</strong></td>
+                    <td>
+                        <span class="climate-badge">{{ row.Climate if row.Climate else 'Unknown' }}</span>
+                    </td>
+                    <td>
+                        <div class="population-bar">
+                            <div class="population-visual">
+                                <div class="population-fill" style="width: {{ (row.Population / max_population * 100) if row.Population else 0 }}%;"></div>
+                            </div>
+                            <span class="population-number">{{ "{:,}".format(row.Population) if row.Population else '0' }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        {% if row.Controlling_Faction %}
+                            <span class="control-badge control-faction">{{ row.Controlling_Faction }}</span>
+                            {% if row.Faction_Leader %}
+                                <span class="faction-leader">👑 {{ row.Faction_Leader }}</span>
+                            {% endif %}
+                        {% elif row.Controlling_Crew %}
+                            <span class="control-badge control-crew">{{ row.Controlling_Crew }}</span>
+                        {% else %}
+                            <span class="control-badge control-none">Unclaimed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                
+                {% if loop.last %}
+                    </tbody></table></div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="region-section">
+                <p class="no-data">No territory data available</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "operations/base_operation.html" %}
+
+{% set operation_title = "Register Person" %}
+{% set icon = "👤" %}
+{% set description = "Add new person to database with home island validation" %}
+{% set warning = "Home Island ID must exist before registration" %}
+
+{% block form_fields %}
+<div class="form-group">
+    <label class="form-label" for="first_name">First Name *</label>
+    <input type="text" class="form-control" id="first_name" name="first_name" required>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="last_name">Last Name</label>
+    <input type="text" class="form-control" id="last_name" name="last_name">
+    <div class="form-help">Optional - leave blank if person has no last name</div>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="dob">Date of Birth *</label>
+    <input type="date" class="form-control" id="dob" name="dob" required>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="home_island_id">Home Island *</label>
+    <select class="form-control" id="home_island_id" name="home_island_id" required>
+        <option value="">-- Select Island --</option>
+        {% for island in islands %}
+            <option value="{{ island.Island_ID }}">{{ island.Island_Name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="status">Status *</label>
+    <select class="form-control" id="status" name="status" required>
+        <option value="Active">Active</option>
+        <option value="Captured">Captured</option>
+        <option value="Deceased">Deceased</option>
+    </select>
+</div>
+{% endblock %}

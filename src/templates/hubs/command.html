@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+
+{% block title %}Command Operations Hub - Aegis Intelligence{% endblock %}
+
+{% block content %}
+<style>
+    .command-hub {
+        padding: 30px 0;
+    }
+
+    .hub-header {
+        background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        box-shadow: 0 8px 25px rgba(211, 47, 47, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hub-header::before {
+        content: '⚠️';
+        position: absolute;
+        font-size: 10rem;
+        opacity: 0.1;
+        right: 30px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .hub-header h1 {
+        color: #fff;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hub-header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+        margin: 5px 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .warning-banner {
+        background: rgba(255, 152, 0, 0.2);
+        border-left: 4px solid #ff9800;
+        padding: 15px 20px;
+        margin-bottom: 30px;
+        border-radius: 5px;
+    }
+
+    .warning-banner strong {
+        color: #ff9800;
+    }
+
+    .section-header {
+        background: linear-gradient(90deg, #d32f2f 0%, transparent 100%);
+        padding: 15px 25px;
+        border-radius: 8px;
+        margin: 40px 0 25px 0;
+        border-left: 5px solid #ff6b6b;
+    }
+
+    .section-header h2 {
+        color: #fff;
+        margin: 0;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .section-description {
+        color: #bbb;
+        margin: 10px 0 30px 0;
+        font-size: 1rem;
+        padding-left: 10px;
+        border-left: 3px solid #f44336;
+    }
+
+    .operation-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .operation-card {
+        background: linear-gradient(145deg, #2a2a3e 0%, #1e1e2f 100%);
+        border: 2px solid #d32f2f;
+        border-radius: 12px;
+        padding: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .operation-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 107, 107, 0.1) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .operation-card:hover {
+        transform: translateY(-5px);
+        border-color: #ff6b6b;
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+    }
+
+    .operation-card:hover::before {
+        opacity: 1;
+    }
+
+    .operation-icon {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+        display: inline-block;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .operation-card:hover .operation-icon {
+        animation: pulse 0.5s infinite;
+    }
+
+    .operation-title {
+        color: #ff6b6b;
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .operation-description {
+        color: #aaa;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 12px;
+    }
+
+    .operation-warning {
+        background: rgba(255, 152, 0, 0.1);
+        border-left: 3px solid #ff9800;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        color: #ff9800;
+        border-radius: 4px;
+        margin-top: 10px;
+    }
+
+    .delete-card {
+        background: linear-gradient(145deg, #3a1f1f 0%, #2a1515 100%);
+        border: 2px solid #f44336;
+    }
+
+    .delete-card .operation-title {
+        color: #f44336;
+    }
+
+    .delete-card:hover {
+        border-color: #ff1744;
+        box-shadow: 0 8px 25px rgba(255, 23, 68, 0.4);
+    }
+
+    .back-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+    }
+
+    .back-button:hover {
+        transform: translateX(-5px);
+        box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+</style>
+
+<div class="command-hub">
+    <div class="container">
+        <!-- Back Button -->
+        <a href="{{ url_for('dashboard') }}" class="back-button">
+            ← Back to Command Center
+        </a>
+
+        <!-- Hub Header -->
+        <div class="hub-header">
+            <h1>
+                <span>⚠️</span>
+                Command Operations Hub
+            </h1>
+            <p>Database modification and data entry operations</p>
+            <p><small>⚡ All operations require admin authentication</small></p>
+        </div>
+
+        <!-- Warning Banner -->
+        <div class="warning-banner">
+            <strong>⚠️ CRITICAL OPERATIONS AREA:</strong> All modifications are logged and permanent. Ensure data accuracy before submission. Some operations execute database transactions.
+        </div>
+
+        <!-- SECTION 1: INSERT OPERATIONS -->
+        <div class="section-header">
+            <h2><span>➕</span> Insert Operations</h2>
+        </div>
+        <p class="section-description">
+            Register new entities in the database with business logic validation
+        </p>
+
+        <div class="operation-grid">
+            <!-- Insert Operation 1 -->
+            <a href="{{ url_for('register_person') }}" class="operation-card">
+                <div class="operation-icon">👤</div>
+                <div class="operation-title">Register Person</div>
+                <div class="operation-description">
+                    Add new person to database with home island validation
+                </div>
+                <div class="operation-warning">
+                    ⚠️ Validates Home_Island_ID exists before insertion
+                </div>
+            </a>
+
+            <!-- Insert Operation 2 -->
+            <a href="{{ url_for('issue_bounty') }}" class="operation-card">
+                <div class="operation-icon">💰</div>
+                <div class="operation-title">Issue Bounty</div>
+                <div class="operation-description">
+                    Create new bounty record for a pirate
+                </div>
+                <div class="operation-warning">
+                    ⚠️ Verifies Person_ID exists and is a pirate
+                </div>
+            </a>
+
+            <!-- Insert Operation 3 -->
+            <a href="{{ url_for('commission_ship') }}" class="operation-card">
+                <div class="operation-icon">🚢</div>
+                <div class="operation-title">Commission Ship</div>
+                <div class="operation-description">
+                    Register new ship with crew ownership
+                </div>
+                <div class="operation-warning">
+                    ⚠️ Validates Owning_Crew_ID exists before insertion
+                </div>
+            </a>
+
+            <!-- Insert Operation 4 -->
+            <a href="{{ url_for('log_devil_fruit') }}" class="operation-card">
+                <div class="operation-icon">🍇</div>
+                <div class="operation-title">Log Devil Fruit</div>
+                <div class="operation-description">
+                    Register new Devil Fruit in database
+                </div>
+                <div class="operation-warning">
+                    ⚠️ Enforces ENUM ('Paramecia', 'Zoan', 'Logia')
+                </div>
+            </a>
+
+            <!-- Insert Operation 5 -->
+            <a href="{{ url_for('form_crew') }}" class="operation-card">
+                <div class="operation-icon">🏴‍☠️</div>
+                <div class="operation-title">Form Crew</div>
+                <div class="operation-description">
+                    Create new crew with formation date validation
+                </div>
+                <div class="operation-warning">
+                    ⚠️ Checks Date_Formed NOT > CURDATE()
+                </div>
+            </a>
+        </div>
+
+        <!-- SECTION 2: UPDATE OPERATIONS -->
+        <div class="section-header">
+            <h2><span>✏️</span> Update Operations</h2>
+        </div>
+        <p class="section-description">
+            Modify existing records with transactional integrity
+        </p>
+
+        <div class="operation-grid">
+            <!-- Update Operation 1 -->
+            <a href="{{ url_for('update_bounty') }}" class="operation-card">
+                <div class="operation-icon">📈</div>
+                <div class="operation-title">Update Bounty</div>
+                <div class="operation-description">
+                    Increase pirate bounty with versioned record history
+                </div>
+                <div class="operation-warning">
+                    ⚠️ TRANSACTION: Updates Pirate + Inserts new Bounty_Record
+                </div>
+            </a>
+
+            <!-- Update Operation 2 -->
+            <a href="{{ url_for('change_status') }}" class="operation-card">
+                <div class="operation-icon">🔒</div>
+                <div class="operation-title">Change Person Status</div>
+                <div class="operation-description">
+                    Update person status (Active/Captured/Deceased)
+                </div>
+                <div class="operation-warning">
+                    ⚠️ May affect bounty status if captured
+                </div>
+            </a>
+
+            <!-- Update Operation 3 -->
+            <a href="{{ url_for('record_fruit_consumption') }}" class="operation-card">
+                <div class="operation-icon">🍽️</div>
+                <div class="operation-title">Record Fruit Consumption</div>
+                <div class="operation-description">
+                    Register person consuming a Devil Fruit
+                </div>
+                <div class="operation-warning">
+                    ⚠️ TRANSACTION: Checks existing fruit, inserts possession
+                </div>
+            </a>
+
+            <!-- Update Operation 4 -->
+            <a href="{{ url_for('update_marine_rank') }}" class="operation-card">
+                <div class="operation-icon">🎖️</div>
+                <div class="operation-title">Update Marine Rank</div>
+                <div class="operation-description">
+                    Promote or demote Marine Officer
+                </div>
+                <div class="operation-warning">
+                    ⚠️ Simple UPDATE Marine_Officer.Rank
+                </div>
+            </a>
+
+            <!-- Update Operation 5 -->
+            <a href="{{ url_for('remove_territory_control') }}" class="operation-card">
+                <div class="operation-icon">🏝️</div>
+                <div class="operation-title">Remove Territory Control</div>
+                <div class="operation-description">
+                    Clear faction/crew control from island
+                </div>
+                <div class="operation-warning">
+                    ⚠️ SET Territory Faction_ID=NULL AND Crew_ID=NULL
+                </div>
+            </a>
+        </div>
+
+        <!-- SECTION 3: DELETE OPERATIONS -->
+        <div class="section-header">
+            <h2><span>🗑️</span> Delete Operations</h2>
+        </div>
+        <p class="section-description">
+            Remove or disband entities with cascade handling
+        </p>
+
+        <div class="operation-grid">
+            <!-- Delete Operation 1 -->
+            <a href="{{ url_for('decommission_ship') }}" class="delete-card operation-card">
+                <div class="operation-icon">⚓</div>
+                <div class="operation-title">Decommission Ship</div>
+                <div class="operation-description">
+                    Remove ship from registry (may cascade log entries)
+                </div>
+                <div class="operation-warning">
+                    ⚠️ Handles Log_Entry cascade via ON DELETE CASCADE
+                </div>
+            </a>
+
+            <!-- Delete Operation 2 -->
+            <a href="{{ url_for('disband_crew') }}" class="delete-card operation-card">
+                <div class="operation-icon">💔</div>
+                <div class="operation-title">Disband Crew</div>
+                <div class="operation-description">
+                    Dissolve crew and clear all memberships
+                </div>
+                <div class="operation-warning">
+                    ⚠️ SET Membership.Crew_ID=NULL for all members
+                </div>
+            </a>
+
+            <!-- Delete Operation 3 -->
+            <a href="{{ url_for('revoke_bounty') }}" class="delete-card operation-card">
+                <div class="operation-icon">❌</div>
+                <div class="operation-title">Revoke Bounty</div>
+                <div class="operation-description">
+                    Remove bounty record from database
+                </div>
+                <div class="operation-warning">
+                    ⚠️ DELETE from Bounty_Record (already implemented)
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

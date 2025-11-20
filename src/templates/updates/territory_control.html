@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Territory Control - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <div class="card-header-custom">
+        🏝️ TERRITORY CONTROL ASSIGNMENT
+    </div>
+    
+    <div class="alert-custom" style="background: rgba(220, 53, 69, 0.1); border-left: 4px solid #dc3545; margin-bottom: 2rem;">
+        <strong>⚠️ XOR CONSTRAINT (Phase 3 Rule):</strong><br>
+        A territory must be controlled by <strong>EITHER</strong> a Faction <strong>OR</strong> a Crew, but <strong>NOT BOTH</strong>.<br>
+        Attempting to assign both will result in a constraint violation error.
+    </div>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Assign or update territorial control for World Government tracking. This operation enforces the exclusive-OR constraint defined in Phase 3.
+    </p>
+    
+    <form method="POST" action="{{ url_for('update_territory_control') }}">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="island_id" class="form-label">🏝️ Island / Territory *</label>
+                <select class="form-control" id="island_id" name="island_id" required>
+                    <option value="">-- Select Island --</option>
+                    {% if islands %}
+                        {% for island in islands %}
+                            <option value="{{ island.Island_ID }}">{{ island.Island_Name }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <label for="control_level" class="form-label">📊 Control Level</label>
+                <select class="form-control" id="control_level" name="control_level">
+                    <option value="Full Control">Full Control</option>
+                    <option value="Partial Control">Partial Control</option>
+                    <option value="Contested">Contested</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="faction_id" class="form-label">⚓ Controlling Faction (Option A)</label>
+                <select class="form-control" id="faction_id" name="faction_id">
+                    <option value="">-- None (Select Crew Instead) --</option>
+                    {% if factions %}
+                        {% for faction in factions %}
+                            <option value="{{ faction.Faction_ID }}">{{ faction.Faction_Name }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+                <small class="form-text text-muted">Select a faction OR leave empty to choose a crew</small>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <label for="crew_id" class="form-label">🏴‍☠️ Controlling Crew (Option B)</label>
+                <select class="form-control" id="crew_id" name="crew_id">
+                    <option value="">-- None (Select Faction Instead) --</option>
+                    {% if crews %}
+                        {% for crew in crews %}
+                            <option value="{{ crew.Crew_ID }}">{{ crew.Crew_Name }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+                <small class="form-text text-muted">Select a crew OR leave empty to choose a faction</small>
+            </div>
+        </div>
+        
+        <div class="alert-custom" style="background: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; margin-top: 1rem; margin-bottom: 1.5rem;">
+            <strong>⚡ Logic:</strong> If both Faction and Crew are selected, the system will reject the operation.<br>
+            If neither is selected, you will be prompted to choose one.
+        </div>
+        
+        <button type="submit" class="btn btn-custom">
+            ✅ ASSIGN CONTROL
+        </button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-custom" style="background: #666;">
+            ← BACK TO DASHBOARD
+        </a>
+    </form>
+</div>
+
+<script>
+// Visual feedback: Disable the other option when one is selected
+document.getElementById('faction_id').addEventListener('change', function() {
+    const crewSelect = document.getElementById('crew_id');
+    if (this.value) {
+        crewSelect.style.opacity = '0.5';
+        crewSelect.disabled = true;
+        crewSelect.value = '';
+    } else {
+        crewSelect.style.opacity = '1';
+        crewSelect.disabled = false;
+    }
+});
+
+document.getElementById('crew_id').addEventListener('change', function() {
+    const factionSelect = document.getElementById('faction_id');
+    if (this.value) {
+        factionSelect.style.opacity = '0.5';
+        factionSelect.disabled = true;
+        factionSelect.value = '';
+    } else {
+        factionSelect.style.opacity = '1';
+        factionSelect.disabled = false;
+    }
+});
+</script>
+{% endblock %}

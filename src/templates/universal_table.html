@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}{{ query_title }} - AEGIS{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="page-header" style="background: {{ header_color|default('linear-gradient(135deg, #0a4d68, #05BFDB)') }}; padding: 2rem; border-radius: 10px; margin-bottom: 2rem;">
+        <h1 style="color: white; margin: 0;">{{ icon|default('🔍') }} {{ query_title }}</h1>
+        <p class="subtitle" style="color: rgba(255,255,255,0.9); margin: 0.5rem 0 0 0;">{{ description }}</p>
+    </div>
+
+    <!-- Back Navigation -->
+    <div style="margin-bottom: 1.5rem;">
+        <a href="{{ back_url }}" class="btn btn-secondary">
+            ← Back to {{ back_name }}
+        </a>
+    </div>
+
+    <!-- Search Form (if applicable) -->
+    {% if show_form %}
+    <div class="card-custom" style="margin-bottom: 2rem;">
+        <form method="POST" action="{{ form_action }}">
+            <div class="row">
+                {% for field in form_fields %}
+                <div class="col-md-{{ field.col_width|default(6) }} mb-3">
+                    <label for="{{ field.name }}" class="form-label">{{ field.label }}</label>
+                    {% if field.type == 'select' %}
+                        <select name="{{ field.name }}" id="{{ field.name }}" class="form-control" {{ field.required|default(false) and 'required' or '' }}>
+                            <option value="">-- Select {{ field.label }} --</option>
+                            {% for option in field.options %}
+                            <option value="{{ option.value }}">{{ option.text }}</option>
+                            {% endfor %}
+                        </select>
+                    {% elif field.type == 'date' %}
+                        <input type="date" name="{{ field.name }}" id="{{ field.name }}" class="form-control" {{ field.required|default(false) and 'required' or '' }}>
+                    {% elif field.type == 'number' %}
+                        <input type="number" name="{{ field.name }}" id="{{ field.name }}" class="form-control" placeholder="{{ field.placeholder|default('') }}" {{ field.required|default(false) and 'required' or '' }}>
+                    {% else %}
+                        <input type="text" name="{{ field.name }}" id="{{ field.name }}" class="form-control" placeholder="{{ field.placeholder|default('') }}" {{ field.required|default(false) and 'required' or '' }}>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">🔍 Execute Query</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- Results Section -->
+    {% if results is not none %}
+        {% if results is string %}
+        <!-- Error message case -->
+        <div class="alert alert-danger" style="padding: 1.5rem; background: rgba(255, 0, 0, 0.1); border: 1px solid var(--danger-color); border-radius: 8px;">
+            <h4>⚠️ Query Error</h4>
+            <p>{{ results }}</p>
+        </div>
+        {% elif results|length > 0 %}
+        <div class="results-summary" style="background: rgba(0, 255, 255, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <span class="result-count">📊 Records Found: <strong>{{ results|length }}</strong></span>
+            <span class="timestamp" style="float: right;">Generated: {{ now.strftime('%Y-%m-%d %H:%M:%S') if now else 'N/A' }}</span>
+        </div>
+
+        <div class="table-container" style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                <thead style="background: var(--primary-color); color: white;">
+                    <tr>
+                        {% for column in results[0].keys() %}
+                        <th style="padding: 12px; text-align: left; border: 1px solid var(--border-color);">{{ column|replace('_', ' ')|title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in results %}
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        {% for key, value in row.items() %}
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">
+                            {% if value is none %}
+                                <span style="color: var(--text-muted); font-style: italic;">NULL</span>
+                            {% elif key in ['Bounty', 'Amount', 'Total_Bounty', 'Avg_Bounty', 'Highest_Bounty', 'Total_Bounties', 'Total_Bounty_Sum'] %}
+                                <span style="color: var(--danger-color); font-weight: bold; font-family: monospace;">฿{{ "{:,.0f}".format(value) if value else '0' }}</span>
+                            {% elif key in ['Date_of_Birth', 'Issue_Date', 'Date_Formed', 'Start_Date', 'End_Date', 'Date_Acquired'] %}
+                                {{ value.strftime('%Y-%m-%d') if value else 'N/A' }}
+                            {% elif key == 'Status' %}
+                                {% if value == 'Active' %}
+                                    <span style="color: var(--success-color); font-weight: bold;">● {{ value }}</span>
+                                {% elif value == 'Captured' %}
+                                    <span style="color: var(--danger-color); font-weight: bold;">● {{ value }}</span>
+                                {% elif value == 'Deceased' %}
+                                    <span style="color: var(--text-muted); font-weight: bold;">✝ {{ value }}</span>
+                                {% else %}
+                                    <span>{{ value }}</span>
+                                {% endif %}
+                            {% elif key == 'is_Awakened' or key == 'Is_Awakened' %}
+                                {% if value %}
+                                    <span style="color: var(--warning-color); font-weight: bold;">⚡ AWAKENED</span>
+                                {% else %}
+                                    <span style="color: var(--text-muted);">Standard</span>
+                                {% endif %}
+                            {% else %}
+                                {{ value }}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Export Options -->
+        <div style="margin-top: 1.5rem; text-align: right;">
+            <small style="color: var(--text-muted);">💡 Tip: Results can be copied for reporting purposes</small>
+        </div>
+
+        {% else %}
+        <div class="no-results" style="text-align: center; padding: 3rem; background: rgba(255, 193, 7, 0.1); border-radius: 10px;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+            <h3 style="color: var(--warning-color);">No Records Found</h3>
+            <p style="color: var(--text-muted);">The query returned 0 results. Try adjusting your search criteria.</p>
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="info-box" style="text-align: center; padding: 3rem; background: rgba(5, 191, 219, 0.1); border-radius: 10px; border: 2px dashed var(--info-color);">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">📋</div>
+            <h3 style="color: var(--info-color);">Query Ready</h3>
+            <p style="color: var(--text-muted);">{{ form_instruction|default('Fill in the search criteria above and click Execute Query to view results.') }}</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.data-table {
+    background: var(--surface-color);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.data-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+}
+
+.data-table tbody tr:hover {
+    background: rgba(5, 191, 219, 0.05);
+}
+
+.content-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "operations/base_operation.html" %}
+
+{% set operation_title = "Commission Ship" %}
+{% set icon = "🚢" %}
+{% set description = "Register new ship with crew ownership" %}
+{% set warning = "Owning Crew ID must exist if specified" %}
+
+{% block form_fields %}
+<div class="form-group">
+    <label class="form-label" for="ship_name">Ship Name *</label>
+    <input type="text" class="form-control" id="ship_name" name="ship_name" required>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="ship_class">Ship Class *</label>
+    <input type="text" class="form-control" id="ship_class" name="ship_class" required>
+    <div class="form-help">e.g., Sloop, Brig, Galleon, Battleship</div>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="owning_crew_id">Owning Crew</label>
+    <select class="form-control" id="owning_crew_id" name="owning_crew_id">
+        <option value="">-- No Owner --</option>
+        {% for crew in crews %}
+            <option value="{{ crew.Crew_ID }}">{{ crew.Crew_Name }}</option>
+        {% endfor %}
+    </select>
+    <div class="form-help">Optional - leave blank if no crew owns this ship</div>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="commission_date">Commission Date *</label>
+    <input type="date" class="form-control" id="commission_date" name="commission_date" required>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "operations/base_operation.html" %}
+
+{% set operation_title = "Disband Crew" %}
+{% set icon = "💔" %}
+{% set description = "Dissolve crew and clear all memberships" %}
+{% set warning = "Sets Membership.Crew_ID=NULL for all members" %}
+{% set submit_text = "Disband Crew" %}
+
+{% block form_fields %}
+<div class="form-group">
+    <label class="form-label" for="crew_id">Crew *</label>
+    <select class="form-control" id="crew_id" name="crew_id" required>
+        <option value="">-- Select Crew --</option>
+        {% for crew in crews %}
+            <option value="{{ crew.Crew_ID }}">
+                {{ crew.Crew_Name }} ({{ crew.Member_Count }} members)
+            </option>
+        {% endfor %}
+    </select>
+    <div class="form-help">⚠️ This will clear crew assignments for all {{ crews|length if crews else 0 }} crew members</div>
+</div>
+{% endblock %}

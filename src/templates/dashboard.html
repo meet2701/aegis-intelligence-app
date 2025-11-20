@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Marine Dashboard - AEGIS{% endblock %}
+{% block title %}Command Center - AEGIS{% endblock %}
 
 {% block content %}
 <div class="card-custom">
     <div class="card-header-custom">
-        ⚓ MARINE HEADQUARTERS OPERATIONS DASHBOARD
+        ⚓ AEGIS INTELLIGENCE DATABASE - COMMAND CENTER
     </div>
     
     <div style="text-align: center; margin-bottom: 2rem;">
@@ -21,59 +21,69 @@
     
     <hr style="border-color: var(--border-color); margin: 2rem 0;">
     
-    <!-- READ OPERATIONS Section -->
-    <div style="margin-bottom: 3rem;">
-        <h3 style="color: var(--text-primary); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px;">
-            📊 Intelligence Retrieval Operations
+    <!-- MODULAR COMMAND CENTER -->
+    <div style="margin-bottom: 2rem;">
+        <h3 style="color: var(--text-primary); text-align: center; margin-bottom: 2rem; text-transform: uppercase; letter-spacing: 3px; font-size: 1.3rem;">
+            ⚡ SELECT OPERATIONAL MODULE ⚡
         </h3>
         
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <a href="{{ url_for('wanted_poster_search') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">WANTED POSTER SEARCH</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Search pirates by name or bounty range
+        <div class="row" style="margin-top: 3rem;">
+            <!-- MODULE A: INTELLIGENCE HUB -->
+            <div class="col-md-4 mb-4">
+                <a href="{{ url_for('intelligence_hub') }}" class="module-card" style="background: linear-gradient(135deg, #0a4d68, #05BFDB); border: 3px solid #00d4ff; text-decoration: none; display: block; padding: 2.5rem; border-radius: 15px; box-shadow: 0 8px 20px rgba(5, 191, 219, 0.3); transition: all 0.3s ease;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🔍</div>
+                        <h4 style="color: #00ffff; font-weight: bold; font-size: 1.4rem; margin-bottom: 1rem; text-transform: uppercase;">
+                            Intelligence Hub
+                        </h4>
+                        <p style="color: #b0e7ff; font-size: 0.95rem; line-height: 1.6;">
+                            <strong>Data Retrieval & Search</strong><br>
+                            Selection Queries • Projections<br>
+                            Advanced Search Operations
+                        </p>
+                        <div style="margin-top: 1.5rem; padding: 0.8rem; background: rgba(0, 255, 255, 0.1); border-radius: 8px;">
+                            <small style="color: #00ffff;">22 Query Operations Available</small>
+                        </div>
                     </div>
                 </a>
             </div>
             
-            <div class="col-md-6 mb-3">
-                <a href="{{ url_for('devil_fruit_encyclopedia') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🍎</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">DEVIL FRUIT ENCYCLOPEDIA</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Database of Devil Fruits and their users
+            <!-- MODULE B: TACTICAL ANALYSIS -->
+            <div class="col-md-4 mb-4">
+                <a href="{{ url_for('tactical_analysis') }}" class="module-card" style="background: linear-gradient(135deg, #4a148c, #7b1fa2); border: 3px solid #ce93d8; text-decoration: none; display: block; padding: 2.5rem; border-radius: 15px; box-shadow: 0 8px 20px rgba(206, 147, 216, 0.3); transition: all 0.3s ease;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">📊</div>
+                        <h4 style="color: #ffd700; font-weight: bold; font-size: 1.4rem; margin-bottom: 1rem; text-transform: uppercase;">
+                            Tactical Analysis
+                        </h4>
+                        <p style="color: #e1bee7; font-size: 0.95rem; line-height: 1.6;">
+                            <strong>Strategic Intelligence</strong><br>
+                            Aggregate Reports • Analytics<br>
+                            Threat Assessments
+                        </p>
+                        <div style="margin-top: 1.5rem; padding: 0.8rem; background: rgba(255, 215, 0, 0.1); border-radius: 8px;">
+                            <small style="color: #ffd700;">11 Analysis Operations Available</small>
+                        </div>
                     </div>
                 </a>
             </div>
             
-            <div class="col-md-6 mb-3">
-                <a href="{{ url_for('territory_map') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🗺️</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">TERRITORY CONTROL MAP</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        View islands and their controlling factions
-                    </div>
-                </a>
-            </div>
-            
-            <div class="col-md-6 mb-3">
-                <a href="{{ url_for('crew_manifest') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">CREW MANIFEST</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Detailed crew member and ship information
-                    </div>
-                </a>
-            </div>
-            
-            <div class="col-md-6 mb-3">
-                <a href="{{ url_for('regional_threat_report') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">REGIONAL THREAT REPORT</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Pirate activity analysis by sea region
+            <!-- MODULE C: COMMAND OPERATIONS -->
+            <div class="col-md-4 mb-4">
+                <a href="{{ url_for('command_ops') }}" class="module-card" style="background: linear-gradient(135deg, #b71c1c, #d32f2f); border: 3px solid #ff6b6b; text-decoration: none; display: block; padding: 2.5rem; border-radius: 15px; box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3); transition: all 0.3s ease;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+                        <h4 style="color: #ffeb3b; font-weight: bold; font-size: 1.4rem; margin-bottom: 1rem; text-transform: uppercase;">
+                            Command Operations
+                        </h4>
+                        <p style="color: #ffcdd2; font-size: 0.95rem; line-height: 1.6;">
+                            <strong>Database Modifications</strong><br>
+                            Insert • Update • Delete<br>
+                            Restricted Access Required
+                        </p>
+                        <div style="margin-top: 1.5rem; padding: 0.8rem; background: rgba(255, 235, 59, 0.1); border-radius: 8px;">
+                            <small style="color: #ffeb3b;">13 Modification Operations Available</small>
+                        </div>
                     </div>
                 </a>
             </div>
@@ -82,49 +92,51 @@
     
     <hr style="border-color: var(--border-color); margin: 2rem 0;">
     
-    <!-- WRITE OPERATIONS Section -->
-    <div>
-        <h3 style="color: var(--text-primary); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px;">
-            ✏️ Database Modification Operations
-        </h3>
-        
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <a href="{{ url_for('register_criminal') }}" class="btn btn-custom w-100" style="padding: 1.5rem; background: linear-gradient(135deg, #004400, #006600);">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">➕</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">REGISTER CRIMINAL</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Add new pirate to database (INSERT)
-                    </div>
-                </a>
+    <!-- QUICK STATS -->
+    <div style="background: rgba(0, 255, 255, 0.05); padding: 1.5rem; border-radius: 10px; border: 1px solid var(--border-color);">
+        <h4 style="text-align: center; color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px;">
+            System Status
+        </h4>
+        <div class="row text-center">
+            <div class="col-md-3">
+                <div style="color: var(--success-color); font-size: 1.5rem; font-weight: bold;">ONLINE</div>
+                <small style="color: var(--text-muted);">Database Status</small>
             </div>
-            
-            <div class="col-md-4 mb-3">
-                <a href="{{ url_for('update_status') }}" class="btn btn-custom w-100" style="padding: 1.5rem; background: linear-gradient(135deg, #664400, #996600);">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔄</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">UPDATE STATUS</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Change person's status (UPDATE)
-                    </div>
-                </a>
+            <div class="col-md-3">
+                <div style="color: var(--info-color); font-size: 1.5rem; font-weight: bold;">46</div>
+                <small style="color: var(--text-muted);">Total Operations</small>
             </div>
-            
-            <div class="col-md-4 mb-3">
-                <a href="{{ url_for('revoke_bounty') }}" class="btn btn-danger-custom w-100" style="padding: 1.5rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">❌</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">REVOKE BOUNTY</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Delete bounty record (DELETE)
-                    </div>
-                </a>
+            <div class="col-md-3">
+                <div style="color: var(--warning-color); font-size: 1.5rem; font-weight: bold;">{{ session.role|upper }}</div>
+                <small style="color: var(--text-muted);">Access Level</small>
+            </div>
+            <div class="col-md-3">
+                <div style="color: var(--primary-color); font-size: 1.5rem; font-weight: bold;">SECURED</div>
+                <small style="color: var(--text-muted);">Connection</small>
             </div>
         </div>
     </div>
     
-    <div style="text-align: center; margin-top: 3rem; padding: 1.5rem; background: rgba(0, 255, 255, 0.05); border: 1px solid var(--border-color); border-radius: 5px;">
-        <p style="color: var(--text-secondary); margin: 0;">
-            ⚓ "Absolute Justice" - Fleet Admiral Akainu
+    <div style="text-align: center; margin-top: 2rem; padding: 1rem; background: rgba(0, 255, 255, 0.05); border: 1px solid var(--border-color); border-radius: 5px;">
+        <p style="color: var(--text-secondary); margin: 0; font-size: 0.9rem;">
+            ⚓ "Absolute Justice" - Fleet Admiral Akainu | Phase 4 Production System
         </p>
     </div>
 </div>
+
+<style>
+.module-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 191, 219, 0.5) !important;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.module-card:hover div:first-child {
+    animation: pulse 1s infinite;
+}
+</style>
 {% endblock %}

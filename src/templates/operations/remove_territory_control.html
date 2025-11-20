@@ -1,0 +1,27 @@
+{% extends "operations/base_operation.html" %}
+
+{% set operation_title = "Remove Territory Control" %}
+{% set icon = "🏝️" %}
+{% set description = "Clear faction/crew control from island" %}
+{% set warning = "Sets both Faction_ID and Crew_ID to NULL" %}
+{% set submit_text = "Remove Control" %}
+
+{% block form_fields %}
+<div class="form-group">
+    <label class="form-label" for="island_id">Controlled Territory *</label>
+    <select class="form-control" id="island_id" name="island_id" required>
+        <option value="">-- Select Territory --</option>
+        {% for territory in territories %}
+            <option value="{{ territory.Island_ID }}">
+                {{ territory.Island_Name }} 
+                {% if territory.Faction_Name %}
+                    (Faction: {{ territory.Faction_Name }})
+                {% elif territory.Crew_Name %}
+                    (Crew: {{ territory.Crew_Name }})
+                {% endif %}
+            </option>
+        {% endfor %}
+    </select>
+    <div class="form-help">Only showing islands with active control</div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "operations/base_operation.html" %}
+
+{% set operation_title = "Decommission Ship" %}
+{% set icon = "⚓" %}
+{% set description = "Remove ship from registry (may cascade log entries)" %}
+{% set warning = "Will CASCADE DELETE all Log_Entry records for this ship" %}
+{% set submit_text = "Decommission Ship" %}
+
+{% block form_fields %}
+<div class="form-group">
+    <label class="form-label" for="ship_id">Ship *</label>
+    <select class="form-control" id="ship_id" name="ship_id" required>
+        <option value="">-- Select Ship --</option>
+        {% for ship in ships %}
+            <option value="{{ ship.Ship_ID }}">
+                {{ ship.Ship_Name }} 
+                {% if ship.Crew_Name %}
+                    (Owner: {{ ship.Crew_Name }})
+                {% endif %}
+            </option>
+        {% endfor %}
+    </select>
+    <div class="form-help">⚠️ This will permanently delete the ship and all its log entries</div>
+</div>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Faction Power Analysis - Aegis Intelligence Database{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="page-header">
+        <h1>⚔️ Faction Power Analysis</h1>
+        <p class="subtitle">Strategic intelligence report on major factions, allied crews, controlled territories, and aggregate bounty power</p>
+        <p class="description">
+            <strong>Analysis Criteria:</strong> Multi-table aggregation across Faction → Allegiance → Crew → Membership → Pirate → Bounty_Record + Territory control. 
+            Provides comprehensive power metrics including crew alliances, territory dominance, member count, and total bounty influence.
+        </p>
+    </div>
+
+    {% if results %}
+    <div class="results-summary">
+        <span class="result-count">📊 Faction Count: <strong>{{ results|length }}</strong></span>
+        <span class="timestamp">Generated: {{ now.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Faction ID</th>
+                    <th>Faction Name</th>
+                    <th>Ideology</th>
+                    <th>Leader</th>
+                    <th>Allied Crews</th>
+                    <th>Controlled Territories</th>
+                    <th>Total Members</th>
+                    <th>Total Bounty (฿)</th>
+                    <th>Avg Bounty (฿)</th>
+                    <th>Highest Bounty (฿)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    <td>{{ row.Faction_ID }}</td>
+                    <td><strong>{{ row.Faction_Name }}</strong></td>
+                    <td><em>{{ row.Ideology }}</em></td>
+                    <td>{{ row.Leader_Name if row.Leader_Name else '<span class="null-value">Unknown</span>' }}</td>
+                    <td>{{ row.Allied_Crew_Count }}</td>
+                    <td>{{ row.Controlled_Territories }}</td>
+                    <td>{{ row.Total_Members }}</td>
+                    <td class="bounty-amount">
+                        {% if row.Total_Bounty_Sum > 0 %}
+                            {{ "{:,.0f}".format(row.Total_Bounty_Sum) }}
+                        {% else %}
+                            <span class="null-value">No Bounties</span>
+                        {% endif %}
+                    </td>
+                    <td class="bounty-amount">
+                        {% if row.Avg_Bounty > 0 %}
+                            {{ "{:,.0f}".format(row.Avg_Bounty) }}
+                        {% else %}
+                            <span class="null-value">N/A</span>
+                        {% endif %}
+                    </td>
+                    <td class="bounty-amount">
+                        {% if row.Highest_Bounty > 0 %}
+                            {{ "{:,.0f}".format(row.Highest_Bounty) }}
+                        {% else %}
+                            <span class="null-value">N/A</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="legend">
+        <h3>📖 Power Metrics Explained</h3>
+        <ul>
+            <li><strong>Allied Crews:</strong> Number of distinct pirate crews with Allegiance to this faction</li>
+            <li><strong>Controlled Territories:</strong> Number of islands under direct faction control (Territory.Faction_ID)</li>
+            <li><strong>Total Members:</strong> Sum of all pirates in allied crews (via Membership)</li>
+            <li><strong>Total Bounty:</strong> Aggregate of all active bounties for faction-aligned pirates</li>
+            <li><strong>Avg Bounty:</strong> Mean bounty value across all faction members with bounties</li>
+            <li><strong>Highest Bounty:</strong> Maximum individual bounty within faction influence</li>
+        </ul>
+    </div>
+
+    {% else %}
+    <div class="no-results">
+        <p>⚠️ No faction data available in the database.</p>
+        <p>Factions represent major power blocs like the World Government, Revolutionary Army, or pirate alliances.</p>
+    </div>
+    {% endif %}
+
+    <div class="action-buttons">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
+</div>
+
+<style>
+.bounty-amount {
+    font-family: 'Courier New', monospace;
+    text-align: right;
+    color: var(--danger-color);
+    font-weight: bold;
+}
+
+.legend {
+    margin-top: 30px;
+    padding: 20px;
+    background: var(--surface-color);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 8px;
+}
+
+.legend h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.legend ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.legend li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.legend li:last-child {
+    border-bottom: none;
+}
+
+.null-value {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.description {
+    background: var(--surface-color);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid var(--info-color);
+}
+</style>
+{% endblock %}

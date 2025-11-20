@@ -1,0 +1,34 @@
+{% extends "operations/base_operation.html" %}
+
+{% set operation_title = "Record Fruit Consumption" %}
+{% set icon = "🍽️" %}
+{% set description = "Register person consuming a Devil Fruit" %}
+{% set warning = "Fruit must not already be possessed by another person" %}
+{% set submit_text = "Record Consumption" %}
+
+{% block form_fields %}
+<div class="form-group">
+    <label class="form-label" for="person_id">Person *</label>
+    <select class="form-control" id="person_id" name="person_id" required>
+        <option value="">-- Select Person --</option>
+        {% for person in persons %}
+            <option value="{{ person.Person_ID }}">{{ person.Name }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="fruit_id">Devil Fruit *</label>
+    <select class="form-control" id="fruit_id" name="fruit_id" required>
+        <option value="">-- Select Fruit --</option>
+        {% for fruit in fruits %}
+            <option value="{{ fruit.Fruit_ID }}">{{ fruit.Fruit_Name }} ({{ fruit.Type }})</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-group">
+    <label class="form-label" for="date_consumed">Date Consumed *</label>
+    <input type="date" class="form-control" id="date_consumed" name="date_consumed" required>
+</div>
+{% endblock %}
