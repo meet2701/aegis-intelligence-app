@@ -4,6 +4,10 @@
 
 {% block content %}
 <div class="card-custom">
+    <a href="{{ url_for('command_operations') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Command Operations Hub
+    </a>
+    
     <div class="card-header-custom">
         🔄 UPDATE PERSON STATUS
     </div>
@@ -11,6 +15,12 @@
     <p style="color: var(--text-secondary); margin-bottom: 2rem;">
         Modify the operational status of any person in the database (Active, Captured, Deceased, Unknown).
     </p>
+    
+    {% if message %}
+        <div class="alert alert-{{ message_type }}" style="margin-bottom: 2rem;">
+            {{ message }}
+        </div>
+    {% endif %}
     
     <form method="POST" action="{{ url_for('update_status') }}">
         <div class="row">
@@ -49,9 +59,6 @@
         <button type="submit" class="btn btn-custom" style="background: linear-gradient(135deg, #664400, #996600);">
             ✅ UPDATE STATUS
         </button>
-        <a href="{{ url_for('dashboard') }}" class="btn btn-custom" style="background: #666;">
-            ← CANCEL
-        </a>
     </form>
 </div>
 {% endblock %}

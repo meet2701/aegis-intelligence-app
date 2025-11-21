@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Log Decrypter - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('intelligence_hub') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Intelligence Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #001a33, #003366); border-color: #00ccff;">
+        📜 LOG DECRYPTER
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Search ship log entries by keyword or phrase
+    </p>
+    
+    <!-- Search Form -->
+    <form method="POST" class="form-custom" style="margin-bottom: 2rem;">
+        <div class="row">
+            <div class="col-md-8">
+                <label for="keyword" class="form-label">Search Keyword:</label>
+                <input type="text" name="keyword" id="keyword" class="form-control" 
+                       placeholder="e.g., treasure, battle, island..." 
+                       value="{{ keyword }}" required>
+            </div>
+            <div class="col-md-4" style="display: flex; align-items: flex-end;">
+                <button type="submit" class="btn btn-custom w-100">🔍 Search Logs</button>
+            </div>
+        </div>
+    </form>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- Results -->
+    {% if results is string %}
+        <div class="alert alert-info">{{ results }}</div>
+    {% elif results %}
+        <div style="margin-bottom: 1rem;">
+            <strong>Log Entries Found:</strong> {{ results|length }}
+        </div>
+        
+        {% for log in results %}
+        <div style="background: rgba(0, 20, 40, 0.7); border: 2px solid #00ccff; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">
+                <div>
+                    <strong style="color: var(--text-primary); font-size: 1.1rem;">� {{ log.Ship_Name }}</strong>
+                    {% if log.Crew_Name %}
+                        <span style="color: #00ccff; margin-left: 1rem;">({{ log.Crew_Name }})</span>
+                    {% endif %}
+                </div>
+                <div style="color: var(--text-secondary);">
+                    🕐 {{ log.Log_Timestamp }}
+                </div>
+            </div>
+            {% if log.Latitude and log.Longitude %}
+            <div style="color: #ffaa00; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                📍 Coordinates: {{ log.Latitude }}°, {{ log.Longitude }}°
+            </div>
+            {% endif %}
+            <div style="background: rgba(0, 51, 102, 0.5); padding: 1rem; border-radius: 5px; font-family: monospace; line-height: 1.6; color: #e0e0e0;">
+                {{ log.Entry_Text }}
+            </div>
+        </div>
+        {% endfor %}
+    {% elif request.method == 'POST' %}
+        <div class="alert alert-warning" style="text-align: center;">
+            <p><strong>⚠️ No log entries found containing: "{{ keyword }}"</strong></p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Try a different search term</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

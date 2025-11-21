@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Will of D Search - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('intelligence_hub') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Intelligence Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #1a0033, #330066); border-color: #cc66ff;">
+        🔎 "WILL OF D" SEARCH
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Persons with the mysterious "D." in their name
+    </p>
+    
+    {% if results is string %}
+        <div class="alert alert-info">{{ results }}</div>
+    {% elif results %}
+        <div style="margin-bottom: 1rem;">
+            <strong>Individuals Found:</strong> {{ results|length }}
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr>
+                        <th>Full Name</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Bounty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for person in results %}
+                    <tr style="{% if person.Bounty > 1000000000 %}background: rgba(255, 0, 0, 0.1);{% endif %}">
+                        <td><strong style="font-size: 1.1rem;">{{ person.Full_Name }}</strong></td>
+                        <td>
+                            <span class="badge" style="background: {% if person.Role == 'Pirate' %}#ff3333{% elif person.Role == 'Marine Officer' %}#3333ff{% else %}#888{% endif %}; color: #fff; padding: 0.3rem 0.8rem; border-radius: 15px;">
+                                {{ person.Role }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge" style="background: {% if person.Status == 'Active' %}#00ff00{% elif person.Status == 'Captured' %}#ffaa00{% else %}#888{% endif %}; color: #000; padding: 0.3rem 0.8rem; border-radius: 15px;">
+                                {{ person.Status }}
+                            </span>
+                        </td>
+                        <td style="{% if person.Bounty > 1000000000 %}color: #ff0000; font-weight: bold; font-size: 1.2rem;{% endif %}">
+                            {% if person.Bounty > 0 %}
+                                ฿{{ "{:,}".format(person.Bounty) }}
+                            {% else %}
+                                <em style="color: var(--text-muted);">No bounty</em>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="alert alert-warning" style="margin-top: 2rem;">
+            <strong>⚠️ CLASSIFIED INTELLIGENCE:</strong> The "Will of D" is considered highly sensitive information. These individuals often play significant roles in world events. Monitor closely.
+        </div>
+    {% else %}
+        <div class="alert alert-info" style="text-align: center;">
+            <p><strong>📂 No individuals with "D." found</strong></p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

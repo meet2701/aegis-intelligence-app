@@ -124,7 +124,7 @@ CREATE TABLE Bounty_Record (
     Last_Seen_Location VARCHAR(255),
     Photo_URL VARCHAR(255),
     PRIMARY KEY (Person_ID, Record_Version),
-    FOREIGN KEY (Person_ID) REFERENCES Pirate(Person_ID) ON DELETE CASCADE
+    FOREIGN KEY (Person_ID) REFERENCES Person(Person_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Log_Entry (

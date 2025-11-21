@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Pirate Bounty Index - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('intelligence_hub') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Intelligence Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #001a33, #003366); border-color: #00ccff;">
+        💰 PIRATE BOUNTY INDEX
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Simple index of all pirates and their current bounties
+    </p>
+    
+    {% if results is string %}
+        <div class="alert alert-info">{{ results }}</div>
+    {% elif results %}
+        <div style="margin-bottom: 1rem;">
+            <strong>Total Pirates:</strong> {{ results|length }}
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Pirate Name</th>
+                        <th>Bounty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pirate in results %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td><strong>{{ pirate.Pirate_Name }}</strong></td>
+                        <td style="font-size: 1.2rem; {% if pirate.Bounty > 1000000000 %}color: #ff0000; font-weight: bold;{% elif pirate.Bounty > 100000000 %}color: #ff6600; font-weight: bold;{% endif %}">
+                            ฿{{ "{:,}".format(pirate.Bounty) }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info" style="text-align: center;">
+            <p><strong>📂 No bounty data available</strong></p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

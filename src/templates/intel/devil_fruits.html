@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Devil Fruit Encyclopedia - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('intelligence_hub') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Intelligence Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #001a33, #003366); border-color: #00ccff;">
+        🍎 DEVIL FRUIT ENCYCLOPEDIA
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Complete database of Devil Fruits with sorting and filtering
+    </p>
+    
+    <!-- Filter Form -->
+    <form method="GET" id="filterForm" class="form-custom" style="margin-bottom: 2rem;">
+        <div class="row" style="margin-bottom: 1rem;">
+            <div class="col-md-3">
+                <label for="fruit_type" class="form-label">Devil Fruit Type:</label>
+                <select name="fruit_type" id="fruit_type" class="form-control" onchange="this.form.submit()">
+                    <option value="all" {% if fruit_type == 'all' or not fruit_type %}selected{% endif %}>All Types</option>
+                    <option value="Paramecia" {% if fruit_type == 'Paramecia' %}selected{% endif %}>Paramecia</option>
+                    <option value="Zoan" {% if fruit_type == 'Zoan' %}selected{% endif %}>Zoan</option>
+                    <option value="Logia" {% if fruit_type == 'Logia' %}selected{% endif %}>Logia</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="sort_by" class="form-label">Sort By:</label>
+                <select name="sort_by" id="sort_by" class="form-control" onchange="this.form.submit()">
+                    <option value="type" {% if sort_by == 'type' %}selected{% endif %}>Type</option>
+                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Fruit Name</option>
+                    <option value="fruit_id" {% if sort_by == 'fruit_id' %}selected{% endif %}>Fruit ID</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" style="display: block;">Filters:</label>
+                <div class="form-check" style="display: inline-block; margin-right: 2rem;">
+                    <input type="checkbox" class="form-check-input" id="show_awakened" name="show_awakened" {% if show_awakened == 'on' %}checked{% endif %} onchange="this.form.submit()">
+                    <label class="form-check-label" for="show_awakened">
+                        Only Awakened Fruits
+                    </label>
+                </div>
+                <div class="form-check" style="display: inline-block;">
+                    <input type="checkbox" class="form-check-input" id="show_active" name="show_active" {% if show_active == 'on' %}checked{% endif %} onchange="this.form.submit()">
+                    <label class="form-check-label" for="show_active">
+                        Only Active Users
+                    </label>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- Results -->
+    {% if results is string %}
+        <div class="alert alert-info">{{ results }}</div>
+    {% elif results %}
+        <div style="margin-bottom: 1rem;">
+            <strong>Results Found:</strong> {{ results|length }}
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fruit Name</th>
+                        <th>Type</th>
+                        <th>Awakened</th>
+                        <th>Current User</th>
+                        <th>Status</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fruit in results %}
+                    <tr>
+                        <td><strong>#{{ fruit.Fruit_ID }}</strong></td>
+                        <td><strong>{{ fruit.Fruit_Name }}</strong></td>
+                        <td>
+                            <span class="badge" style="
+                                {% if fruit.Fruit_Type == 'Logia' %}background: #ff6666;
+                                {% elif fruit.Fruit_Type == 'Zoan' %}background: #66ff66;
+                                {% else %}background: #6666ff;{% endif %}
+                                color: #000; padding: 0.3rem 0.8rem; border-radius: 15px;">
+                                {{ fruit.Fruit_Type }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if fruit.Is_Awakened == 1 %}
+                                <span style="color: #ff00ff;">✨ YES</span>
+                            {% else %}
+                                <span style="color: var(--text-muted);">No</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if fruit.First_Name %}
+                                {{ fruit.First_Name }} {{ fruit.Last_Name if fruit.Last_Name else '' }}
+                            {% else %}
+                                <em style="color: var(--text-muted);">Unclaimed</em>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if fruit.Status %}
+                                <span class="status-badge {% if fruit.Status == 'Active' %}status-active{% elif fruit.Status == 'Captured' %}status-captured{% elif fruit.Status == 'Deceased' %}status-deceased{% else %}status-inactive{% endif %}">
+                                    {{ fruit.Status }}
+                                </span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td style="max-width: 300px;">
+                            {{ fruit.Description if fruit.Description else 'No description available' }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info" style="text-align: center;">
+            <p><strong>📂 No results found</strong></p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+                Try adjusting your filters
+            </p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Issue Bounty - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('command_operations') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Command Operations Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #003300, #006600); border-color: #00ff00;">
+        💰 ISSUE NEW BOUNTY
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Create a new bounty record for an existing pirate
+    </p>
+    
+    {% if message %}
+        <div class="alert alert-{{ message_type }}" style="margin-bottom: 2rem;">
+            {{ message }}
+        </div>
+    {% endif %}
+    
+    {% if pirates %}
+        <!-- Bounty Issuance Form -->
+        <form method="POST" class="form-custom">
+            <div style="background: linear-gradient(135deg, rgba(0, 51, 0, 0.3), rgba(0, 102, 0, 0.3)); border: 2px solid #00ff00; border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="person_id" class="form-label" style="color: #00ff00;">
+                            <strong>Select Pirate *</strong>
+                        </label>
+                        <select id="person_id" name="person_id" class="form-control" required>
+                            <option value="">-- Choose a pirate without existing bounty --</option>
+                            {% for pirate in pirates %}
+                                <option value="{{ pirate.Person_ID }}">
+                                    {{ pirate.Person_Name }} 
+                                    <span style="color: var(--text-muted);">
+                                        (Status: {{ pirate.Status }})
+                                    </span>
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <small style="color: var(--text-muted);">Only pirates without existing bounties are shown</small>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="amount" class="form-label" style="color: #00ff00;">
+                            <strong>Bounty Amount (฿) *</strong>
+                        </label>
+                        <input type="number" 
+                               id="amount" 
+                               name="amount" 
+                               class="form-control" 
+                               placeholder="e.g., 100000000" 
+                               min="0"
+                               step="1"
+                               required>
+                        <small style="color: var(--text-muted);">Enter amount in Berries (฿)</small>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="date_issued" class="form-label" style="color: #00ff00;">
+                            <strong>Date Issued</strong>
+                            <small style="color: var(--text-muted);">(Optional - defaults to current date)</small>
+                        </label>
+                        <input type="date" 
+                               id="date_issued" 
+                               name="date_issued" 
+                               class="form-control">
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning" style="background: rgba(255, 165, 0, 0.1); border: 1px solid #ff9900; margin-top: 2rem;">
+                    <strong>⚠️ Important:</strong> This operation will create both a Bounty record and an initial Bounty_Record entry (version 1) for historical tracking.
+                </div>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button type="submit" class="btn btn-custom" style="background: #00aa00; border-color: #00ff00; padding: 0.75rem 3rem; font-size: 1.1rem;">
+                        ✅ Issue Bounty
+                    </button>
+                </div>
+            </div>
+        </form>
+        
+    {% else %}
+        <div class="alert alert-info" style="text-align: center;">
+            <h4>📂 No Available Pirates</h4>
+            <p style="margin-top: 1rem; color: var(--text-secondary);">
+                All registered pirates already have bounties assigned. To issue a bounty:
+            </p>
+            <ol style="text-align: left; margin: 1rem auto; max-width: 600px; color: var(--text-secondary);">
+                <li>Register a new criminal using the "Register Criminal" operation</li>
+                <li>Return here to issue a bounty for the newly registered pirate</li>
+            </ol>
+            <a href="{{ url_for('register_criminal') }}" class="btn btn-custom" style="margin-top: 1rem; background: #00aa00; border-color: #00ff00;">
+                → Register New Criminal
+            </a>
+        </div>
+    {% endif %}
+    
+    <!-- Guidelines -->
+    <div style="background: rgba(0, 0, 0, 0.3); border: 2px solid var(--border-color); border-radius: 10px; padding: 1.5rem;">
+        <h4 style="color: #00ff00; margin-bottom: 1rem;">📋 Bounty Guidelines</h4>
+        <ul style="color: var(--text-secondary); line-height: 1.8;">
+            <li><strong style="color: #00ccff;">First Bounty Only:</strong> This operation is for pirates without existing bounties</li>
+            <li><strong style="color: #00ccff;">Bounty Updates:</strong> Use "Update Bounty" to modify existing bounty amounts</li>
+            <li><strong style="color: #00ccff;">Amount Format:</strong> Enter full number (e.g., 100000000 for ฿100M)</li>
+            <li><strong style="color: #00ccff;">Historical Tracking:</strong> First bounty record (version 1) is auto-created</li>
+            <li><strong style="color: #00ccff;">Date Validation:</strong> If no date provided, current system date is used</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

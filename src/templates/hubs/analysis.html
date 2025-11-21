@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Tactical Analysis Hub - AEGIS{% endblock %}
+
+{% block content %}
+<style>
+    .tactical-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+    
+    .tactical-card {
+        background: var(--card-bg);
+        border: 2px solid #cc66ff;
+        border-radius: 10px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+    }
+    
+    .tactical-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(204, 102, 255, 0.3);
+        border-color: #ff66ff;
+    }
+    
+    .tactical-icon {
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .tactical-title {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: var(--text-primary);
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .tactical-desc {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-align: center;
+    }
+    
+    .hub-header {
+        background: linear-gradient(135deg, #1a0033 0%, #330066 100%);
+        border: 3px solid #cc66ff;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .hub-header h1 {
+        color: #cc66ff;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+    }
+    
+    .hub-header p {
+        color: #ffffff;
+        font-size: 1.1rem;
+    }
+</style>
+
+<div class="card-custom">
+    <!-- Back Button -->
+    <a href="{{ url_for('dashboard') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Command Center
+    </a>
+    
+    <!-- Hub Header -->
+    <div class="hub-header">
+        <h1>📊 Tactical Analysis Hub</h1>
+        <p>Strategic Reports & Aggregate Intelligence</p>
+    </div>
+    
+    <!-- Tactical Operations Grid -->
+    <div class="tactical-grid">
+        <!-- Crew Valuation -->
+        <a href="{{ url_for('crew_valuation') }}" class="tactical-card">
+            <div class="tactical-icon">💎</div>
+            <div class="tactical-title">Crew Valuation</div>
+            <div class="tactical-desc">Calculate total bounty of all crew members</div>
+        </a>
+        
+        <!-- Regional Bounty Average -->
+        <a href="{{ url_for('regional_average') }}" class="tactical-card">
+            <div class="tactical-icon">🌊</div>
+            <div class="tactical-title">Regional Bounty Average</div>
+            <div class="tactical-desc">Average bounty of pirates by sea region</div>
+        </a>
+        
+        <!-- Island Census -->
+        <a href="{{ url_for('island_census') }}" class="tactical-card">
+            <div class="tactical-icon">🗺️</div>
+            <div class="tactical-title">Island Census</div>
+            <div class="tactical-desc">Count of islands grouped by sea region</div>
+        </a>
+        
+        <!-- Most Wanted -->
+        <a href="{{ url_for('most_wanted') }}" class="tactical-card">
+            <div class="tactical-icon">👑</div>
+            <div class="tactical-title">Most Wanted</div>
+            <div class="tactical-desc">Highest active bounty in the database</div>
+        </a>
+    </div>
+    
+    <hr style="border-color: #cc66ff; margin: 2rem 0;">
+    
+    <div style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+        <p>📈 STRATEGIC ANALYSIS CLEARANCE REQUIRED</p>
+    </div>
+</div>
+{% endblock %}

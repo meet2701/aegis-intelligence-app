@@ -1,208 +1,414 @@
-# aegis-intelligence-app
-DnA Course Project, for application interface to interact with the data of our selected mini world "One Piece".
+# AEGIS Intelligence Database (AID)# aegis-intelligence-app
+
+**World Government Intelligence Terminal - One Piece Universe**DnA Course Project, for application interface to interact with the data of our selected mini world "One Piece".
+
 # Aegis Intelligence Database (AID) - Phase 4
 
+**Team Big Three** | Phase 4 Final Submission | November 2025
+
 **Team:** Big Three  
-**Members:** Meet Parekh (2024101122), Jainam Modi (2024101057), Divya Padariya (2024113010)  
+
+---**Members:** Meet Parekh (2024101122), Jainam Modi (2024101057), Divya Padariya (2024113010)  
+
 **Submission Date:** November 20, 2025
 
----
-
-## 🎯 Project Overview
-
-The **Aegis Intelligence Database (AID)** is a comprehensive intelligence management system for the World Government in the One Piece universe. This Flask-based application provides real-time access to pirate intelligence, territory control, Devil Fruit information, and operational data through an immersive military-grade terminal interface.
+## 🚀 Quick Start
 
 ---
 
-## 🔐 User Credentials
+### Prerequisites
+
+- Python 3.8+## 🎯 Project Overview
+
+- MySQL 8.0+
+
+- Libraries: `flask`, `pymysql`The **Aegis Intelligence Database (AID)** is a comprehensive intelligence management system for the World Government in the One Piece universe. This Flask-based application provides real-time access to pirate intelligence, territory control, Devil Fruit information, and operational data through an immersive military-grade terminal interface.
+
+
+
+### Installation---
+
+```bash
+
+# Install dependencies## 🔐 User Credentials
+
+pip install flask pymysql
 
 ### Marine Officer (Standard User)
-- **Username:** `MARINE_HQ`
-- **Password:** `SEAGULL`
-- **Access Level:** Read operations (5 queries) + Write operations (3 updates)
+
+# Setup database- **Username:** `MARINE_HQ`
+
+mysql -u root -p- **Password:** `SEAGULL`
+
+source src/schema.sql- **Access Level:** Read operations (5 queries) + Write operations (3 updates)
+
+source src/populate.sql
 
 ### CP0 Administrator (DBA)
-- **Username:** `ROB_LUCCI`
-- **Password:** `DARK_JUSTICE`
-- **Access Level:** All Marine permissions + DDL operations (DROP, TRUNCATE, ALTER)
+
+# Run application- **Username:** `ROB_LUCCI`
+
+cd src- **Password:** `DARK_JUSTICE`
+
+python app.py- **Access Level:** All Marine permissions + DDL operations (DROP, TRUNCATE, ALTER)
+
+```
 
 ---
+
+Access at: `http://127.0.0.1:5000`
 
 ## 🚀 Installation & Setup
 
-### Prerequisites
-- Python 3.8+
-- MySQL Server 8.0+
-- pip (Python package manager)
-
-### Step 1: Install Dependencies
-```bash
-pip install flask pymysql
-```
-
-### Step 2: Setup Database
-```bash
-# Login to MySQL
-mysql -u root -p
-
-# Execute schema and populate scripts
-source src/schema.sql
-source src/populate.sql
-```
-
-### Step 3: Run Application
-```bash
-cd src
-python app.py
-```
-
-When prompted, enter your MySQL root password.
-
-### Step 4: Access Application
-Open your browser and navigate to:
-```
-http://127.0.0.1:5000
-```
-
 ---
 
-## 📋 Application Features (Video Demonstration Order)
+### Prerequisites
+
+## 🔐 Login Credentials- Python 3.8+
+
+- MySQL Server 8.0+
+
+| Role | Username | Password | Access |- pip (Python package manager)
+
+|------|----------|----------|--------|
+
+| Marine Officer | `MARINE_HQ` | `SEAGULL` | 5 Queries + 3 Updates |### Step 1: Install Dependencies
+
+| CP0 Admin | `ROB_LUCCI` | `DARK_JUSTICE` | All + DDL Operations |```bash
+
+pip install flask pymysql
+
+---```
+
+
+
+## 📋 Application Features (Video Demo Order)### Step 2: Setup Database
+
+```bash
+
+### READ OPERATIONS (Queries 1-5)# Login to MySQL
+
+mysql -u root -p
+
+**1. Wanted Poster Search**
+
+- Path: Intelligence Hub → Pirate Search# Execute schema and populate scripts
+
+- Search pirates by name, bounty range, or sea regionsource src/schema.sql
+
+- SQL: `SELECT` with `JOIN` (Person, Pirate, Crew, Membership, Bounty_Record)source src/populate.sql
+
+```
+
+**2. Devil Fruit Encyclopedia**
+
+- Path: Intelligence Hub → Devil Fruit Encyclopedia### Step 3: Run Application
+
+- Browse all Devil Fruits with filtering (Type: Paramecia/Zoan/Logia, Awakened status)```bash
+
+- SQL: `SELECT` with `LEFT JOIN` (Devil_Fruit, Possession, Person)cd src
+
+python app.py
+
+**3. Territory Control Map**```
+
+- Path: Tactical Analysis Hub → Island Census
+
+- View island control by Crews or Factions (XOR constraint demonstration)When prompted, enter your MySQL root password.
+
+- SQL: `SELECT` with multiple `JOIN`s and `CASE` statements
+
+### Step 4: Access Application
+
+**4. Crew Manifest**Open your browser and navigate to:
+
+- Path: Tactical Analysis Hub → Crew Valuation```
+
+- Complete crew dossier: members, ship, total bounty calculationhttp://127.0.0.1:5000
+
+- SQL: `SELECT` with aggregations (`COUNT`, `SUM`, `AVG`, `MAX`)```
+
+
+
+**5. Regional Threat Report**---
+
+- Path: Tactical Analysis Hub → Regional Average
+
+- Pirate activity analysis per sea region## 📋 Application Features (Video Demonstration Order)
+
+- SQL: `SELECT` with `GROUP BY` and aggregate functions
 
 ### 🔵 PART 1: MARINE OFFICER OPERATIONS (User: MARINE_HQ)
 
+### WRITE OPERATIONS (Updates 1-3)
+
 #### **1. LOGIN**
-- Access the login page
-- Enter username: `MARINE_HQ`
-- Enter password: `SEAGULL`
-- Successfully authenticate and redirect to dashboard
 
-#### **2. DASHBOARD OVERVIEW**
-- View the main operations dashboard
-- See all available query and update operations
-- Demonstrate theme toggle (Dark ↔ Light mode)
+**6. Register New Criminal (INSERT)**- Access the login page
 
----
+- Path: Command Operations Hub → Register Criminal- Enter username: `MARINE_HQ`
 
-### 📊 READ OPERATIONS (Queries)
+- Add new pirate with crew membership- Enter password: `SEAGULL`
 
-#### **3. WANTED POSTER SEARCH**
-- **Location:** Dashboard → "Wanted Poster Search"
-- **Functionality:** Search pirates by name or bounty range
-- **SQL Operation:** `SELECT` with `JOIN` (Person, Pirate, Crew, Membership)
-- **Demo Steps:**
+- SQL: `INSERT INTO Person, Pirate, Membership`- Successfully authenticate and redirect to dashboard
+
+- MySQL Verification:
+
+  ```sql#### **2. DASHBOARD OVERVIEW**
+
+  -- Before/After- View the main operations dashboard
+
+  SELECT * FROM Person ORDER BY Person_ID DESC LIMIT 1;- See all available query and update operations
+
+  ```- Demonstrate theme toggle (Dark ↔ Light mode)
+
+
+
+**7. Update Person Status (UPDATE)**---
+
+- Path: Command Operations Hub → Update Status
+
+- Change operational status (Active/Captured/Deceased/Unknown)### 📊 READ OPERATIONS (Queries)
+
+- SQL: `UPDATE Person SET Status = ?`
+
+- MySQL Verification:#### **3. WANTED POSTER SEARCH**
+
+  ```sql- **Location:** Dashboard → "Wanted Poster Search"
+
+  -- Before/After- **Functionality:** Search pirates by name or bounty range
+
+  SELECT Person_ID, First_Name, Status FROM Person WHERE Person_ID = ?;- **SQL Operation:** `SELECT` with `JOIN` (Person, Pirate, Crew, Membership)
+
+  ```- **Demo Steps:**
+
   1. Search without filters (show all pirates)
-  2. Search by name (e.g., "Luffy")
-  3. Search by bounty range (e.g., 100,000,000 - 500,000,000)
-- **Expected Output:** Table showing Person_ID, Name, Bounty, Infamy Level, Status, Crew
 
-#### **4. DEVIL FRUIT ENCYCLOPEDIA**
-- **Location:** Dashboard → "Devil Fruit Encyclopedia"
-- **Functionality:** List all Devil Fruits and their current users
-- **SQL Operation:** `SELECT` with `LEFT JOIN` (Devil_Fruit, Possesses, Person)
-- **Demo Steps:**
+**8. Revoke Bounty (DELETE)**  2. Search by name (e.g., "Luffy")
+
+- Path: Command Operations Hub → Revoke Bounty  3. Search by bounty range (e.g., 100,000,000 - 500,000,000)
+
+- Remove all bounty records for a person- **Expected Output:** Table showing Person_ID, Name, Bounty, Infamy Level, Status, Crew
+
+- SQL: `DELETE FROM Bounty_Record WHERE Person_ID = ?`
+
+- MySQL Verification:#### **4. DEVIL FRUIT ENCYCLOPEDIA**
+
+  ```sql- **Location:** Dashboard → "Devil Fruit Encyclopedia"
+
+  -- Before/After- **Functionality:** List all Devil Fruits and their current users
+
+  SELECT * FROM Bounty_Record WHERE Person_ID = ?;- **SQL Operation:** `SELECT` with `LEFT JOIN` (Devil_Fruit, Possesses, Person)
+
+  ```- **Demo Steps:**
+
   1. Click to view all fruits
-  2. Show fruits with users vs. unclaimed fruits
-  3. Highlight awakened Devil Fruits
-- **Expected Output:** Table showing Fruit_ID, Name, Type, Description, Awakened Status, Current User
 
-#### **5. TERRITORY CONTROL MAP**
+### ADMIN OPERATIONS (DDL)  2. Show fruits with users vs. unclaimed fruits
+
+  3. Highlight awakened Devil Fruits
+
+**9. View All Tables**- **Expected Output:** Table showing Fruit_ID, Name, Type, Description, Awakened Status, Current User
+
+- Display database structure with row counts
+
+- SQL: `SHOW TABLES`, `SELECT COUNT(*)`#### **5. TERRITORY CONTROL MAP**
+
 - **Location:** Dashboard → "Territory Control Map"
-- **Functionality:** Display islands and their controllers (XOR constraint: Faction OR Crew)
-- **SQL Operation:** `SELECT` with multiple `JOIN`s and `CASE` statement
-- **Demo Steps:**
+
+**10. Truncate Table**- **Functionality:** Display islands and their controllers (XOR constraint: Faction OR Crew)
+
+- Remove all data from specified table- **SQL Operation:** `SELECT` with multiple `JOIN`s and `CASE` statement
+
+- SQL: `TRUNCATE TABLE ?`- **Demo Steps:**
+
   1. View all islands
-  2. Show islands controlled by Factions
-  3. Show islands controlled by Crews
-  4. Show unclaimed territories
+
+**11. Alter Schema**  2. Show islands controlled by Factions
+
+- Execute custom DDL (ALTER, CREATE INDEX, DROP INDEX)  3. Show islands controlled by Crews
+
+- SQL: User-defined DDL commands  4. Show unclaimed territories
+
 - **Expected Output:** Table showing Island, Region, Population, Controller Name, Controller Type
 
-#### **6. CREW MANIFEST**
-- **Location:** Dashboard → "Crew Manifest"
+**12. Buster Call Protocol**
+
+- Drop all database tables (requires confirmation: `EXECUTE_BUSTER_CALL`)#### **6. CREW MANIFEST**
+
+- SQL: `DROP TABLE` (multiple)- **Location:** Dashboard → "Crew Manifest"
+
 - **Functionality:** Detailed crew dossier with members, ship, and total bounty
-- **SQL Operation:** Multiple `SELECT` queries with aggregation
+
+---- **SQL Operation:** Multiple `SELECT` queries with aggregation
+
 - **Demo Steps:**
-  1. Select a crew from dropdown
+
+## 📁 File Structure  1. Select a crew from dropdown
+
   2. View crew information and ship details
-  3. Show all crew members with their bounties
-  4. Display aggregated total bounty
-- **Expected Output:** Crew info card + members table + total bounty calculation
 
-#### **7. REGIONAL THREAT REPORT**
-- **Location:** Dashboard → "Regional Threat Report"
-- **Functionality:** Pirate activity analysis by sea region
-- **SQL Operation:** `SELECT` with `GROUP BY` and aggregate functions (COUNT, SUM, AVG, MAX)
-- **Demo Steps:**
-  1. View all regions summary
-  2. Select specific region for detailed analysis
-  3. Show pirate count, total bounties, and threat level
-- **Expected Output:** Table showing Region, Threat Level, Pirate Count, Total/Avg/Max Bounties
+```  3. Show all crew members with their bounties
 
----
+aegis-intelligence-app/  4. Display aggregated total bounty
 
-### ✏️ WRITE OPERATIONS (Updates)
+├── src/- **Expected Output:** Crew info card + members table + total bounty calculation
 
-#### **8. REGISTER NEW CRIMINAL (INSERT)**
-- **Location:** Dashboard → "Register Criminal"
+│   ├── app.py              # Main Flask application (1426 lines)
+
+│   ├── db_utils.py         # Database utilities#### **7. REGIONAL THREAT REPORT**
+
+│   ├── schema.sql          # CREATE TABLE statements- **Location:** Dashboard → "Regional Threat Report"
+
+│   ├── populate.sql        # INSERT statements- **Functionality:** Pirate activity analysis by sea region
+
+│   └── templates/          # 28 HTML templates- **SQL Operation:** `SELECT` with `GROUP BY` and aggregate functions (COUNT, SUM, AVG, MAX)
+
+│       ├── base.html- **Demo Steps:**
+
+│       ├── login.html  1. View all regions summary
+
+│       ├── dashboard.html  2. Select specific region for detailed analysis
+
+│       ├── admin_console.html  3. Show pirate count, total bounties, and threat level
+
+│       ├── hubs/           # Intelligence/Tactical/Operations hubs- **Expected Output:** Table showing Region, Threat Level, Pirate Count, Total/Avg/Max Bounties
+
+│       ├── intel/          # Query templates
+
+│       ├── tactical/       # Analysis templates---
+
+│       ├── operations/     # Update templates
+
+│       ├── updates/        # Status update template### ✏️ WRITE OPERATIONS (Updates)
+
+│       └── admin/          # Admin templates
+
+└── README.md#### **8. REGISTER NEW CRIMINAL (INSERT)**
+
+```- **Location:** Dashboard → "Register Criminal"
+
 - **Functionality:** Add a new pirate to the database
-- **SQL Operation:** `INSERT INTO Person` + `INSERT INTO Pirate`
+
+---- **SQL Operation:** `INSERT INTO Person` + `INSERT INTO Pirate`
+
 - **Demo Steps:**
-  1. Before: Run query in MySQL terminal to show current pirates
+
+## 🎯 Key Features  1. Before: Run query in MySQL terminal to show current pirates
+
      ```sql
-     SELECT * FROM Person WHERE Person_ID = (SELECT MAX(Person_ID) FROM Person);
-     ```
-  2. In app: Fill form with new pirate details
-     - First Name: Test
-     - Last Name: Pirate
-     - Date of Birth: 2000-01-01
-     - Bounty: 50000000
-     - Infamy Level: Regional Menace
+
+- **28 Unique Routes** - All functional requirements implemented     SELECT * FROM Person WHERE Person_ID = (SELECT MAX(Person_ID) FROM Person);
+
+- **Raw SQL Queries** - No ORM, parameterized queries for security     ```
+
+- **Role-Based Access** - Marine vs Admin permissions  2. In app: Fill form with new pirate details
+
+- **Theme Toggle** - Dark/Light mode with persistent state     - First Name: Test
+
+- **Real-Time Feedback** - Inline success/error messages     - Last Name: Pirate
+
+- **Referential Integrity** - All foreign keys enforced with CASCADE     - Date of Birth: 2000-01-01
+
+- **XOR Constraint** - Territory controlled by Faction OR Crew (not both)     - Bounty: 50000000
+
+- **Multi-Version Bounties** - Historical bounty tracking system     - Infamy Level: Regional Menace
+
   3. Submit form
-  4. After: Re-run same query in MySQL terminal to confirm insertion
 
-#### **9. UPDATE PERSON STATUS (UPDATE)**
+---  4. After: Re-run same query in MySQL terminal to confirm insertion
+
+
+
+## 🗄️ Database Schema Highlights#### **9. UPDATE PERSON STATUS (UPDATE)**
+
 - **Location:** Dashboard → "Update Status"
-- **Functionality:** Change a person's operational status
-- **SQL Operation:** `UPDATE Person SET Status = ?`
-- **Demo Steps:**
-  1. Before: Check person's current status in MySQL
-     ```sql
-     SELECT Person_ID, First_Name, Last_Name, Status FROM Person WHERE Person_ID = 1;
+
+**19 Tables** implementing:- **Functionality:** Change a person's operational status
+
+- Generalization (Person → Pirate/Marine/Civilian)- **SQL Operation:** `UPDATE Person SET Status = ?`
+
+- Weak Entities (Bounty_Record, Log_Entry)- **Demo Steps:**
+
+- XOR Constraint (Territory: Faction XOR Crew)  1. Before: Check person's current status in MySQL
+
+- Multi-valued Attributes (Person_Abilities)     ```sql
+
+- Complex Relationships (Membership, Participation, Possession)     SELECT Person_ID, First_Name, Last_Name, Status FROM Person WHERE Person_ID = 1;
+
      ```
-  2. In app: Select person and change status (e.g., Active → Captured)
+
+---  2. In app: Select person and change status (e.g., Active → Captured)
+
   3. Submit update
-  4. After: Re-run query to confirm status change
 
-#### **10. REVOKE BOUNTY RECORD (DELETE)**
-- **Location:** Dashboard → "Revoke Bounty"
-- **Functionality:** Delete a specific bounty record
-- **SQL Operation:** `DELETE FROM Bounty_Record`
-- **Demo Steps:**
-  1. Before: Show all bounty records in MySQL
-     ```sql
-     SELECT * FROM Bounty_Record;
-     ```
-  2. In app: View bounty records table
-  3. Click delete button on a specific record
-  4. Confirm deletion
-  5. After: Re-run query to show record is removed
+## 🎥 Video Demo Checklist  4. After: Re-run query to confirm status change
 
----
 
-### 🔴 PART 2: CP0 ADMINISTRATOR OPERATIONS (User: ROB_LUCCI)
 
-#### **11. LOGOUT & LOGIN AS ADMIN**
+- [ ] Login as MARINE_HQ → Show Dashboard#### **10. REVOKE BOUNTY RECORD (DELETE)**
+
+- [ ] Query 1: Pirate Search- **Location:** Dashboard → "Revoke Bounty"
+
+- [ ] Query 2: Devil Fruit Encyclopedia- **Functionality:** Delete a specific bounty record
+
+- [ ] Query 3: Island Census- **SQL Operation:** `DELETE FROM Bounty_Record`
+
+- [ ] Query 4: Crew Valuation- **Demo Steps:**
+
+- [ ] Query 5: Regional Analysis  1. Before: Show all bounty records in MySQL
+
+- [ ] **MySQL Terminal** → Before state     ```sql
+
+- [ ] Update 1: Register Criminal (INSERT)     SELECT * FROM Bounty_Record;
+
+- [ ] **MySQL Terminal** → After state (confirm insert)     ```
+
+- [ ] **MySQL Terminal** → Before state  2. In app: View bounty records table
+
+- [ ] Update 2: Update Status (UPDATE)  3. Click delete button on a specific record
+
+- [ ] **MySQL Terminal** → After state (confirm update)  4. Confirm deletion
+
+- [ ] **MySQL Terminal** → Before state  5. After: Re-run query to show record is removed
+
+- [ ] Update 3: Revoke Bounty (DELETE)
+
+- [ ] **MySQL Terminal** → After state (confirm delete)---
+
+- [ ] Logout → Login as ROB_LUCCI
+
+- [ ] Admin: View Tables### 🔴 PART 2: CP0 ADMINISTRATOR OPERATIONS (User: ROB_LUCCI)
+
+- [ ] Admin: Truncate Table (with MySQL verification)
+
+- [ ] Admin: Alter Schema (with MySQL verification)#### **11. LOGOUT & LOGIN AS ADMIN**
+
 - Logout from Marine account
-- Login with CP0 credentials
+
+---- Login with CP0 credentials
+
   - Username: `ROB_LUCCI`
-  - Password: `DARK_JUSTICE`
+
+## 📞 Team Contact  - Password: `DARK_JUSTICE`
+
 - Redirected to red-themed Admin Console
 
-#### **12. ADMIN CONSOLE OVERVIEW**
-- View CP0 administrative interface
-- Show red alert theme
+**Team Big Three**
+
+- Meet Parekh (2024101122)#### **12. ADMIN CONSOLE OVERVIEW**
+
+- Jainam Modi (2024101057)- View CP0 administrative interface
+
+- Divya Padariya (2024113010)- Show red alert theme
+
 - Explain DDL operation capabilities
 
 ---
+
+---
+
+**⚓ JUSTICE WILL PREVAIL ⚓**
 
 ### 🛠️ DDL OPERATIONS (Admin Only)
 

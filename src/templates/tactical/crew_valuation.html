@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Crew Valuation - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('tactical_analysis') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Tactical Analysis Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #1a0033, #330066); border-color: #cc66ff;">
+        💎 CREW VALUATION ANALYSIS
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Calculate total bounty value of all crew members
+    </p>
+    
+    <!-- Crew Selection Form -->
+    <form method="POST" class="form-custom" style="margin-bottom: 2rem;">
+        <div class="row">
+            <div class="col-md-8">
+                <label for="crew_id" class="form-label">Select Crew:</label>
+                <select name="crew_id" id="crew_id" class="form-control" required>
+                    <option value="">-- Choose a Crew --</option>
+                    {% for crew in crews %}
+                        <option value="{{ crew.Crew_ID }}" {% if crew_id|string == crew.Crew_ID|string %}selected{% endif %}>
+                            {{ crew.Crew_Name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4" style="display: flex; align-items: flex-end;">
+                <button type="submit" class="btn btn-custom w-100">📊 Calculate</button>
+            </div>
+        </div>
+    </form>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- Results -->
+    {% if results is string %}
+        <div class="alert alert-warning">{{ results }}</div>
+    {% elif results %}
+        {% for crew in results %}
+        <div style="background: linear-gradient(135deg, rgba(26, 0, 51, 0.5), rgba(51, 0, 102, 0.5)); border: 3px solid #cc66ff; border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+            <h2 style="color: #cc66ff; text-align: center; margin-bottom: 2rem; font-size: 2rem;">
+                🏴‍☠️ {{ crew.Crew_Name }}
+            </h2>
+            
+            <!-- Statistics Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                <!-- Total Members -->
+                <div style="background: rgba(0, 0, 0, 0.3); padding: 1.5rem; border-radius: 10px; border: 2px solid #cc66ff; text-align: center;">
+                    <div style="font-size: 2.5rem; color: #cc66ff; font-weight: bold;">{{ crew.Total_Members }}</div>
+                    <div style="color: var(--text-secondary); margin-top: 0.5rem;">Total Members</div>
+                </div>
+                
+                <!-- Total Bounty -->
+                <div style="background: rgba(255, 0, 0, 0.2); padding: 1.5rem; border-radius: 10px; border: 2px solid #ff0000; text-align: center;">
+                    <div style="font-size: 1.5rem; color: #ff0000; font-weight: bold; word-break: break-word; line-height: 1.2;">
+                        ฿{{ "{:,}".format(crew.Total_Bounty|int if crew.Total_Bounty else 0) }}
+                    </div>
+                    <div style="color: var(--text-secondary); margin-top: 0.5rem;">Total Crew Bounty</div>
+                </div>
+                
+                <!-- Average Bounty -->
+                <div style="background: rgba(255, 165, 0, 0.2); padding: 1.5rem; border-radius: 10px; border: 2px solid #ff9900; text-align: center;">
+                    <div style="font-size: 1.5rem; color: #ff9900; font-weight: bold; word-break: break-word; line-height: 1.2;">
+                        ฿{{ "{:,}".format(crew.Average_Bounty|int if crew.Average_Bounty else 0) }}
+                    </div>
+                    <div style="color: var(--text-secondary); margin-top: 0.5rem;">Average Bounty</div>
+                </div>
+                
+                <!-- Highest Bounty -->
+                <div style="background: rgba(255, 255, 0, 0.1); padding: 1.5rem; border-radius: 10px; border: 2px solid #ffff00; text-align: center;">
+                    <div style="font-size: 1.5rem; color: #ffff00; font-weight: bold; word-break: break-word; line-height: 1.2;">
+                        ฿{{ "{:,}".format(crew.Highest_Bounty|int if crew.Highest_Bounty else 0) }}
+                    </div>
+                    <div style="color: var(--text-secondary); margin-top: 0.5rem;">Highest Member</div>
+                </div>
+                
+                <!-- Lowest Bounty -->
+                <div style="background: rgba(0, 255, 255, 0.1); padding: 1.5rem; border-radius: 10px; border: 2px solid #00ccff; text-align: center;">
+                    <div style="font-size: 1.5rem; color: #00ccff; font-weight: bold; word-break: break-word; line-height: 1.2;">
+                        ฿{{ "{:,}".format(crew.Lowest_Bounty|int if crew.Lowest_Bounty else 0) }}
+                    </div>
+                    <div style="color: var(--text-secondary); margin-top: 0.5rem;">Lowest Member</div>
+                </div>
+            </div>
+            
+            <!-- Threat Assessment -->
+            <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(255, 0, 0, 0.1); border: 2px solid #ff0000; border-radius: 10px;">
+                <h3 style="color: #ff0000; margin-bottom: 1rem;">⚠️ Threat Assessment</h3>
+                <p style="color: var(--text-secondary); line-height: 1.6;">
+                    {% if crew.Total_Bounty and crew.Total_Bounty > 5000000000 %}
+                        <strong style="color: #ff0000;">EXTREME THREAT:</strong> This crew poses a catastrophic danger to World Government authority. Immediate Admiral-level response required.
+                    {% elif crew.Total_Bounty and crew.Total_Bounty > 1000000000 %}
+                        <strong style="color: #ff6600;">HIGH THREAT:</strong> Significant danger. Vice Admiral deployment recommended.
+                    {% elif crew.Total_Bounty and crew.Total_Bounty > 100000000 %}
+                        <strong style="color: #ffaa00;">MODERATE THREAT:</strong> Requires continued monitoring and possible containment.
+                    {% else %}
+                        <strong style="color: #00ff00;">LOW THREAT:</strong> Standard surveillance protocols sufficient.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info" style="text-align: center;">
+            <p><strong>📂 Select a crew above to view valuation analysis</strong></p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

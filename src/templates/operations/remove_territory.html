@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Remove Territory Control - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('command_operations') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Command Operations Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #330000, #660000); border-color: #ff0000;">
+        🏴‍☠️ REMOVE TERRITORY CONTROL
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Remove a pirate crew's control over an island territory
+    </p>
+    
+    {% if message %}
+        <div class="alert alert-{{ message_type }}" style="margin-bottom: 2rem;">
+            {{ message }}
+        </div>
+    {% endif %}
+    
+    {% if territories %}
+        <!-- Territory Removal Form -->
+        <form method="POST" class="form-custom" onsubmit="return confirm('⚠️ Remove control over this island? This action cannot be undone.');">
+            <div style="background: linear-gradient(135deg, rgba(51, 0, 0, 0.3), rgba(102, 0, 0, 0.3)); border: 2px solid #ff0000; border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="island_id" class="form-label" style="color: #ff0000;">
+                            <strong>Select Territory to Remove *</strong>
+                        </label>
+                        <select id="island_id" name="island_id" class="form-control" required>
+                            <option value="">-- Choose a territory --</option>
+                            {% for territory in territories %}
+                                <option value="{{ territory.Island_ID }}" 
+                                        data-controller="{{ territory.Controller_Name }}" 
+                                        data-island="{{ territory.Island_Name }}"
+                                        data-region="{{ territory.Region_Name }}"
+                                        data-date="{{ territory.Date_Acquired.strftime('%Y-%m-%d') if territory.Date_Acquired else 'Unknown' }}"
+                                        data-level="{{ territory.Control_Level if territory.Control_Level else 'Unknown' }}">
+                                    {{ territory.Controller_Name }} controlling {{ territory.Island_Name }} ({{ territory.Region_Name }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Selected Territory Info -->
+                <div id="territory_info" style="background: rgba(255, 0, 0, 0.2); border: 2px solid #ff0000; border-radius: 10px; padding: 1.5rem; margin-top: 2rem; display: none;">
+                    <h4 style="color: #ff0000; margin-bottom: 1rem;">⚠️ Territory Details</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+                        <div>
+                            <div style="color: #ff9900; font-size: 0.9rem; margin-bottom: 0.5rem;">CONTROLLER</div>
+                            <div id="info_controller" style="color: #cc66ff; font-size: 1.3rem; font-weight: bold;">-</div>
+                        </div>
+                        <div>
+                            <div style="color: #ff9900; font-size: 0.9rem; margin-bottom: 0.5rem;">ISLAND</div>
+                            <div id="info_island" style="color: #00ccff; font-size: 1.3rem; font-weight: bold;">-</div>
+                        </div>
+                        <div>
+                            <div style="color: #ff9900; font-size: 0.9rem; margin-bottom: 0.5rem;">REGION</div>
+                            <div id="info_region" style="color: #00ff00; font-size: 1.3rem; font-weight: bold;">-</div>
+                        </div>
+                        <div>
+                            <div style="color: #ff9900; font-size: 0.9rem; margin-bottom: 0.5rem;">CONTROL LEVEL</div>
+                            <div id="info_level" style="color: #ffaa00; font-size: 1.3rem; font-weight: bold;">-</div>
+                        </div>
+                        <div>
+                            <div style="color: #ff9900; font-size: 0.9rem; margin-bottom: 0.5rem;">DATE ACQUIRED</div>
+                            <div id="info_date" style="color: #ffaa00; font-size: 1.3rem; font-weight: bold;">-</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning" style="background: rgba(255, 165, 0, 0.2); border: 2px solid #ff9900; margin-top: 2rem; color: #ff9900;">
+                    <strong style="color: #ffaa00;">ℹ️ Note:</strong> This operation removes the control record only. The island and controller remain in the database.
+                </div>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button type="submit" class="btn btn-custom" style="background: #990000; border-color: #ff0000; padding: 0.75rem 3rem; font-size: 1.1rem;">
+                        🗑️ Remove Control
+                    </button>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Territory Control List -->
+        <div style="margin-top: 3rem;">
+            <h3 style="color: #ff0000; text-align: center; margin-bottom: 1.5rem;">🗺️ All Territory Controls</h3>
+            <div class="table-responsive">
+                <table class="table table-dark table-striped table-hover">
+                    <thead style="background: linear-gradient(135deg, #330000, #660000); color: #ff0000;">
+                        <tr>
+                            <th style="padding: 1rem;">Controller</th>
+                            <th style="padding: 1rem;">Island Name</th>
+                            <th style="padding: 1rem;">Sea Region</th>
+                            <th style="padding: 1rem; text-align: center;">Control Level</th>
+                            <th style="padding: 1rem; text-align: center;">Date Acquired</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for territory in territories %}
+                        <tr>
+                            <td style="padding: 1rem; font-weight: bold; color: #cc66ff;">
+                                {% if territory.Crew_ID %}
+                                    🏴‍☠️ {{ territory.Controller_Name }}
+                                {% else %}
+                                    ⚓ {{ territory.Controller_Name }}
+                                {% endif %}
+                            </td>
+                            <td style="padding: 1rem; font-weight: bold; color: #00ccff;">
+                                �️ {{ territory.Island_Name }}
+                            </td>
+                            <td style="padding: 1rem; color: var(--text-secondary);">
+                                � {{ territory.Region_Name }}
+                            </td>
+                            <td style="padding: 1rem; text-align: center; color: #ffaa00;">
+                                {{ territory.Control_Level if territory.Control_Level else 'Unknown' }}
+                            </td>
+                            <td style="padding: 1rem; text-align: center; color: #ffaa00;">
+                                {{ territory.Date_Acquired.strftime('%Y-%m-%d') if territory.Date_Acquired else 'Unknown' }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    {% else %}
+        <div class="alert alert-info" style="text-align: center;">
+            <h4>🗺️ No Territory Controls</h4>
+            <p style="margin-top: 1rem; color: var(--text-secondary);">
+                No crew currently controls any islands in the database.
+            </p>
+        </div>
+    {% endif %}
+    
+    <!-- Guidelines -->
+    <div style="background: rgba(0, 0, 0, 0.3); border: 2px solid var(--border-color); border-radius: 10px; padding: 1.5rem;">
+        <h4 style="color: #ff0000; margin-bottom: 1rem;">📋 Removal Guidelines</h4>
+        <ul style="color: var(--text-secondary); line-height: 1.8;">
+            <li><strong style="color: #ff0000;">Control Record Only:</strong> Removes crew-island relationship, not the entities themselves</li>
+            <li><strong style="color: #ff0000;">Island Status:</strong> Island returns to neutral/unclaimed status</li>
+            <li><strong style="color: #ff0000;">Crew Status:</strong> Crew remains active but loses this territory</li>
+            <li><strong style="color: #ff0000;">Use Cases:</strong> Marine reclamation, crew defeat, treaty agreements</li>
+            <li><strong style="color: #ff0000;">Restoration:</strong> Can re-establish control later if needed</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+// Show territory info when island is selected
+document.getElementById('island_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const territoryInfo = document.getElementById('territory_info');
+    
+    if (this.value) {
+        document.getElementById('info_controller').textContent = selectedOption.getAttribute('data-controller');
+        document.getElementById('info_island').textContent = selectedOption.getAttribute('data-island');
+        document.getElementById('info_region').textContent = selectedOption.getAttribute('data-region');
+        document.getElementById('info_level').textContent = selectedOption.getAttribute('data-level');
+        document.getElementById('info_date').textContent = selectedOption.getAttribute('data-date');
+        territoryInfo.style.display = 'block';
+    } else {
+        territoryInfo.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

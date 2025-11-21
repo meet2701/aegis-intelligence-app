@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Update Bounty - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('command_operations') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Command Operations Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #553300, #aa6600); border-color: #ffaa00;">
+        💸 UPDATE BOUNTY AMOUNT
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Modify an existing bounty amount with automatic historical record creation
+    </p>
+    
+    {% if message %}
+        <div class="alert alert-{{ message_type }}" style="margin-bottom: 2rem;">
+            {{ message }}
+        </div>
+    {% endif %}
+    
+    {% if bounties %}
+        <!-- Bounty Update Form -->
+        <form method="POST" class="form-custom">
+            <div style="background: linear-gradient(135deg, rgba(85, 51, 0, 0.3), rgba(170, 102, 0, 0.3)); border: 2px solid #ffaa00; border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="person_id" class="form-label" style="color: #ffaa00;">
+                            <strong>Select Pirate to Update Bounty *</strong>
+                        </label>
+                        <select id="person_id" name="person_id" class="form-control" required>
+                            <option value="">-- Choose a pirate --</option>
+                            {% for bounty in bounties %}
+                                <option value="{{ bounty.Person_ID }}" data-current-amount="{{ bounty.Amount }}" data-versions="{{ bounty.version_count }}">
+                                    {{ bounty.Person_Name }} - 
+                                    <strong>Current: ฿{{ "{:,}".format(bounty.Amount|int) }}</strong>
+                                    ({{ bounty.Status }}, {{ bounty.version_count }} version{{ 's' if bounty.version_count != 1 else '' }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Current Bounty Display -->
+                <div id="current_info" style="background: rgba(0, 0, 0, 0.3); border: 2px solid #00ccff; border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem; display: none;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <div style="color: #00ccff; font-size: 0.9rem; margin-bottom: 0.5rem;">CURRENT AMOUNT</div>
+                            <div id="current_amount" style="color: #ff9900; font-size: 1.8rem; font-weight: bold;">฿0</div>
+                        </div>
+                        <div>
+                            <div style="color: #00ccff; font-size: 0.9rem; margin-bottom: 0.5rem;">VERSION HISTORY</div>
+                            <div id="version_count" style="color: #cc66ff; font-size: 1.8rem; font-weight: bold;">0 versions</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="new_amount" class="form-label" style="color: #ffaa00;">
+                            <strong>New Bounty Amount (฿) *</strong>
+                        </label>
+                        <input type="number" 
+                               id="new_amount" 
+                               name="new_amount" 
+                               class="form-control" 
+                               placeholder="Enter new bounty amount" 
+                               min="0"
+                               step="1"
+                               required>
+                        <small style="color: var(--text-muted);">Enter full amount in Berries</small>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label for="date_issued" class="form-label" style="color: #ffaa00;">
+                            <strong>Date Issued</strong>
+                            <small style="color: var(--text-muted);">(Optional)</small>
+                        </label>
+                        <input type="date" 
+                               id="date_issued" 
+                               name="date_issued" 
+                               class="form-control">
+                        <small style="color: var(--text-muted);">Defaults to current date if not provided</small>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label for="last_seen_location" class="form-label" style="color: #ffaa00;">
+                            <strong>Last Seen Location</strong>
+                            <small style="color: var(--text-muted);">(Optional)</small>
+                        </label>
+                        <input type="text" 
+                               id="last_seen_location" 
+                               name="last_seen_location" 
+                               class="form-control"
+                               placeholder="e.g., East Blue, Grand Line">
+                        <small style="color: var(--text-muted);">Where pirate was last spotted</small>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info" style="background: rgba(0, 204, 255, 0.2); border: 2px solid #00ccff; margin-top: 2rem; color: #00ccff;">
+                    <strong style="color: #00ffff;">ℹ️ Automatic Historical Tracking:</strong>
+                    <p style="margin-top: 0.5rem; margin-bottom: 0;">
+                        This operation will:
+                        <br>1. Create a new versioned record in the Bounty_Record table
+                        <br>2. Increment the Record_Version number automatically
+                        <br>3. Preserve all previous bounty versions for historical analysis
+                    </p>
+                </div>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button type="submit" class="btn btn-custom" style="background: #cc8800; border-color: #ffaa00; padding: 0.75rem 3rem; font-size: 1.1rem;">
+                        ✅ Update Bounty
+                    </button>
+                </div>
+            </div>
+        </form>
+        
+        <!-- All Bounties List -->
+        <div style="margin-top: 3rem;">
+            <h3 style="color: #ffaa00; text-align: center; margin-bottom: 1.5rem;">📊 All Active Bounties</h3>
+            <div class="table-responsive">
+                <table class="table table-dark table-striped table-hover">
+                    <thead style="background: linear-gradient(135deg, #553300, #aa6600); color: #ffaa00;">
+                        <tr>
+                            <th style="padding: 1rem;">Pirate Name</th>
+                            <th style="padding: 1rem; text-align: right;">Current Bounty</th>
+                            <th style="padding: 1rem; text-align: center;">Status</th>
+                            <th style="padding: 1rem; text-align: center;">Versions</th>
+                            <th style="padding: 1rem;">Last Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bounty in bounties %}
+                        <tr>
+                            <td style="padding: 1rem; font-weight: bold;">{{ bounty.Person_Name }}</td>
+                            <td style="padding: 1rem; text-align: right; font-weight: bold; color: {% if bounty.Amount > 1000000000 %}#ff0000{% elif bounty.Amount > 100000000 %}#ff9900{% else %}#00ff00{% endif %};">
+                                ฿{{ "{:,}".format(bounty.Amount|int) }}
+                            </td>
+                            <td style="padding: 1rem; text-align: center;">
+                                <span class="badge" style="background: {% if bounty.Status == 'Active' %}#00aa00{% elif bounty.Status == 'Captured' %}#0088cc{% else %}#666{% endif %};">
+                                    {{ bounty.Status }}
+                                </span>
+                            </td>
+                            <td style="padding: 1rem; text-align: center; color: #cc66ff;">
+                                {{ bounty.version_count }}
+                            </td>
+                            <td style="padding: 1rem; color: var(--text-secondary);">
+                                {{ bounty.Date_Issued.strftime('%Y-%m-%d') if bounty.Date_Issued else 'Unknown' }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    {% else %}
+        <div class="alert alert-warning" style="text-align: center;">
+            <h4>💰 No Active Bounties</h4>
+            <p style="margin-top: 1rem; color: var(--text-secondary);">
+                No bounties exist in the database. Use "Issue Bounty" to create one first.
+            </p>
+            <a href="{{ url_for('issue_bounty') }}" class="btn btn-custom" style="margin-top: 1rem; background: #00aa00; border-color: #00ff00;">
+                → Issue New Bounty
+            </a>
+        </div>
+    {% endif %}
+    
+    <!-- Guidelines -->
+    <div style="background: rgba(0, 0, 0, 0.3); border: 2px solid var(--border-color); border-radius: 10px; padding: 1.5rem;">
+        <h4 style="color: #ffaa00; margin-bottom: 1rem;">📋 Update Guidelines</h4>
+        <ul style="color: var(--text-secondary); line-height: 1.8;">
+            <li><strong style="color: #00ccff;">Version Control:</strong> Each update creates a new version in Bounty_Record</li>
+            <li><strong style="color: #00ccff;">Historical Preservation:</strong> All previous bounty amounts are retained</li>
+            <li><strong style="color: #00ccff;">Amount Changes:</strong> Can increase or decrease bounty value</li>
+            <li><strong style="color: #00ccff;">Date Tracking:</strong> Each version can have its own issue date</li>
+            <li><strong style="color: #00ccff;">Status Independent:</strong> Can update bounty regardless of pirate status</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+// Show current bounty info when selected
+document.getElementById('person_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const currentInfo = document.getElementById('current_info');
+    const currentAmount = document.getElementById('current_amount');
+    const versionCount = document.getElementById('version_count');
+    
+    if (this.value) {
+        const amount = selectedOption.getAttribute('data-current-amount');
+        const versions = selectedOption.getAttribute('data-versions');
+        
+        currentAmount.textContent = '฿' + parseInt(amount).toLocaleString();
+        versionCount.textContent = versions + ' version' + (versions != 1 ? 's' : '');
+        currentInfo.style.display = 'block';
+    } else {
+        currentInfo.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

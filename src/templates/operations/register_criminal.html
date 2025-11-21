@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Register Criminal - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('command_operations') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Command Operations Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #003300, #006600); border-color: #00ff00;">
+        👤 REGISTER NEW CRIMINAL
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Add a new pirate or criminal to the AEGIS Intelligence Database
+    </p>
+    
+    {% if message %}
+        <div class="alert alert-{{ message_type }}" style="margin-bottom: 2rem;">
+            {{ message }}
+        </div>
+    {% endif %}
+    
+    <!-- Registration Form -->
+    <form method="POST" class="form-custom">
+        <div style="background: linear-gradient(135deg, rgba(0, 51, 0, 0.3), rgba(0, 102, 0, 0.3)); border: 2px solid #00ff00; border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+            
+            <h3 style="color: #00ff00; margin-bottom: 1.5rem;">👤 Person Information</h3>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="first_name" class="form-label" style="color: #00ff00;">
+                        <strong>First Name *</strong>
+                    </label>
+                    <input type="text" 
+                           id="first_name" 
+                           name="first_name" 
+                           class="form-control" 
+                           placeholder="e.g., Monkey" 
+                           required>
+                    <small style="color: var(--text-muted);">Required</small>
+                </div>
+                
+                <div class="col-md-6">
+                    <label for="last_name" class="form-label" style="color: #00ff00;">
+                        <strong>Last Name</strong>
+                        <small style="color: var(--text-muted);">(Optional)</small>
+                    </label>
+                    <input type="text" 
+                           id="last_name" 
+                           name="last_name" 
+                           class="form-control" 
+                           placeholder="e.g., D. Luffy">
+                    <small style="color: var(--text-muted);">Can be left blank</small>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="date_of_birth" class="form-label" style="color: #00ff00;">
+                        <strong>Date of Birth</strong>
+                        <small style="color: var(--text-muted);">(Optional)</small>
+                    </label>
+                    <input type="date" 
+                           id="date_of_birth" 
+                           name="date_of_birth" 
+                           class="form-control">
+                </div>
+                
+                <div class="col-md-4">
+                    <label for="status" class="form-label" style="color: #00ff00;">
+                        <strong>Status *</strong>
+                    </label>
+                    <select id="status" name="status" class="form-control" required>
+                        <option value="Unknown" selected>Unknown</option>
+                        <option value="Active">Active</option>
+                        <option value="Captured">Captured</option>
+                        <option value="Deceased">Deceased</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-4">
+                    <label for="home_island_id" class="form-label" style="color: #00ff00;">
+                        <strong>Home Island</strong>
+                        <small style="color: var(--text-muted);">(Optional)</small>
+                    </label>
+                    <select id="home_island_id" name="home_island_id" class="form-control">
+                        <option value="">-- Unknown --</option>
+                        {% for island in islands %}
+                            <option value="{{ island.Island_ID }}">
+                                {{ island.Island_Name }} ({{ island.Region_Name }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <hr style="border-color: #00ff00; margin: 2rem 0;">
+            
+            <h3 style="color: #00ff00; margin-bottom: 1.5rem;">🏴‍☠️ Pirate Details</h3>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="infamy_level" class="form-label" style="color: #00ff00;">
+                        <strong>Infamy Level</strong>
+                        <small style="color: var(--text-muted);">(Optional)</small>
+                    </label>
+                    <select id="infamy_level" name="infamy_level" class="form-control">
+                        <option value="">-- Select Infamy Level --</option>
+                        <option value="Unknown">Unknown</option>
+                        <option value="Rookie">Rookie (New to Grand Line)</option>
+                        <option value="Supernova">Supernova (100M+ bounty)</option>
+                        <option value="Veteran">Veteran (Established pirate)</option>
+                        <option value="Warlord">Warlord Level</option>
+                        <option value="Yonko Commander">Yonko Commander</option>
+                        <option value="Yonko">Yonko (Emperor)</option>
+                        <option value="Legendary">Legendary</option>
+                    </select>
+                    <small style="color: var(--text-muted);">Indicates the pirate's reputation and threat level</small>
+                </div>
+                
+                <div class="col-md-6">
+                    <label for="crew_id" class="form-label" style="color: #00ff00;">
+                        <strong>Crew Affiliation</strong>
+                        <small style="color: var(--text-muted);">(Optional)</small>
+                    </label>
+                    <select id="crew_id" name="crew_id" class="form-control">
+                        <option value="">-- No Crew (Solo Pirate) --</option>
+                        {% for crew in crews %}
+                            <option value="{{ crew.Crew_ID }}">{{ crew.Crew_Name }}</option>
+                        {% endfor %}
+                    </select>
+                    <small style="color: var(--text-muted);">Leave blank if pirate operates independently</small>
+                </div>
+            </div>
+            
+            <div class="row mb-3" id="role_section" style="display: none;">
+                <div class="col-md-12">
+                    <label for="role" class="form-label" style="color: #00ff00;">
+                        <strong>Role in Crew</strong>
+                        <small style="color: var(--text-muted);">(Optional)</small>
+                    </label>
+                    <input type="text" 
+                           id="role" 
+                           name="role" 
+                           class="form-control" 
+                           placeholder="e.g., Captain, First Mate, Navigator, Cook, Doctor, Sniper">
+                    <small style="color: var(--text-muted);">Position or role within the crew (e.g., Captain, Navigator, Doctor)</small>
+                </div>
+            </div>
+            
+            <div class="alert alert-info" style="background: rgba(0, 204, 255, 0.2); border: 2px solid #00ccff; margin-top: 2rem; color: #00ccff;">
+                <strong style="color: #00ffff;">ℹ️ Note:</strong> After registration, you can issue a bounty using the "Issue Bounty" operation.
+            </div>
+            
+            <div style="margin-top: 2rem; text-align: center;">
+                <button type="submit" class="btn btn-custom" style="background: #00aa00; border-color: #00ff00; padding: 0.75rem 3rem; font-size: 1.1rem;">
+                    ✅ Register Criminal
+                </button>
+            </div>
+        </div>
+    </form>
+    
+    <script>
+    // Show/hide role field when crew is selected
+    document.getElementById('crew_id').addEventListener('change', function() {
+        const roleSection = document.getElementById('role_section');
+        if (this.value) {
+            roleSection.style.display = 'block';
+        } else {
+            roleSection.style.display = 'none';
+            document.getElementById('role').value = ''; // Clear role if no crew
+        }
+    });
+    </script>
+    
+    <!-- Guidelines -->
+    <div style="background: rgba(0, 0, 0, 0.3); border: 2px solid var(--border-color); border-radius: 10px; padding: 1.5rem;">
+        <h4 style="color: #00ff00; margin-bottom: 1rem;">📋 Registration Guidelines</h4>
+        <ul style="color: var(--text-secondary); line-height: 1.8;">
+            <li><strong style="color: #00ccff;">Required Fields:</strong> First Name and Status must be provided</li>
+            <li><strong style="color: #00ccff;">Name Format:</strong> First Name is required, Last Name is optional</li>
+            <li><strong style="color: #00ccff;">Date of Birth:</strong> Optional field for tracking age and background</li>
+            <li><strong style="color: #00ccff;">Home Island:</strong> Optional but recommended for intelligence tracking</li>
+            <li><strong style="color: #00ccff;">Infamy Level:</strong> Indicates threat level and reputation in pirate world</li>
+            <li><strong style="color: #00ccff;">Crew Affiliation:</strong> Select crew if pirate is part of a crew. Role field appears when crew is selected</li>
+            <li><strong style="color: #00ccff;">Crew Role:</strong> Position within the crew (Captain, Navigator, Doctor, etc.)</li>
+            <li><strong style="color: #00ccff;">Bounties:</strong> Use "Issue Bounty" operation separately after registration</li>
+            <li><strong style="color: #00ccff;">Duplicate Names:</strong> System allows duplicate names (different Person_IDs)</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

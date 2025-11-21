@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Revoke Bounty - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('command_operations') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Command Operations Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #330000, #660000); border-color: #ff0000;">
+        🚫 REVOKE BOUNTY
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Remove a bounty from the database (pardon, capture, or death)
+    </p>
+    
+    {% if message %}
+        <div class="alert alert-{{ message_type }}" style="margin-bottom: 2rem;">
+            {{ message }}
+        </div>
+    {% endif %}
+    
+    {% if bounties %}
+        <!-- Revocation Form -->
+        <form method="POST" class="form-custom" onsubmit="return confirm('⚠️ WARNING: This will permanently delete the bounty and all its historical records. This action CANNOT be undone. Continue?');">
+            <div style="background: linear-gradient(135deg, rgba(51, 0, 0, 0.3), rgba(102, 0, 0, 0.3)); border: 2px solid #ff0000; border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="person_id" class="form-label" style="color: #ff0000;">
+                            <strong>Select Bounty to Revoke *</strong>
+                        </label>
+                        <select id="person_id" name="person_id" class="form-control" required>
+                            <option value="">-- Choose a bounty to revoke --</option>
+                            {% for bounty in bounties %}
+                                <option value="{{ bounty.Person_ID }}" data-amount="{{ bounty.Amount }}" data-name="{{ bounty.Person_Name }}">
+                                    {{ bounty.Person_Name }} - 
+                                    ฿{{ "{:,}".format(bounty.Amount|int) }}
+                                    ({{ bounty.Status }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Selected Bounty Info -->
+                <div id="selected_info" style="background: rgba(255, 0, 0, 0.2); border: 2px solid #ff0000; border-radius: 10px; padding: 1.5rem; margin-top: 2rem; display: none;">
+                    <h4 style="color: #ff0000; margin-bottom: 1rem;">⚠️ Selected for Revocation</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <div style="color: #ff9900; font-size: 0.9rem; margin-bottom: 0.5rem;">PIRATE NAME</div>
+                            <div id="selected_name" style="color: #ffffff; font-size: 1.5rem; font-weight: bold;">-</div>
+                        </div>
+                        <div>
+                            <div style="color: #ff9900; font-size: 0.9rem; margin-bottom: 0.5rem;">BOUNTY AMOUNT</div>
+                            <div id="selected_amount" style="color: #ff0000; font-size: 1.5rem; font-weight: bold;">฿0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-danger" style="background: rgba(255, 0, 0, 0.3); border: 3px solid #ff0000; margin-top: 2rem; color: #ffffff;">
+                    <strong style="color: #ff0000; font-size: 1.2rem;">⚠️ CRITICAL WARNING:</strong>
+                    <ul style="margin-top: 0.5rem; margin-bottom: 0; color: #ffcccc; line-height: 1.8;">
+                        <li><strong style="color: #ff6666;">PERMANENT DELETION:</strong> This will delete the bounty and ALL historical records</li>
+                        <li><strong style="color: #ff6666;">NO RECOVERY:</strong> Deleted data cannot be recovered</li>
+                        <li><strong style="color: #ff6666;">CASCADE DELETE:</strong> All Bounty_Record entries will also be removed</li>
+                        <li><strong style="color: #ff6666;">USE CASES:</strong> Full pardon, death, or data correction only</li>
+                    </ul>
+                </div>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button type="submit" class="btn btn-custom" style="background: #990000; border-color: #ff0000; padding: 0.75rem 3rem; font-size: 1.1rem;">
+                        🗑️ Revoke Bounty (Permanent)
+                    </button>
+                </div>
+            </div>
+        </form>
+        
+        <!-- All Bounties List -->
+        <div style="margin-top: 3rem;">
+            <h3 style="color: #ff0000; text-align: center; margin-bottom: 1.5rem;">📋 All Active Bounties</h3>
+            <div class="table-responsive">
+                <table class="table table-dark table-striped table-hover">
+                    <thead style="background: linear-gradient(135deg, #330000, #660000); color: #ff0000;">
+                        <tr>
+                            <th style="padding: 1rem;">Pirate Name</th>
+                            <th style="padding: 1rem; text-align: right;">Bounty Amount</th>
+                            <th style="padding: 1rem; text-align: center;">Status</th>
+                            <th style="padding: 1rem;">Date Issued</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bounty in bounties %}
+                        <tr>
+                            <td style="padding: 1rem; font-weight: bold;">{{ bounty.Person_Name }}</td>
+                            <td style="padding: 1rem; text-align: right; font-weight: bold; color: {% if bounty.Amount > 1000000000 %}#ff0000{% elif bounty.Amount > 100000000 %}#ff9900{% else %}#00ff00{% endif %};">
+                                ฿{{ "{:,}".format(bounty.Amount|int) }}
+                            </td>
+                            <td style="padding: 1rem; text-align: center;">
+                                <span class="badge" style="background: {% if bounty.Status == 'Active' %}#ff0000{% elif bounty.Status == 'Captured' %}#0088cc{% elif bounty.Status == 'Deceased' %}#666{% else %}#999{% endif %};">
+                                    {{ bounty.Status }}
+                                </span>
+                            </td>
+                            <td style="padding: 1rem; color: var(--text-secondary);">
+                                {{ bounty.Date_Issued.strftime('%Y-%m-%d') if bounty.Date_Issued else 'Unknown' }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    {% else %}
+        <div class="alert alert-info" style="text-align: center;">
+            <h4>💰 No Active Bounties</h4>
+            <p style="margin-top: 1rem; color: var(--text-secondary);">
+                No bounties exist in the database to revoke.
+            </p>
+        </div>
+    {% endif %}
+    
+    <!-- Guidelines -->
+    <div style="background: rgba(0, 0, 0, 0.3); border: 2px solid var(--border-color); border-radius: 10px; padding: 1.5rem;">
+        <h4 style="color: #ff0000; margin-bottom: 1rem;">📋 Revocation Guidelines</h4>
+        <ul style="color: var(--text-secondary); line-height: 1.8;">
+            <li><strong style="color: #ff0000;">Permanent Action:</strong> Cannot be undone - all data is permanently deleted</li>
+            <li><strong style="color: #ff0000;">Cascade Delete:</strong> Removes bounty AND all historical records from Bounty_Record</li>
+            <li><strong style="color: #ff0000;">Use Cases:</strong> Full government pardon, confirmed death, or database cleanup</li>
+            <li><strong style="color: #ff0000;">Alternative:</strong> Consider using "Update Status" to mark pirate as Captured/Deceased instead</li>
+            <li><strong style="color: #ff0000;">Confirmation:</strong> System will ask for confirmation before deletion</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+// Show selected bounty info
+document.getElementById('person_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const selectedInfo = document.getElementById('selected_info');
+    const selectedName = document.getElementById('selected_name');
+    const selectedAmount = document.getElementById('selected_amount');
+    
+    if (this.value) {
+        const name = selectedOption.getAttribute('data-name');
+        const amount = selectedOption.getAttribute('data-amount');
+        
+        selectedName.textContent = name;
+        selectedAmount.textContent = '฿' + parseInt(amount).toLocaleString();
+        selectedInfo.style.display = 'block';
+    } else {
+        selectedInfo.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

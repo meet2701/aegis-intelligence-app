@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Marine Officer Directory - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('intelligence_hub') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Intelligence Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #001a33, #003366); border-color: #00ccff;">
+        ⚓ MARINE OFFICER DIRECTORY
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Complete roster of Marine officers with rank filtering
+    </p>
+    
+    <!-- Filter Form -->
+    <form method="POST" class="form-custom" style="margin-bottom: 2rem;">
+        <div class="row">
+            <div class="col-md-8">
+                <label for="rank" class="form-label">Filter by Rank:</label>
+                <select name="rank" id="rank" class="form-control">
+                    <option value="">-- All Ranks --</option>
+                    {% for r in ranks %}
+                        <option value="{{ r }}" {% if rank == r %}selected{% endif %}>
+                            {{ r }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4" style="display: flex; align-items: flex-end;">
+                <button type="submit" class="btn btn-custom w-100">🔍 Filter</button>
+            </div>
+        </div>
+    </form>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- Results -->
+    {% if results is string %}
+        <div class="alert alert-info">{{ results }}</div>
+    {% elif results %}
+        <div style="margin-bottom: 1rem;">
+            <strong>Officers Found:</strong> {{ results|length }}
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr>
+                        <th>Officer Name</th>
+                        <th>Rank</th>
+                        <th>Service Number</th>
+                        <th>Status</th>
+                        <th>Date of Birth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for officer in results %}
+                    <tr>
+                        <td><strong>{{ officer.Officer_Name }}</strong></td>
+                        <td>
+                            <span class="badge" style="
+                                {% if officer.Rank == 'Fleet Admiral' %}background: #ff0000;
+                                {% elif officer.Rank == 'Admiral' %}background: #ff6600;
+                                {% elif officer.Rank == 'Vice Admiral' %}background: #ffaa00;
+                                {% else %}background: #00ccff;{% endif %}
+                                color: {% if officer.Rank in ['Fleet Admiral', 'Admiral', 'Vice Admiral'] %}#fff{% else %}#000{% endif %}; 
+                                padding: 0.3rem 0.8rem; border-radius: 15px; font-weight: bold;">
+                                {{ officer.Rank }}
+                            </span>
+                        </td>
+                        <td><code>{{ officer.Service_Number }}</code></td>
+                        <td>
+                            <span class="badge" style="
+                                {% if officer.Status == 'Active' %}background: #00ff00;
+                                {% else %}background: #888;{% endif %}
+                                color: #000; padding: 0.3rem 0.8rem; border-radius: 15px;">
+                                {{ officer.Status }}
+                            </span>
+                        </td>
+                        <td>{{ officer.Date_of_Birth if officer.Date_of_Birth else 'Unknown' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info" style="text-align: center;">
+            <p><strong>📂 Use the filter above to search Marine officers</strong></p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+                Select a rank or leave blank to view all officers
+            </p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

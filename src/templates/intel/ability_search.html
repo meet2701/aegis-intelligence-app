@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Ability Search - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('intelligence_hub') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Intelligence Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #001a33, #003366); border-color: #00ccff;">
+        💪 ABILITY SEARCH
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Search persons by their known abilities
+    </p>
+    
+    <!-- Reference List -->
+    {% if abilities %}
+    <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(0, 204, 255, 0.05); border: 1px solid #00ccff; border-radius: 8px;">
+        <h4 style="color: var(--text-primary); margin-bottom: 1rem;">📚 Known Abilities Reference:</h4>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            {% for ability in abilities %}
+            <span class="badge" style="background: #003366; color: #00ccff; padding: 0.4rem 0.8rem; border-radius: 15px;">
+                {{ ability.Ability }}
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Search Form -->
+    <form method="POST" class="form-custom" style="margin-bottom: 2rem;">
+        <div class="row">
+            <div class="col-md-8">
+                <label for="ability" class="form-label">Search for Ability:</label>
+                <input type="text" name="ability" id="ability" class="form-control" 
+                       placeholder="e.g., Haki, Rokushiki, Conqueror's..." 
+                       value="{{ search_ability }}" required>
+            </div>
+            <div class="col-md-4" style="display: flex; align-items: flex-end;">
+                <button type="submit" class="btn btn-custom w-100">🔍 Search</button>
+            </div>
+        </div>
+    </form>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- Results -->
+    {% if results is string %}
+        <div class="alert alert-info">{{ results }}</div>
+    {% elif results %}
+        <div style="margin-bottom: 1rem;">
+            <strong>Persons Found:</strong> {{ results|length }}
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr>
+                        <th>Person Name</th>
+                        <th>Ability</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for person in results %}
+                    <tr>
+                        <td><strong>{{ person.Person_Name }}</strong></td>
+                        <td>
+                            <span class="badge" style="background: #cc66ff; color: #1a0033; padding: 0.4rem 0.8rem; border-radius: 15px; font-weight: bold;">
+                                {{ person.Ability }}
+                            </span>
+                        </td>
+                        <td>{{ person.Role }}</td>
+                        <td>
+                            <span class="badge" style="background: {% if person.Status == 'Active' %}#00ff00{% else %}#888{% endif %}; color: #000; padding: 0.3rem 0.8rem; border-radius: 15px;">
+                                {{ person.Status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% elif request.method == 'POST' %}
+        <div class="alert alert-warning" style="text-align: center;">
+            <p><strong>⚠️ No persons found with ability: "{{ search_ability }}"</strong></p>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Try a different search term or check the reference list above</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

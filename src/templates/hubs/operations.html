@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Command Operations Hub - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Main Dashboard
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #330000, #660000); border-color: #ff6666;">
+        ⚔️ COMMAND OPERATIONS HUB
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 1rem;">
+        Authorized personnel only • Database modification operations
+    </p>
+    
+    <div class="alert alert-danger" style="background: rgba(255, 0, 0, 0.2); border: 2px solid #ff0000; margin-bottom: 2rem; color: #ff6666;">
+        <strong style="color: #ff0000;">⚠️ WARNING:</strong> These operations directly modify the AEGIS Intelligence Database. 
+        All actions are logged and require proper authorization. Unauthorized use will result in disciplinary action.
+    </div>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- INSERT Operations Section -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="color: #00ff00; margin-bottom: 1.5rem; text-align: center; font-size: 1.8rem;">
+            ➕ INSERT OPERATIONS
+        </h2>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">
+            Add new records to the intelligence database
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; align-items: start;">
+            
+            <!-- Register Criminal -->
+            <div class="hub-card" style="background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 128, 0, 0.1)); border: 2px solid #00ff00; transition: all 0.3s; display: flex; flex-direction: column; min-height: 320px;">
+                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">👤</div>
+                <h3 style="color: #00ff00; margin-bottom: 1rem;">Register Criminal</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6; flex-grow: 1;">
+                    Add new pirate to the database with complete profile information
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <span class="badge" style="background: #004400; color: #00ff00; margin-right: 0.5rem;">Person Table</span>
+                    <span class="badge" style="background: #004400; color: #00ff00;">Pirate Table</span>
+                </div>
+                <a href="{{ url_for('register_criminal') }}" class="btn btn-custom w-100" style="background: #00aa00; border-color: #00ff00;">
+                    Register New Criminal
+                </a>
+            </div>
+            
+            <!-- Issue Bounty -->
+            <div class="hub-card" style="background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 128, 0, 0.1)); border: 2px solid #00ff00; transition: all 0.3s; display: flex; flex-direction: column; min-height: 320px;">
+                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">💰</div>
+                <h3 style="color: #00ff00; margin-bottom: 1rem;">Issue Bounty</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6; flex-grow: 1;">
+                    Create new bounty record for existing pirate with amount and date
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <span class="badge" style="background: #004400; color: #00ff00; margin-right: 0.5rem;">Bounty Table</span>
+                    <span class="badge" style="background: #004400; color: #00ff00;">Bounty_Record</span>
+                </div>
+                <a href="{{ url_for('issue_bounty') }}" class="btn btn-custom w-100" style="background: #00aa00; border-color: #00ff00;">
+                    Issue New Bounty
+                </a>
+            </div>
+            
+            <!-- Log Devil Fruit -->
+            <div class="hub-card" style="background: linear-gradient(135deg, rgba(0, 255, 0, 0.1), rgba(0, 128, 0, 0.1)); border: 2px solid #00ff00; transition: all 0.3s; display: flex; flex-direction: column; min-height: 320px;">
+                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">🍎</div>
+                <h3 style="color: #00ff00; margin-bottom: 1rem;">Log Devil Fruit</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6; flex-grow: 1;">
+                    Register newly discovered Devil Fruit with type and ability details
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <span class="badge" style="background: #004400; color: #00ff00;">Devil_Fruit Table</span>
+                </div>
+                <a href="{{ url_for('log_devil_fruit') }}" class="btn btn-custom w-100" style="background: #00aa00; border-color: #00ff00;">
+                    Log New Fruit
+                </a>
+            </div>
+            
+        </div>
+    </div>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- UPDATE Operations Section -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="color: #ffaa00; margin-bottom: 1.5rem; text-align: center; font-size: 1.8rem;">
+            ✏️ UPDATE OPERATIONS
+        </h2>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">
+            Modify existing intelligence records
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+            
+            <!-- Update Status -->
+            <div class="hub-card" style="background: linear-gradient(135deg, rgba(255, 170, 0, 0.1), rgba(255, 140, 0, 0.1)); border: 2px solid #ffaa00; transition: all 0.3s;">
+                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">📋</div>
+                <h3 style="color: #ffaa00; margin-bottom: 1rem;">Update Pirate Status</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    Change pirate status between Active, Captured, Deceased, or Unknown
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <span class="badge" style="background: #553300; color: #ffaa00;">Pirate Table</span>
+                </div>
+                <a href="{{ url_for('update_status') }}" class="btn btn-custom w-100" style="background: #cc8800; border-color: #ffaa00;">
+                    Update Status
+                </a>
+            </div>
+            
+            <!-- Update Bounty -->
+            <div class="hub-card" style="background: linear-gradient(135deg, rgba(255, 170, 0, 0.1), rgba(255, 140, 0, 0.1)); border: 2px solid #ffaa00; transition: all 0.3s;">
+                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">💸</div>
+                <h3 style="color: #ffaa00; margin-bottom: 1rem;">Update Bounty Amount</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    Modify bounty amount and auto-create historical record
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <span class="badge" style="background: #553300; color: #ffaa00; margin-right: 0.5rem;">Bounty Table</span>
+                    <span class="badge" style="background: #553300; color: #ffaa00;">Bounty_Record</span>
+                </div>
+                <a href="{{ url_for('update_bounty') }}" class="btn btn-custom w-100" style="background: #cc8800; border-color: #ffaa00;">
+                    Update Bounty
+                </a>
+            </div>
+            
+            <!-- Consume Devil Fruit -->
+            <div class="hub-card" style="background: linear-gradient(135deg, rgba(255, 170, 0, 0.1), rgba(255, 140, 0, 0.1)); border: 2px solid #ffaa00; transition: all 0.3s;">
+                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">🍽️</div>
+                <h3 style="color: #ffaa00; margin-bottom: 1rem;">Consume Devil Fruit</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    Record Devil Fruit consumption with validation checks
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <span class="badge" style="background: #553300; color: #ffaa00; margin-right: 0.5rem;">Possesses Table</span>
+                    <span class="badge" style="background: #553300; color: #ffaa00;">Devil_Fruit</span>
+                </div>
+                <a href="{{ url_for('consume_devil_fruit') }}" class="btn btn-custom w-100" style="background: #cc8800; border-color: #ffaa00;">
+                    Record Consumption
+                </a>
+            </div>
+            
+        </div>
+    </div>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    
+    <!-- DELETE Operations Section -->
+    <div style="margin-bottom: 2rem;">
+        <h2 style="color: #ff0000; margin-bottom: 1.5rem; text-align: center; font-size: 1.8rem;">
+            🗑️ DELETE OPERATIONS
+        </h2>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">
+            Remove records from the intelligence database
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+            
+            <!-- Revoke Bounty -->
+            <div class="hub-card" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(139, 0, 0, 0.1)); border: 2px solid #ff0000; transition: all 0.3s;">
+                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">🚫</div>
+                <h3 style="color: #ff0000; margin-bottom: 1rem;">Revoke Bounty</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    Remove bounty from pirate (pardon, capture, or death)
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <span class="badge" style="background: #330000; color: #ff0000;">Bounty Table</span>
+                </div>
+                <a href="{{ url_for('revoke_bounty') }}" class="btn btn-custom w-100" style="background: #cc0000; border-color: #ff0000;">
+                    Revoke Bounty
+                </a>
+            </div>
+            
+            <!-- Remove Territory Control -->
+            <div class="hub-card" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(139, 0, 0, 0.1)); border: 2px solid #ff0000; transition: all 0.3s;">
+                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">🏴‍☠️</div>
+                <h3 style="color: #ff0000; margin-bottom: 1rem;">Remove Territory Control</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    Remove crew's control over an island territory
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <span class="badge" style="background: #330000; color: #ff0000;">Controls Table</span>
+                </div>
+                <a href="{{ url_for('remove_territory') }}" class="btn btn-custom w-100" style="background: #cc0000; border-color: #ff0000;">
+                    Remove Territory
+                </a>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Security Footer -->
+    <div style="background: rgba(255, 0, 0, 0.05); border: 2px solid #ff6666; border-radius: 10px; padding: 1.5rem; margin-top: 2rem; text-align: center;">
+        <p style="color: #ff6666; font-size: 1rem; font-weight: bold; margin: 0;">
+            🔒 All operations are logged and monitored by World Government Security Protocols
+        </p>
+        <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem;">
+            Session ID: {{ session.get('user_id', 'ANONYMOUS') }} | Timestamp: {{ now().strftime('%Y-%m-%d %H:%M:%S UTC') if now else 'N/A' }}
+        </p>
+    </div>
+</div>
+
+<style>
+.hub-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+</style>
+{% endblock %}

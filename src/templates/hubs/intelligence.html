@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Intelligence Hub - AEGIS{% endblock %}
+
+{% block content %}
+<style>
+    .intel-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+    
+    .intel-card {
+        background: var(--card-bg);
+        border: 2px solid #00ccff;
+        border-radius: 10px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+    }
+    
+    .intel-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 204, 255, 0.3);
+        border-color: #00ffff;
+    }
+    
+    .intel-icon {
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .intel-title {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: var(--text-primary);
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .intel-desc {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-align: center;
+    }
+    
+    .hub-header {
+        background: linear-gradient(135deg, #001a33 0%, #003366 100%);
+        border: 3px solid #00ccff;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .hub-header h1 {
+        color: #00ccff;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+    }
+    
+    .hub-header p {
+        color: #ffffff;
+        font-size: 1.1rem;
+    }
+</style>
+
+<div class="card-custom">
+    <!-- Back Button -->
+    <a href="{{ url_for('dashboard') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Command Center
+    </a>
+    
+    <!-- Hub Header -->
+    <div class="hub-header">
+        <h1>🔍 Intelligence Hub</h1>
+        <p>Access Criminal Databases & Intelligence Dossiers</p>
+    </div>
+    
+    <!-- Intelligence Operations Grid -->
+    <div class="intel-grid">
+        <!-- Devil Fruit Encyclopedia -->
+        <a href="{{ url_for('devil_fruit_encyclopedia') }}" class="intel-card">
+            <div class="intel-icon">🍎</div>
+            <div class="intel-title">Devil Fruit Encyclopedia</div>
+            <div class="intel-desc">Browse all Devil Fruits with type filtering (Paramecia, Zoan, Logia)</div>
+        </a>
+        
+        <!-- Pirate Search -->
+        <a href="{{ url_for('pirate_search') }}" class="intel-card">
+            <div class="intel-icon">🎯</div>
+            <div class="intel-title">Pirate Search</div>
+            <div class="intel-desc">Advanced search for pirates by name, bounty range, or sea region</div>
+        </a>
+        
+        <!-- Marine Officer Directory -->
+        <a href="{{ url_for('marine_directory') }}" class="intel-card">
+            <div class="intel-icon">⚓</div>
+            <div class="intel-title">Marine Officer Directory</div>
+            <div class="intel-desc">List Marine officers with rank filtering capabilities</div>
+        </a>
+        
+        <!-- Pirate Bounty Index -->
+        <a href="{{ url_for('bounty_index') }}" class="intel-card">
+            <div class="intel-icon">💰</div>
+            <div class="intel-title">Pirate Bounty Index</div>
+            <div class="intel-desc">Simple index of all pirates and their current bounties</div>
+        </a>
+        
+        <!-- Will of D Search -->
+        <a href="{{ url_for('will_of_d_search') }}" class="intel-card">
+            <div class="intel-icon">🔎</div>
+            <div class="intel-title">"Will of D" Search</div>
+            <div class="intel-desc">Find all persons with the mysterious "D." in their name</div>
+        </a>
+        
+        <!-- Ability Search -->
+        <a href="{{ url_for('ability_search') }}" class="intel-card">
+            <div class="intel-icon">💪</div>
+            <div class="intel-title">Ability Search</div>
+            <div class="intel-desc">Search persons by their known abilities (Haki, Rokushiki, etc.)</div>
+        </a>
+        
+        <!-- Log Decrypter -->
+        <a href="{{ url_for('log_decrypter') }}" class="intel-card">
+            <div class="intel-icon">📜</div>
+            <div class="intel-title">Log Decrypter</div>
+            <div class="intel-desc">Search ship log entries by keyword or phrase</div>
+        </a>
+    </div>
+    
+    <hr style="border-color: #00ccff; margin: 2rem 0;">
+    
+    <div style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+        <p>🔐 INTELLIGENCE CLEARANCE REQUIRED</p>
+    </div>
+</div>
+{% endblock %}

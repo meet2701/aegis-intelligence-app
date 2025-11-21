@@ -1,37 +1,41 @@
 {% extends "base.html" %}
 
-{% block title %}Wanted Poster Search - AEGIS{% endblock %}
+{% block title %}Pirate Search - AEGIS{% endblock %}
 
 {% block content %}
 <div class="card-custom">
-    <div class="card-header-custom">
-        🎯 WANTED POSTER SEARCH
+    <a href="{{ url_for('intelligence_hub') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Intelligence Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #001a33, #003366); border-color: #00ccff;">
+        🎯 PIRATE SEARCH
     </div>
     
-    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-        Search for active pirates by name, bounty range, or sea region. All data is real-time and verified by Cipher Pol.
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Search for active pirates by name, bounty range, or sea region
     </p>
     
-    <form method="POST" action="{{ url_for('wanted_poster_search') }}">
+    <form method="POST" action="{{ url_for('pirate_search') }}">
         <!-- Search Type Selector -->
         <div class="mb-4">
-            <label class="form-label" style="color: var(--accent-color); font-weight: bold;">SEARCH MODE:</label>
+            <label class="form-label" style="color: #00ccff; font-weight: bold;">SEARCH MODE:</label>
             <div class="btn-group w-100" role="group">
                 <input type="radio" class="btn-check" name="search_type" id="search_name" value="name" 
                     {% if search_type == 'name' %}checked{% endif %}>
-                <label class="btn btn-outline-info" for="search_name" style="border: 2px solid var(--accent-color);">
+                <label class="btn btn-outline-info" for="search_name" style="border: 2px solid #00ccff;">
                     📝 Search by Name
                 </label>
                 
                 <input type="radio" class="btn-check" name="search_type" id="search_bounty" value="bounty"
                     {% if search_type == 'bounty' %}checked{% endif %}>
-                <label class="btn btn-outline-info" for="search_bounty" style="border: 2px solid var(--accent-color);">
+                <label class="btn btn-outline-info" for="search_bounty" style="border: 2px solid #00ccff;">
                     💰 Search by Bounty
                 </label>
                 
                 <input type="radio" class="btn-check" name="search_type" id="search_region" value="region"
                     {% if search_type == 'region' %}checked{% endif %}>
-                <label class="btn btn-outline-info" for="search_region" style="border: 2px solid var(--accent-color);">
+                <label class="btn btn-outline-info" for="search_region" style="border: 2px solid #00ccff;">
                     🌊 Search by Sea Region
                 </label>
             </div>
@@ -110,20 +114,17 @@
         <button type="submit" class="btn btn-custom">
             🔍 EXECUTE SEARCH
         </button>
-        <a href="{{ url_for('dashboard') }}" class="btn btn-custom" style="background: #666;">
-            ← BACK TO DASHBOARD
-        </a>
     </form>
     
     {% if results is not none %}
         <hr style="border-color: var(--border-color); margin: 2rem 0;">
         
         {% if results == "INTELLIGENCE NOT FOUND" %}
-            <div class="alert-custom alert-warning-custom">
-                {{ results }}
+            <div class="alert alert-warning" style="text-align: center;">
+                <p><strong>⚠️ {{ results }}</strong></p>
             </div>
         {% elif results is string %}
-            <div class="alert-custom alert-danger-custom">
+            <div class="alert alert-danger">
                 {{ results }}
             </div>
         {% else %}
@@ -131,8 +132,8 @@
                 📋 Search Results: {{ results|length }} Pirates Found
             </h4>
             
-            <div style="overflow-x: auto;">
-                <table class="table-custom">
+            <div class="table-responsive">
+                <table class="table table-custom">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -151,18 +152,20 @@
                         <tr>
                             <td>{{ pirate.Person_ID }}</td>
                             <td><strong>{{ pirate.First_Name }} {{ pirate.Last_Name if pirate.Last_Name else '' }}</strong></td>
-                            <td style="color: var(--warning-color); font-weight: bold; font-size: 1.1em;">
+                            <td style="color: #ffaa00; font-weight: bold; font-size: 1.1em;">
                                 ₿{{ "{:,}".format(pirate.Bounty) }}
                             </td>
                             <td>{{ pirate.Bounty_Date if pirate.Bounty_Date else 'N/A' }}</td>
                             <td>{{ pirate.Infamy_Level if pirate.Infamy_Level else 'Unknown' }}</td>
                             <td>
                                 {% if pirate.Status == 'Active' %}
-                                    <span style="color: var(--danger-color);">● {{ pirate.Status }}</span>
+                                    <span class="status-badge status-active">{{ pirate.Status }}</span>
                                 {% elif pirate.Status == 'Captured' %}
-                                    <span style="color: var(--success-color);">● {{ pirate.Status }}</span>
+                                    <span class="status-badge status-captured">{{ pirate.Status }}</span>
+                                {% elif pirate.Status == 'Deceased' %}
+                                    <span class="status-badge status-deceased">{{ pirate.Status }}</span>
                                 {% else %}
-                                    <span style="color: var(--text-muted);">● {{ pirate.Status }}</span>
+                                    <span class="status-badge status-inactive">{{ pirate.Status }}</span>
                                 {% endif %}
                             </td>
                             <td>{{ pirate.Crew_Name if pirate.Crew_Name else '<span style="color: #999;">No Crew</span>' | safe }}</td>
@@ -226,4 +229,3 @@ document.querySelectorAll('input[name="search_type"]').forEach(radio => {
 });
 </script>
 {% endblock %}
-

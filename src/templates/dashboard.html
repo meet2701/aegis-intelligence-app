@@ -1,129 +1,259 @@
 {% extends "base.html" %}
 
-{% block title %}Marine Dashboard - AEGIS{% endblock %}
+{% block title %}Command Center - AEGIS{% endblock %}
 
 {% block content %}
+<style>
+    .hub-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+    
+    .hub-card {
+        position: relative;
+        padding: 2.5rem;
+        border-radius: 15px;
+        border: 3px solid;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+        overflow: hidden;
+    }
+    
+    .hub-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0.1;
+        transition: opacity 0.3s ease;
+    }
+    
+    .hub-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 255, 255, 0.4);
+    }
+    
+    .hub-card:hover::before {
+        opacity: 0.2;
+    }
+    
+    .hub-intelligence {
+        background: linear-gradient(135deg, #001a33 0%, #003366 100%);
+        border-color: #00ccff;
+    }
+    
+    .hub-intelligence::before {
+        background: radial-gradient(circle, #00ccff 0%, transparent 70%);
+    }
+    
+    .hub-tactical {
+        background: linear-gradient(135deg, #1a0033 0%, #330066 100%);
+        border-color: #cc66ff;
+    }
+    
+    .hub-tactical::before {
+        background: radial-gradient(circle, #cc66ff 0%, transparent 70%);
+    }
+    
+    .hub-command {
+        background: linear-gradient(135deg, #330000 0%, #660000 100%);
+        border-color: #ff6666;
+    }
+    
+    .hub-command::before {
+        background: radial-gradient(circle, #ff6666 0%, transparent 70%);
+    }
+    
+    .hub-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .hub-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #ffffff;
+        text-align: center;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .hub-description {
+        font-size: 1rem;
+        color: #cccccc;
+        text-align: center;
+        line-height: 1.6;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .hub-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        margin-top: 1rem;
+    }
+    
+    .hub-intelligence .hub-badge {
+        background: #00ccff;
+        color: #001a33;
+    }
+    
+    .hub-tactical .hub-badge {
+        background: #cc66ff;
+        color: #1a0033;
+    }
+    
+    .hub-command .hub-badge {
+        background: #ff6666;
+        color: #330000;
+    }
+    
+    .welcome-section {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: var(--card-bg);
+        border-radius: 10px;
+        border: 2px solid var(--border-color);
+    }
+    
+    .welcome-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        text-shadow: 0 0 20px var(--border-color);
+    }
+    
+    .welcome-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .security-badge {
+        display: inline-block;
+        padding: 0.5rem 1.5rem;
+        background: linear-gradient(135deg, var(--success-color), #00aa00);
+        color: #ffffff;
+        border-radius: 25px;
+        font-weight: bold;
+        margin-top: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
+    }
+</style>
+
 <div class="card-custom">
-    <div class="card-header-custom">
-        ⚓ MARINE HEADQUARTERS OPERATIONS DASHBOARD
+    <div class="welcome-section">
+        <div class="welcome-title">
+            ⚓ AEGIS COMMAND CENTER
+        </div>
+        <div class="welcome-subtitle">
+            Welcome, <strong>{{ session.full_name }}</strong>
+        </div>
+        <div style="color: var(--text-muted); font-size: 0.95rem;">
+            World Government Intelligence Terminal
+        </div>
+        <div class="security-badge">
+            🔐 SECURITY CLEARANCE: GRANTED
+        </div>
     </div>
+    
+    <hr style="border-color: var(--border-color); margin: 2rem 0;">
     
     <div style="text-align: center; margin-bottom: 2rem;">
-        <p style="color: var(--text-secondary); font-size: 1.1rem;">
-            Welcome, <strong>{{ session.full_name }}</strong>
-        </p>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">
-            Security Clearance: <span style="color: var(--success-color);">GRANTED</span> | 
-            Session Active | 
-            Justice Prevails
+        <h2 style="color: var(--text-primary); letter-spacing: 3px;">
+            SELECT YOUR OPERATIONAL HUB
+        </h2>
+        <p style="color: var(--text-muted); margin-top: 0.5rem;">
+            Choose a module to access specialized intelligence and command functions
         </p>
     </div>
     
-    <hr style="border-color: var(--border-color); margin: 2rem 0;">
-    
-    <!-- READ OPERATIONS Section -->
-    <div style="margin-bottom: 3rem;">
-        <h3 style="color: var(--text-primary); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px;">
-            📊 Intelligence Retrieval Operations
-        </h3>
+    <div class="hub-container">
+        <!-- Intelligence Hub -->
+        <a href="{{ url_for('intelligence_hub') }}" class="hub-card hub-intelligence">
+            <div class="hub-icon">🔍</div>
+            <div class="hub-title">Intelligence Hub</div>
+            <div class="hub-description">
+                Access criminal databases, search records, and retrieve intelligence dossiers.
+                <br><br>
+                <strong>Features:</strong>
+                <ul style="text-align: left; padding-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>Devil Fruit Encyclopedia</li>
+                    <li>Marine Officer Directory</li>
+                    <li>Pirate Bounty Index</li>
+                    <li>Advanced Search Tools</li>
+                </ul>
+            </div>
+            <div style="text-align: center;">
+                <span class="hub-badge">RETRIEVAL & SEARCH</span>
+            </div>
+        </a>
         
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <a href="{{ url_for('wanted_poster_search') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">WANTED POSTER SEARCH</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Search pirates by name or bounty range
-                    </div>
-                </a>
+        <!-- Tactical Analysis Hub -->
+        <a href="{{ url_for('tactical_analysis') }}" class="hub-card hub-tactical">
+            <div class="hub-icon">📊</div>
+            <div class="hub-title">Tactical Analysis</div>
+            <div class="hub-description">
+                Generate strategic reports, analyze threats, and evaluate regional intelligence.
+                <br><br>
+                <strong>Features:</strong>
+                <ul style="text-align: left; padding-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>Crew Valuation Analysis</li>
+                    <li>Regional Threat Assessment</li>
+                    <li>Island Census Reports</li>
+                    <li>Most Wanted Tracking</li>
+                </ul>
             </div>
-            
-            <div class="col-md-6 mb-3">
-                <a href="{{ url_for('devil_fruit_encyclopedia') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🍎</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">DEVIL FRUIT ENCYCLOPEDIA</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Database of Devil Fruits and their users
-                    </div>
-                </a>
+            <div style="text-align: center;">
+                <span class="hub-badge">AGGREGATES & REPORTS</span>
             </div>
-            
-            <div class="col-md-6 mb-3">
-                <a href="{{ url_for('territory_map') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🗺️</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">TERRITORY CONTROL MAP</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        View islands and their controlling factions
-                    </div>
-                </a>
+        </a>
+        
+        <!-- Command Operations Hub -->
+        <a href="{{ url_for('command_operations') }}" class="hub-card hub-command">
+            <div class="hub-icon">⚡</div>
+            <div class="hub-title">Command Operations</div>
+            <div class="hub-description">
+                Execute database modifications, issue bounties, and manage operational records.
+                <br><br>
+                <strong>Features:</strong>
+                <ul style="text-align: left; padding-left: 1.5rem; margin-top: 0.5rem;">
+                    <li>Criminal Registration</li>
+                    <li>Bounty Management</li>
+                    <li>Status Updates</li>
+                    <li>Territory Control</li>
+                </ul>
             </div>
-            
-            <div class="col-md-6 mb-3">
-                <a href="{{ url_for('crew_manifest') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">CREW MANIFEST</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Detailed crew member and ship information
-                    </div>
-                </a>
+            <div style="text-align: center;">
+                <span class="hub-badge">INSERT · UPDATE · DELETE</span>
             </div>
-            
-            <div class="col-md-6 mb-3">
-                <a href="{{ url_for('regional_threat_report') }}" class="btn btn-custom w-100" style="padding: 1.5rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">REGIONAL THREAT REPORT</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Pirate activity analysis by sea region
-                    </div>
-                </a>
-            </div>
-        </div>
+        </a>
     </div>
     
-    <hr style="border-color: var(--border-color); margin: 2rem 0;">
+    <hr style="border-color: var(--border-color); margin: 3rem 0 2rem 0;">
     
-    <!-- WRITE OPERATIONS Section -->
-    <div>
-        <h3 style="color: var(--text-primary); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px;">
-            ✏️ Database Modification Operations
-        </h3>
-        
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <a href="{{ url_for('register_criminal') }}" class="btn btn-custom w-100" style="padding: 1.5rem; background: linear-gradient(135deg, #004400, #006600);">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">➕</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">REGISTER CRIMINAL</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Add new pirate to database (INSERT)
-                    </div>
-                </a>
-            </div>
-            
-            <div class="col-md-4 mb-3">
-                <a href="{{ url_for('update_status') }}" class="btn btn-custom w-100" style="padding: 1.5rem; background: linear-gradient(135deg, #664400, #996600);">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔄</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">UPDATE STATUS</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Change person's status (UPDATE)
-                    </div>
-                </a>
-            </div>
-            
-            <div class="col-md-4 mb-3">
-                <a href="{{ url_for('revoke_bounty') }}" class="btn btn-danger-custom w-100" style="padding: 1.5rem;">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">❌</div>
-                    <div style="font-size: 1.1rem; font-weight: bold;">REVOKE BOUNTY</div>
-                    <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
-                        Delete bounty record (DELETE)
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div style="text-align: center; margin-top: 3rem; padding: 1.5rem; background: rgba(0, 255, 255, 0.05); border: 1px solid var(--border-color); border-radius: 5px;">
-        <p style="color: var(--text-secondary); margin: 0;">
-            ⚓ "Absolute Justice" - Fleet Admiral Akainu
+    <div style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+        <p>⚖️ ABSOLUTE JUSTICE PREVAILS ⚖️</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+            CLASSIFIED SYSTEM · AUTHORIZED PERSONNEL ONLY
         </p>
     </div>
 </div>
