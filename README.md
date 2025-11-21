@@ -1,174 +1,345 @@
-# AEGIS Intelligence Database (AID)# aegis-intelligence-app
+# Aegis Intelligence Database (AID)# AEGIS Intelligence Database (AID)# aegis-intelligence-app
 
-**World Government Intelligence Terminal - One Piece Universe**DnA Course Project, for application interface to interact with the data of our selected mini world "One Piece".
 
-# Aegis Intelligence Database (AID) - Phase 4
+
+**World Government Intelligence Terminal - One Piece Universe****World Government Intelligence Terminal - One Piece Universe**DnA Course Project, for application interface to interact with the data of our selected mini world "One Piece".
+
+
+
+**Team Big Three** | Phase 4 Final Submission | November 2025  # Aegis Intelligence Database (AID) - Phase 4
+
+**Members:** Meet Parekh (2024101122), Jainam Modi (2024101057), Divya Padariya (2024113010)
 
 **Team Big Three** | Phase 4 Final Submission | November 2025
 
+---
+
 **Team:** Big Three  
+
+## 🚀 Installation
 
 ---**Members:** Meet Parekh (2024101122), Jainam Modi (2024101057), Divya Padariya (2024113010)  
 
-**Submission Date:** November 20, 2025
-
-## 🚀 Quick Start
-
----
-
 ### Prerequisites
 
-- Python 3.8+## 🎯 Project Overview
-
-- MySQL 8.0+
-
-- Libraries: `flask`, `pymysql`The **Aegis Intelligence Database (AID)** is a comprehensive intelligence management system for the World Government in the One Piece universe. This Flask-based application provides real-time access to pirate intelligence, territory control, Devil Fruit information, and operational data through an immersive military-grade terminal interface.
-
-
-
-### Installation---
-
-```bash
-
-# Install dependencies## 🔐 User Credentials
-
-pip install flask pymysql
-
-### Marine Officer (Standard User)
-
-# Setup database- **Username:** `MARINE_HQ`
-
-mysql -u root -p- **Password:** `SEAGULL`
-
-source src/schema.sql- **Access Level:** Read operations (5 queries) + Write operations (3 updates)
-
-source src/populate.sql
-
-### CP0 Administrator (DBA)
-
-# Run application- **Username:** `ROB_LUCCI`
-
-cd src- **Password:** `DARK_JUSTICE`
-
-python app.py- **Access Level:** All Marine permissions + DDL operations (DROP, TRUNCATE, ALTER)
-
-```
-
----
-
-Access at: `http://127.0.0.1:5000`
-
-## 🚀 Installation & Setup
-
----
-
-### Prerequisites
-
-## 🔐 Login Credentials- Python 3.8+
+- Python 3.8+**Submission Date:** November 21, 2025
 
 - MySQL Server 8.0+
 
-| Role | Username | Password | Access |- pip (Python package manager)
+## 🚀 Quick Start
+
+### Setup Steps
+
+---
+
+1. **Create Virtual Environment** (Optional but Recommended)
+
+   ```bash### Prerequisites
+
+   python3 -m venv venv
+
+   source venv/bin/activate  # On Windows: venv\Scripts\activate- Python 3.8+## 🎯 Project Overview
+
+   ```
+
+- MySQL 8.0+
+
+2. **Install Dependencies**
+
+   ```bash- Libraries: `flask`, `pymysql`The **Aegis Intelligence Database (AID)** is a comprehensive intelligence management system for the World Government in the One Piece universe. This Flask-based application provides real-time access to pirate intelligence, territory control, Devil Fruit information, and operational data through an immersive military-grade terminal interface.
+
+   pip install -r src/requirements.txt
+
+   ```
+
+
+
+3. **Setup Database**### Installation---
+
+   ```bash
+
+   mysql -u root -p < src/schema.sql```bash
+
+   mysql -u root -p < src/populate.sql
+
+   ```# Install dependencies## 🔐 User Credentials
+
+
+
+4. **Run Application**pip install flask pymysql
+
+   ```bash
+
+   cd src### Marine Officer (Standard User)
+
+   python3 app.py
+
+   ```# Setup database- **Username:** `MARINE_HQ`
+
+
+
+Access at: `http://127.0.0.1:5000`mysql -u root -p- **Password:** `SEAGULL`
+
+
+
+---source src/schema.sql- **Access Level:** Read operations (5 queries) + Write operations (3 updates)
+
+
+
+## 🔐 Login Credentialssource src/populate.sql
+
+
+
+| Role | Username | Password | Access |### CP0 Administrator (DBA)
 
 |------|----------|----------|--------|
 
-| Marine Officer | `MARINE_HQ` | `SEAGULL` | 5 Queries + 3 Updates |### Step 1: Install Dependencies
+| Marine Officer | `MARINE_HQ` | `SEAGULL` | 5 Queries + 3 Updates |# Run application- **Username:** `ROB_LUCCI`
 
-| CP0 Admin | `ROB_LUCCI` | `DARK_JUSTICE` | All + DDL Operations |```bash
+| CP0 Admin | `ROB_LUCCI` | `DARK_JUSTICE` | All + DDL Operations |
 
-pip install flask pymysql
+cd src- **Password:** `DARK_JUSTICE`
 
----```
+---
+
+python app.py- **Access Level:** All Marine permissions + DDL operations (DROP, TRUNCATE, ALTER)
+
+## 📋 Application Features
+
+```
+
+### READ OPERATIONS (Queries 1-5)
+
+---
+
+**1. Wanted Poster Search** - Search pirates by name, bounty, or region  
+
+**2. Devil Fruit Encyclopedia** - Browse all Devil Fruits with filtering  Access at: `http://127.0.0.1:5000`
+
+**3. Territory Control Map** - View island control (XOR: Faction OR Crew)  
+
+**4. Crew Manifest** - Complete crew dossier with members and bounties  ## 🚀 Installation & Setup
+
+**5. Regional Threat Report** - Pirate activity analysis per sea region
+
+---
+
+### WRITE OPERATIONS (Updates 1-3)
+
+### Prerequisites
+
+**6. Register New Criminal** - INSERT new pirate with crew membership  
+
+**7. Update Person Status** - UPDATE operational status (Active/Captured/Deceased)  ## 🔐 Login Credentials- Python 3.8+
+
+**8. Revoke Bounty** - DELETE bounty records
+
+- MySQL Server 8.0+
+
+### ADMIN OPERATIONS (DDL - CP0 Only)
+
+| Role | Username | Password | Access |- pip (Python package manager)
+
+**9. View All Tables** - Display database structure with row counts  
+
+**10. Truncate Table** - Remove all data from specified table  |------|----------|----------|--------|
+
+**11. Alter Schema** - Execute custom DDL (ALTER, CREATE INDEX)  
+
+**12. Buster Call Protocol** - Drop all database tables| Marine Officer | `MARINE_HQ` | `SEAGULL` | 5 Queries + 3 Updates |### Step 1: Install Dependencies
 
 
 
-## 📋 Application Features (Video Demo Order)### Step 2: Setup Database
+---| CP0 Admin | `ROB_LUCCI` | `DARK_JUSTICE` | All + DDL Operations |```bash
 
-```bash
 
-### READ OPERATIONS (Queries 1-5)# Login to MySQL
 
-mysql -u root -p
+## 📁 File Structurepip install flask pymysql
 
-**1. Wanted Poster Search**
 
-- Path: Intelligence Hub → Pirate Search# Execute schema and populate scripts
 
-- Search pirates by name, bounty range, or sea regionsource src/schema.sql
+```---```
 
-- SQL: `SELECT` with `JOIN` (Person, Pirate, Crew, Membership, Bounty_Record)source src/populate.sql
+aegis-intelligence-app/
+
+├── src/
+
+│   ├── app.py              # Main Flask application (1426 lines, 28 routes)
+
+│   ├── db_utils.py         # Database utilities## 📋 Application Features (Video Demo Order)### Step 2: Setup Database
+
+│   ├── schema.sql          # CREATE TABLE statements
+
+│   ├── populate.sql        # INSERT statements```bash
+
+│   ├── requirements.txt    # Python dependencies
+
+│   └── templates/          # 28 HTML templates### READ OPERATIONS (Queries 1-5)# Login to MySQL
+
+│       ├── base.html       # Base template with theme toggle
+
+│       ├── login.html      # Login pagemysql -u root -p
+
+│       ├── dashboard.html  # Marine dashboard
+
+│       ├── admin_console.html  # CP0 admin console**1. Wanted Poster Search**
+
+│       ├── hubs/           # Intelligence/Tactical/Operations hubs
+
+│       ├── intel/          # Query templates- Path: Intelligence Hub → Pirate Search# Execute schema and populate scripts
+
+│       ├── tactical/       # Analysis templates
+
+│       ├── operations/     # Update templates- Search pirates by name, bounty range, or sea regionsource src/schema.sql
+
+│       └── admin/          # Admin templates
+
+├── README.md- SQL: `SELECT` with `JOIN` (Person, Pirate, Crew, Membership, Bounty_Record)source src/populate.sql
+
+└── media/
+
+    └── Marines_Logo.jpeg```
 
 ```
 
 **2. Devil Fruit Encyclopedia**
 
+---
+
 - Path: Intelligence Hub → Devil Fruit Encyclopedia### Step 3: Run Application
+
+## 🗄️ Database Schema
 
 - Browse all Devil Fruits with filtering (Type: Paramecia/Zoan/Logia, Awakened status)```bash
 
-- SQL: `SELECT` with `LEFT JOIN` (Devil_Fruit, Possession, Person)cd src
+**19 Tables** implementing:
 
-python app.py
+- Generalization (Person → Pirate/Marine/Civilian)- SQL: `SELECT` with `LEFT JOIN` (Devil_Fruit, Possession, Person)cd src
 
-**3. Territory Control Map**```
+- Weak Entities (Bounty_Record, Log_Entry)
 
-- Path: Tactical Analysis Hub → Island Census
+- XOR Constraint (Territory: Faction XOR Crew)python app.py
 
-- View island control by Crews or Factions (XOR constraint demonstration)When prompted, enter your MySQL root password.
+- Multi-valued Attributes (Person_Abilities)
 
-- SQL: `SELECT` with multiple `JOIN`s and `CASE` statements
+- Complex Relationships (Membership, Participation, Possession)**3. Territory Control Map**```
 
-### Step 4: Access Application
 
-**4. Crew Manifest**Open your browser and navigate to:
 
-- Path: Tactical Analysis Hub → Crew Valuation```
+---- Path: Tactical Analysis Hub → Island Census
 
-- Complete crew dossier: members, ship, total bounty calculationhttp://127.0.0.1:5000
+
+
+## 🎥 Video Demo Checklist- View island control by Crews or Factions (XOR constraint demonstration)When prompted, enter your MySQL root password.
+
+
+
+### Part 1: Marine Officer (MARINE_HQ)- SQL: `SELECT` with multiple `JOIN`s and `CASE` statements
+
+- [ ] Login and Dashboard
+
+- [ ] Query 1: Pirate Search### Step 4: Access Application
+
+- [ ] Query 2: Devil Fruit Encyclopedia
+
+- [ ] Query 3: Territory Control**4. Crew Manifest**Open your browser and navigate to:
+
+- [ ] Query 4: Crew Manifest
+
+- [ ] Query 5: Regional Threat Analysis- Path: Tactical Analysis Hub → Crew Valuation```
+
+- [ ] Update 1: Register Criminal (INSERT) - show MySQL before/after
+
+- [ ] Update 2: Update Status (UPDATE) - show MySQL before/after- Complete crew dossier: members, ship, total bounty calculationhttp://127.0.0.1:5000
+
+- [ ] Update 3: Revoke Bounty (DELETE) - show MySQL before/after
 
 - SQL: `SELECT` with aggregations (`COUNT`, `SUM`, `AVG`, `MAX`)```
 
+### Part 2: CP0 Administrator (ROB_LUCCI)
+
+- [ ] Logout and Login as Admin
+
+- [ ] View All Tables
+
+- [ ] Truncate Table - show MySQL before/after**5. Regional Threat Report**---
+
+- [ ] Alter Schema - show MySQL before/after
+
+- [ ] Buster Call Protocol (DROP ALL) - show MySQL before/after- Path: Tactical Analysis Hub → Regional Average
 
 
-**5. Regional Threat Report**---
 
-- Path: Tactical Analysis Hub → Regional Average
+---- Pirate activity analysis per sea region## 📋 Application Features (Video Demonstration Order)
 
-- Pirate activity analysis per sea region## 📋 Application Features (Video Demonstration Order)
 
-- SQL: `SELECT` with `GROUP BY` and aggregate functions
 
-### 🔵 PART 1: MARINE OFFICER OPERATIONS (User: MARINE_HQ)
+## 🎯 Key Features- SQL: `SELECT` with `GROUP BY` and aggregate functions
 
-### WRITE OPERATIONS (Updates 1-3)
 
-#### **1. LOGIN**
+
+- **28 Unique Routes** - All functional requirements implemented### 🔵 PART 1: MARINE OFFICER OPERATIONS (User: MARINE_HQ)
+
+- **Raw SQL Queries** - No ORM, parameterized queries for security
+
+- **Role-Based Access** - Marine vs Admin permissions### WRITE OPERATIONS (Updates 1-3)
+
+- **Theme Toggle** - Dark/Light mode with persistent state
+
+- **Real-Time Feedback** - Inline success/error messages#### **1. LOGIN**
+
+- **Referential Integrity** - All foreign keys enforced with CASCADE
 
 **6. Register New Criminal (INSERT)**- Access the login page
 
+---
+
 - Path: Command Operations Hub → Register Criminal- Enter username: `MARINE_HQ`
+
+## 🐛 Troubleshooting
 
 - Add new pirate with crew membership- Enter password: `SEAGULL`
 
-- SQL: `INSERT INTO Person, Pirate, Membership`- Successfully authenticate and redirect to dashboard
+### Database Connection Issues
 
-- MySQL Verification:
+```bash- SQL: `INSERT INTO Person, Pirate, Membership`- Successfully authenticate and redirect to dashboard
 
-  ```sql#### **2. DASHBOARD OVERVIEW**
+# Check MySQL service
 
-  -- Before/After- View the main operations dashboard
-
-  SELECT * FROM Person ORDER BY Person_ID DESC LIMIT 1;- See all available query and update operations
-
-  ```- Demonstrate theme toggle (Dark ↔ Light mode)
+sudo systemctl status mysql- MySQL Verification:
 
 
 
-**7. Update Person Status (UPDATE)**---
+# Test connection  ```sql#### **2. DASHBOARD OVERVIEW**
 
-- Path: Command Operations Hub → Update Status
+mysql -u root -p
 
-- Change operational status (Active/Captured/Deceased/Unknown)### 📊 READ OPERATIONS (Queries)
+```  -- Before/After- View the main operations dashboard
+
+
+
+### Port 5000 Already in Use  SELECT * FROM Person ORDER BY Person_ID DESC LIMIT 1;- See all available query and update operations
+
+```bash
+
+# Kill process on port 5000  ```- Demonstrate theme toggle (Dark ↔ Light mode)
+
+lsof -ti:5000 | xargs kill -9
+
+```
+
+
+
+---**7. Update Person Status (UPDATE)**---
+
+
+
+**⚓ Justice Will Prevail ⚓**- Path: Command Operations Hub → Update Status
+
+
+
+*Aegis Intelligence Database - Phase 4 Final Submission*- Change operational status (Active/Captured/Deceased/Unknown)### 📊 READ OPERATIONS (Queries)
+
 
 - SQL: `UPDATE Person SET Status = ?`
 
