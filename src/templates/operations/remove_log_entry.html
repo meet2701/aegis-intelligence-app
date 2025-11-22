@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Remove Log Entry - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('command_operations') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Command Operations Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #660000, #cc0000); border-color: #ff0000;">
+        📝 REMOVE SHIP LOG ENTRY
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Delete ship log entries from the intelligence database
+    </p>
+    
+    {% if message %}
+        <div class="alert alert-{{ message_type }}" style="margin-bottom: 2rem;">
+            {{ message }}
+        </div>
+    {% endif %}
+    
+    {% if logs %}
+        <!-- Log Entry List -->
+        <div style="background: linear-gradient(135deg, rgba(102, 0, 0, 0.3), rgba(204, 0, 0, 0.3)); border: 2px solid #ff0000; border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+            <h4 style="color: #ff0000; margin-bottom: 2rem; text-align: center;">
+                📋 Ship Log Entries ({{ logs|length }})
+            </h4>
+            
+            <div class="table-responsive">
+                <table class="table table-dark table-hover" style="border: 2px solid #ff0000;">
+                    <thead style="background: linear-gradient(135deg, #660000, #cc0000);">
+                        <tr>
+                            <th style="color: #ff0000;">Ship Name</th>
+                            <th style="color: #ff0000;">Crew</th>
+                            <th style="color: #ff0000;">Timestamp</th>
+                            <th style="color: #ff0000;">Log Entry</th>
+                            <th style="color: #ff0000;">Coordinates</th>
+                            <th style="color: #ff0000; text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td style="color: #00ccff; font-weight: bold;">
+                                {{ log.Ship_Name }}
+                            </td>
+                            <td style="color: #ffaa00;">
+                                {{ log.Crew_Name or 'Independent' }}
+                            </td>
+                            <td style="color: #00ff00;">
+                                {{ log.Log_Timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.Log_Timestamp else 'N/A' }}
+                            </td>
+                            <td style="color: var(--text-secondary); max-width: 400px;">
+                                {{ log.Entry_Text[:100] }}{% if log.Entry_Text|length > 100 %}...{% endif %}
+                            </td>
+                            <td style="color: var(--text-muted); font-size: 0.9rem;">
+                                <small>
+                                    Lat: {{ "%.2f"|format(log.Latitude) if log.Latitude else 'N/A' }}<br>
+                                    Lon: {{ "%.2f"|format(log.Longitude) if log.Longitude else 'N/A' }}
+                                </small>
+                            </td>
+                            <td style="text-align: center;">
+                                <form method="POST" style="display: inline;" onsubmit="return confirm('⚠️ Are you sure you want to remove this log entry? Ship: {{ log.Ship_Name }} - Timestamp: {{ log.Log_Timestamp }}. This will permanently delete the log record!');">
+                                    <input type="hidden" name="ship_id" value="{{ log.Ship_ID }}">
+                                    <input type="hidden" name="log_timestamp" value="{{ log.Log_Timestamp }}">
+                                    <button type="submit" class="btn btn-sm" style="background: #cc0000; border-color: #ff0000; color: white;">
+                                        🗑️ Remove
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="alert alert-danger" style="background: rgba(255, 0, 0, 0.3); border: 3px solid #ff0000; color: #ffffff;">
+            <strong style="color: #ff0000; font-size: 1.2rem;">⚠️ DELETION WARNING:</strong>
+            <ul style="margin-top: 0.5rem; margin-bottom: 0; color: #ffcccc; line-height: 1.8;">
+                <li><strong style="color: #ff6666;">This is a DELETE operation</strong> - log entry will be permanently removed</li>
+                <li><strong style="color: #ff6666;">Intelligence Reports may reference this log</strong> - verify dependencies first</li>
+                <li><strong style="color: #ff6666;">The ship itself will NOT be deleted</strong> - only the specific log entry</li>
+                <li><strong style="color: #ff6666;">Composite Key Deletion</strong> - uses both Ship_ID and Log_Timestamp</li>
+                <li><strong style="color: #ff6666;">This operation cannot be undone</strong></li>
+            </ul>
+        </div>
+        
+    {% else %}
+        <div class="alert alert-warning" style="text-align: center;">
+            <h4>📝 No Log Entries Found</h4>
+            <p style="margin-top: 1rem; color: var(--text-secondary);">
+                There are currently no ship log entries in the system.
+            </p>
+            <p style="color: var(--text-secondary);">
+                Ship log entries are created automatically when ships traverse the seas.
+            </p>
+            <div style="margin-top: 1.5rem;">
+                <a href="{{ url_for('log_decrypter') }}" class="btn btn-custom" style="background: #0066cc; border-color: #0099ff;">
+                    → View Log Search Tool
+                </a>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Guidelines -->
+    <div style="background: rgba(0, 0, 0, 0.3); border: 2px solid var(--border-color); border-radius: 10px; padding: 1.5rem;">
+        <h4 style="color: #ff0000; margin-bottom: 1rem;">📋 Removal Guidelines</h4>
+        <ul style="color: var(--text-secondary); line-height: 1.8;">
+            <li><strong style="color: #00ccff;">Composite Key:</strong> Log entries use Ship_ID + Log_Timestamp as primary key</li>
+            <li><strong style="color: #00ccff;">Foreign Key Dependencies:</strong> Check Intelligence_Report table for references</li>
+            <li><strong style="color: #00ccff;">Deletion Scope:</strong> Only removes the log entry, not the ship or related data</li>
+            <li><strong style="color: #00ccff;">Use Cases:</strong> Incorrect entries, duplicate logs, or data cleanup</li>
+            <li><strong style="color: #00ccff;">Permanent Action:</strong> Cannot be undone - verify before deletion</li>
+            <li><strong style="color: #00ccff;">Best Practice:</strong> Review Intelligence Reports that reference this log first</li>
+        </ul>
+    </div>
+    
+    <!-- Technical Information -->
+    <div style="background: rgba(0, 100, 200, 0.1); border: 2px solid #0066cc; border-radius: 10px; padding: 1.5rem; margin-top: 1.5rem;">
+        <h4 style="color: #00ccff; margin-bottom: 1rem;">🔧 Technical Details</h4>
+        <div style="color: var(--text-secondary); line-height: 1.8;">
+            <p><strong style="color: #00ff00;">Table:</strong> Log_Entry (Weak Entity)</p>
+            <p><strong style="color: #00ff00;">Primary Key:</strong> (Ship_ID, Log_Timestamp) - Composite Key</p>
+            <p><strong style="color: #00ff00;">Foreign Key:</strong> Ship_ID → Ship(Ship_ID)</p>
+            <p><strong style="color: #00ff00;">Referenced By:</strong> Intelligence_Report (Ship_ID, Log_Timestamp)</p>
+            <p><strong style="color: #00ff00;">Cascade Behavior:</strong> Manual deletion only - no cascade</p>
+            <p style="margin-top: 1rem; color: #ffaa00;">
+                <strong>⚠️ Note:</strong> If Intelligence Reports reference this log, foreign key constraint will prevent deletion.
+                Remove dependent reports first.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

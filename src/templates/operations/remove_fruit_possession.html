@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Remove Devil Fruit Possession - AEGIS{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <a href="{{ url_for('command_operations') }}" class="btn btn-custom" style="margin-bottom: 2rem;">
+        ← Back to Command Operations Hub
+    </a>
+    
+    <div class="card-header-custom" style="background: linear-gradient(135deg, #660000, #cc0000); border-color: #ff0000;">
+        🗑️ REMOVE DEVIL FRUIT POSSESSION
+    </div>
+    
+    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+        Delete Devil Fruit possession records from the database
+    </p>
+    
+    {% if message %}
+        <div class="alert alert-{{ message_type }}" style="margin-bottom: 2rem;">
+            {{ message }}
+        </div>
+    {% endif %}
+    
+    {% if possessions %}
+        <!-- Possession List -->
+        <div style="background: linear-gradient(135deg, rgba(102, 0, 0, 0.3), rgba(204, 0, 0, 0.3)); border: 2px solid #ff0000; border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+            <h4 style="color: #ff0000; margin-bottom: 2rem; text-align: center;">
+                📋 Current Devil Fruit Possessions ({{ possessions|length }})
+            </h4>
+            
+            <div class="table-responsive">
+                <table class="table table-dark table-hover" style="border: 2px solid #ff0000;">
+                    <thead style="background: linear-gradient(135deg, #660000, #cc0000);">
+                        <tr>
+                            <th style="color: #ff0000;">Fruit Name</th>
+                            <th style="color: #ff0000;">Type</th>
+                            <th style="color: #ff0000;">Current Owner</th>
+                            <th style="color: #ff0000;">Status</th>
+                            <th style="color: #ff0000;">Ability</th>
+                            <th style="color: #ff0000; text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for possession in possessions %}
+                        <tr>
+                            <td style="color: #ffaa00; font-weight: bold;">
+                                {{ possession.Fruit_Name }}
+                            </td>
+                            <td>
+                                <span class="badge" style="background: {% if possession.Type == 'Paramecia' %}#ff9900{% elif possession.Type == 'Zoan' %}#aa00ff{% else %}#00ff00{% endif %};">
+                                    {{ possession.Type }}
+                                </span>
+                            </td>
+                            <td style="color: #00ccff;">
+                                {{ possession.Person_Name or 'Unknown' }}
+                            </td>
+                            <td>
+                                <span class="badge" style="background: {% if possession.Status == 'Active' %}#00ff00{% elif possession.Status == 'Deceased' %}#666666{% elif possession.Status == 'Captured' %}#ff9900{% else %}#cccccc{% endif %};">
+                                    {{ possession.Status }}
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary); font-size: 0.9rem; max-width: 300px;">
+                                {{ possession.Description[:100] }}{% if possession.Description|length > 100 %}...{% endif %}
+                            </td>
+                            <td style="text-align: center;">
+                                <form method="POST" style="display: inline;" onsubmit="return confirm('⚠️ Are you sure you want to remove this Devil Fruit possession? Fruit: {{ possession.Fruit_Name }} - Owner: {{ possession.Person_Name or "Unknown" }}. This will permanently delete the possession record!');">
+                                    <input type="hidden" name="fruit_id" value="{{ possession.Fruit_ID }}">
+                                    <button type="submit" class="btn btn-sm" style="background: #cc0000; border-color: #ff0000; color: white;">
+                                        🗑️ Remove
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="alert alert-danger" style="background: rgba(255, 0, 0, 0.3); border: 3px solid #ff0000; color: #ffffff;">
+            <strong style="color: #ff0000; font-size: 1.2rem;">⚠️ DELETION WARNING:</strong>
+            <ul style="margin-top: 0.5rem; margin-bottom: 0; color: #ffcccc; line-height: 1.8;">
+                <li><strong style="color: #ff6666;">This is a DELETE operation</strong> - possession record will be permanently removed</li>
+                <li><strong style="color: #ff6666;">The Devil Fruit itself will NOT be deleted</strong> - only the possession link</li>
+                <li><strong style="color: #ff6666;">The person will NOT be deleted</strong> - only their fruit possession</li>
+                <li><strong style="color: #ff6666;">The fruit becomes available</strong> for reassignment after deletion</li>
+                <li><strong style="color: #ff6666;">This operation cannot be undone</strong></li>
+            </ul>
+        </div>
+        
+    {% else %}
+        <div class="alert alert-warning" style="text-align: center;">
+            <h4>🍎 No Devil Fruit Possessions Found</h4>
+            <p style="margin-top: 1rem; color: var(--text-secondary);">
+                There are currently no Devil Fruit possession records in the system.
+            </p>
+            <p style="color: var(--text-secondary);">
+                To create possession records:
+            </p>
+            <ol style="text-align: left; margin: 1rem auto; max-width: 600px; color: var(--text-secondary);">
+                <li>Log Devil Fruits using the "Log Devil Fruit" operation</li>
+                <li>Assign them to people using "Update Devil Fruit Possession"</li>
+                <li>Return here to manage or remove possessions</li>
+            </ol>
+            <div style="margin-top: 1.5rem;">
+                <a href="{{ url_for('log_devil_fruit') }}" class="btn btn-custom" style="background: #00aa00; border-color: #00ff00; margin-right: 1rem;">
+                    → Log New Devil Fruit
+                </a>
+                <a href="{{ url_for('consume_devil_fruit') }}" class="btn btn-custom" style="background: #cc8800; border-color: #ffaa00;">
+                    → Assign Possession
+                </a>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Guidelines -->
+    <div style="background: rgba(0, 0, 0, 0.3); border: 2px solid var(--border-color); border-radius: 10px; padding: 1.5rem;">
+        <h4 style="color: #ff0000; margin-bottom: 1rem;">📋 Removal Guidelines</h4>
+        <ul style="color: var(--text-secondary); line-height: 1.8;">
+            <li><strong style="color: #00ccff;">Deletion Scope:</strong> Only removes the possession link, not the fruit or person</li>
+            <li><strong style="color: #00ccff;">Fruit Availability:</strong> Deleted possessions free up the fruit for reassignment</li>
+            <li><strong style="color: #00ccff;">Use Cases:</strong> Death of user, fruit reincarnation, or data cleanup</li>
+            <li><strong style="color: #00ccff;">Permanent Action:</strong> Cannot be undone - use with caution</li>
+            <li><strong style="color: #00ccff;">Alternative:</strong> Use "Update Devil Fruit Possession" to transfer instead of delete</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

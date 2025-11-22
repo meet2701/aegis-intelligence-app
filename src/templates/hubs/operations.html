@@ -128,19 +128,19 @@
                 </a>
             </div>
             
-            <!-- Consume Devil Fruit -->
+            <!-- Update Devil Fruit Possession -->
             <div class="hub-card" style="background: linear-gradient(135deg, rgba(255, 170, 0, 0.1), rgba(255, 140, 0, 0.1)); border: 2px solid #ffaa00; transition: all 0.3s;">
-                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">🍽️</div>
-                <h3 style="color: #ffaa00; margin-bottom: 1rem;">Consume Devil Fruit</h3>
+                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">🔄</div>
+                <h3 style="color: #ffaa00; margin-bottom: 1rem;">Update Fruit Possession</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
-                    Record Devil Fruit consumption with validation checks
+                    Transfer Devil Fruit from current owner to new person
                 </p>
                 <div style="margin-bottom: 1rem;">
-                    <span class="badge" style="background: #553300; color: #ffaa00; margin-right: 0.5rem;">Possesses Table</span>
-                    <span class="badge" style="background: #553300; color: #ffaa00;">Devil_Fruit</span>
+                    <span class="badge" style="background: #553300; color: #ffaa00; margin-right: 0.5rem;">UPDATE Operation</span>
+                    <span class="badge" style="background: #553300; color: #ffaa00;">Possession Table</span>
                 </div>
                 <a href="{{ url_for('consume_devil_fruit') }}" class="btn btn-custom w-100" style="background: #cc8800; border-color: #ffaa00;">
-                    Record Consumption
+                    Transfer Possession
                 </a>
             </div>
             
@@ -175,18 +175,33 @@
                 </a>
             </div>
             
-            <!-- Remove Territory Control -->
+            <!-- Remove Log Entry -->
             <div class="hub-card" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(139, 0, 0, 0.1)); border: 2px solid #ff0000; transition: all 0.3s;">
-                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">🏴‍☠️</div>
-                <h3 style="color: #ff0000; margin-bottom: 1rem;">Remove Territory Control</h3>
+                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">📝</div>
+                <h3 style="color: #ff0000; margin-bottom: 1rem;">Remove Log Entry</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
-                    Remove crew's control over an island territory
+                    Delete ship log entries from database by selection
                 </p>
                 <div style="margin-bottom: 1rem;">
-                    <span class="badge" style="background: #330000; color: #ff0000;">Controls Table</span>
+                    <span class="badge" style="background: #330000; color: #ff0000;">Log_Entry Table</span>
                 </div>
-                <a href="{{ url_for('remove_territory') }}" class="btn btn-custom w-100" style="background: #cc0000; border-color: #ff0000;">
-                    Remove Territory
+                <a href="{{ url_for('remove_log_entry') }}" class="btn btn-custom w-100" style="background: #cc0000; border-color: #ff0000;">
+                    Remove Log Entry
+                </a>
+            </div>
+            
+            <!-- Remove Devil Fruit Possession -->
+            <div class="hub-card" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.1), rgba(139, 0, 0, 0.1)); border: 2px solid #ff0000; transition: all 0.3s;">
+                <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">🗑️</div>
+                <h3 style="color: #ff0000; margin-bottom: 1rem;">Remove Fruit Possession</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">
+                    Delete Devil Fruit possession records (fruit reincarnation)
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <span class="badge" style="background: #330000; color: #ff0000;">Possession Table</span>
+                </div>
+                <a href="{{ url_for('remove_fruit_possession') }}" class="btn btn-custom w-100" style="background: #cc0000; border-color: #ff0000;">
+                    Remove Possession
                 </a>
             </div>
             

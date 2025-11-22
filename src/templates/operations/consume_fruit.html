@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Consume Devil Fruit - AEGIS{% endblock %}
+{% block title %}Update Devil Fruit Possession - AEGIS{% endblock %}
 
 {% block content %}
 <div class="card-custom">
@@ -9,11 +9,11 @@
     </a>
     
     <div class="card-header-custom" style="background: linear-gradient(135deg, #553300, #aa6600); border-color: #ffaa00;">
-        🍽️ RECORD DEVIL FRUIT CONSUMPTION
+        🔄 UPDATE DEVIL FRUIT POSSESSION
     </div>
     
     <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
-        Record that a person has consumed a Devil Fruit
+        Transfer Devil Fruit from current owner to a new person
     </p>
     
     {% if message %}
@@ -22,30 +22,12 @@
         </div>
     {% endif %}
     
-    {% if people and fruits %}
-        <!-- Consumption Recording Form -->
+    {% if fruits and people %}
+        <!-- Update Possession Form -->
         <form method="POST" class="form-custom">
             <div style="background: linear-gradient(135deg, rgba(85, 51, 0, 0.3), rgba(170, 102, 0, 0.3)); border: 2px solid #ffaa00; border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
                 
                 <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="person_id" class="form-label" style="color: #ffaa00;">
-                            <strong>Select Person *</strong>
-                        </label>
-                        <select id="person_id" name="person_id" class="form-control" required>
-                            <option value="">-- Choose a person --</option>
-                            {% for person in people %}
-                                <option value="{{ person.Person_ID }}">
-                                    {{ person.Person_Name }} 
-                                    <span style="color: var(--text-muted);">
-                                        ({{ person.Role }})
-                                    </span>
-                                </option>
-                            {% endfor %}
-                        </select>
-                        <small style="color: var(--text-muted);">Only people without Devil Fruits are shown</small>
-                    </div>
-                    
                     <div class="col-md-6">
                         <label for="fruit_id" class="form-label" style="color: #ffaa00;">
                             <strong>Select Devil Fruit *</strong>
@@ -53,37 +35,67 @@
                         <select id="fruit_id" name="fruit_id" class="form-control" required>
                             <option value="">-- Choose a fruit --</option>
                             {% for fruit in fruits %}
-                                <option value="{{ fruit.Fruit_ID }}">
+                                <option value="{{ fruit.Fruit_ID }}" 
+                                        data-current-owner="{{ fruit.Current_Owner_Name or 'None' }}"
+                                        data-description="{{ fruit.Description }}">
                                     {{ fruit.Fruit_Name }} 
                                     <span class="badge" style="background: {% if fruit.Type == 'Paramecia' %}#ff9900{% elif fruit.Type == 'Zoan' %}#aa00ff{% else %}#00ff00{% endif %}; margin-left: 0.5rem;">
                                         {{ fruit.Type }}
                                     </span>
+                                    {% if fruit.Current_Owner_Name %}
+                                        - Currently: {{ fruit.Current_Owner_Name }}
+                                    {% else %}
+                                        - Unpossessed
+                                    {% endif %}
                                 </option>
                             {% endfor %}
                         </select>
-                        <small style="color: var(--text-muted);">Only unpossessed fruits are shown</small>
+                        <small style="color: var(--text-muted);">Select fruit to transfer</small>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="new_person_id" class="form-label" style="color: #ffaa00;">
+                            <strong>New Owner (Person) *</strong>
+                        </label>
+                        <select id="new_person_id" name="new_person_id" class="form-control" required>
+                            <option value="">-- Choose new owner --</option>
+                            {% for person in people %}
+                                <option value="{{ person.Person_ID }}">
+                                    {{ person.Person_Name }} 
+                                    <span style="color: var(--text-muted);">
+                                        ({{ person.Status }})
+                                    </span>
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <small style="color: var(--text-muted);">Only people without Devil Fruits are shown</small>
                     </div>
                 </div>
                 
-                <!-- Selected Fruit Details -->
-                <div id="fruit_details" style="background: rgba(0, 0, 0, 0.3); border: 2px solid #00ccff; border-radius: 10px; padding: 1.5rem; margin-top: 2rem; display: none;">
-                    <h4 style="color: #00ccff; margin-bottom: 1rem;">🍎 Selected Fruit Ability</h4>
-                    <p id="ability_text" style="color: var(--text-secondary); line-height: 1.6;"></p>
+                <!-- Current Owner Info -->
+                <div id="current_owner_info" style="background: rgba(0, 0, 0, 0.3); border: 2px solid #ffaa00; border-radius: 10px; padding: 1.5rem; margin-top: 2rem; display: none;">
+                    <h4 style="color: #ffaa00; margin-bottom: 1rem;">📋 Current Possession Info</h4>
+                    <p style="color: var(--text-secondary);">
+                        <strong style="color: #00ccff;">Current Owner:</strong> <span id="current_owner_text">None</span>
+                    </p>
+                    <p style="color: var(--text-secondary); margin-bottom: 0;">
+                        <strong style="color: #00ccff;">Ability:</strong> <span id="ability_text">-</span>
+                    </p>
                 </div>
                 
-                <div class="alert alert-danger" style="background: rgba(255, 0, 0, 0.3); border: 3px solid #ff0000; margin-top: 2rem; color: #ffffff;">
-                    <strong style="color: #ff0000; font-size: 1.2rem;">⚠️ CRITICAL RULES:</strong>
-                    <ul style="margin-top: 0.5rem; margin-bottom: 0; color: #ffcccc; line-height: 1.8;">
-                        <li><strong style="color: #ff6666;">Each person can only possess ONE Devil Fruit</strong></li>
-                        <li><strong style="color: #ff6666;">Each Devil Fruit can only be possessed by ONE person</strong></li>
-                        <li><strong style="color: #ff6666;">Consuming a second Devil Fruit results in death</strong> (not enforced in DB)</li>
-                        <li><strong style="color: #ff6666;">This operation cannot be undone easily</strong></li>
+                <div class="alert alert-info" style="background: rgba(0, 204, 255, 0.2); border: 3px solid #00ccff; margin-top: 2rem; color: #ffffff;">
+                    <strong style="color: #00ccff; font-size: 1.2rem;">ℹ️ UPDATE OPERATION:</strong>
+                    <ul style="margin-top: 0.5rem; margin-bottom: 0; color: #ccf2ff; line-height: 1.8;">
+                        <li><strong style="color: #66d9ff;">This is an UPDATE operation</strong> - transfers fruit to new owner</li>
+                        <li><strong style="color: #66d9ff;">Previous owner will lose the fruit</strong></li>
+                        <li><strong style="color: #66d9ff;">New owner cannot already have a Devil Fruit</strong></li>
+                        <li><strong style="color: #66d9ff;">Use this for fruit reincarnation scenarios</strong></li>
                     </ul>
                 </div>
                 
                 <div style="margin-top: 2rem; text-align: center;">
                     <button type="submit" class="btn btn-custom" style="background: #cc8800; border-color: #ffaa00; padding: 0.75rem 3rem; font-size: 1.1rem;">
-                        ✅ Record Consumption
+                        🔄 Transfer Possession
                     </button>
                 </div>
             </div>
@@ -93,23 +105,24 @@
         <div class="alert alert-warning" style="text-align: center;">
             <h4>👥 No Available People</h4>
             <p style="margin-top: 1rem; color: var(--text-secondary);">
-                All registered people already possess Devil Fruits. To record consumption:
+                All registered people already possess Devil Fruits. To transfer a fruit:
             </p>
             <ol style="text-align: left; margin: 1rem auto; max-width: 600px; color: var(--text-secondary);">
                 <li>Register a new person using the "Register Criminal" operation</li>
-                <li>Return here to record their Devil Fruit consumption</li>
+                <li>Or remove an existing fruit possession first</li>
+                <li>Return here to transfer the fruit</li>
             </ol>
         </div>
         
     {% elif not fruits %}
         <div class="alert alert-warning" style="text-align: center;">
-            <h4>🍎 No Available Devil Fruits</h4>
+            <h4>🍎 No Devil Fruits Found</h4>
             <p style="margin-top: 1rem; color: var(--text-secondary);">
-                All logged Devil Fruits are already possessed. To record consumption:
+                No Devil Fruits are registered in the system. To transfer fruits:
             </p>
             <ol style="text-align: left; margin: 1rem auto; max-width: 600px; color: var(--text-secondary);">
                 <li>Log a new Devil Fruit using the "Log Devil Fruit" operation</li>
-                <li>Return here to record its consumption</li>
+                <li>Return here to manage possession</li>
             </ol>
             <a href="{{ url_for('log_devil_fruit') }}" class="btn btn-custom" style="margin-top: 1rem; background: #00aa00; border-color: #00ff00;">
                 → Log New Devil Fruit
@@ -119,38 +132,34 @@
     
     <!-- Guidelines -->
     <div style="background: rgba(0, 0, 0, 0.3); border: 2px solid var(--border-color); border-radius: 10px; padding: 1.5rem;">
-        <h4 style="color: #ffaa00; margin-bottom: 1rem;">📋 Consumption Guidelines</h4>
+        <h4 style="color: #ffaa00; margin-bottom: 1rem;">📋 Update Guidelines</h4>
         <ul style="color: var(--text-secondary); line-height: 1.8;">
-            <li><strong style="color: #00ccff;">One Fruit Rule:</strong> Each person can only possess one Devil Fruit</li>
-            <li><strong style="color: #00ccff;">Uniqueness:</strong> Each fruit can only be possessed by one person at a time</li>
-            <li><strong style="color: #00ccff;">Validation:</strong> System automatically checks for existing possessions</li>
-            <li><strong style="color: #00ccff;">Swimming Ability:</strong> Devil Fruit users cannot swim (not enforced in DB)</li>
-            <li><strong style="color: #00ccff;">Power Transfer:</strong> Fruit reincarnates if user dies (not auto-tracked)</li>
+            <li><strong style="color: #00ccff;">Transfer Operation:</strong> This updates existing possession records</li>
+            <li><strong style="color: #00ccff;">Fruit Reincarnation:</strong> When a user dies, fruit reappears elsewhere</li>
+            <li><strong style="color: #00ccff;">One Fruit Rule:</strong> New owner must not already have a Devil Fruit</li>
+            <li><strong style="color: #00ccff;">Previous Owner:</strong> Will automatically lose possession when transferred</li>
+            <li><strong style="color: #00ccff;">Complete Removal:</strong> Use "Remove Fruit Possession" to delete records entirely</li>
         </ul>
     </div>
 </div>
 
 <script>
-// Show fruit ability when selected
+// Show current owner and ability when fruit is selected
 document.getElementById('fruit_id').addEventListener('change', function() {
     const selectedOption = this.options[this.selectedIndex];
-    const fruitDetails = document.getElementById('fruit_details');
+    const currentOwnerInfo = document.getElementById('current_owner_info');
+    const currentOwnerText = document.getElementById('current_owner_text');
     const abilityText = document.getElementById('ability_text');
     
     if (this.value) {
-        // Extract ability from data attribute (we'll need to add this to the option)
-        const fruits = {{ fruits|tojson }};
-        const selectedFruit = fruits.find(f => f.Fruit_ID == this.value);
+        const currentOwner = selectedOption.getAttribute('data-current-owner');
+        const description = selectedOption.getAttribute('data-description');
         
-        if (selectedFruit && selectedFruit.Ability) {
-            abilityText.textContent = selectedFruit.Ability;
-            fruitDetails.style.display = 'block';
-        } else {
-            abilityText.textContent = 'No ability description available.';
-            fruitDetails.style.display = 'block';
-        }
+        currentOwnerText.textContent = currentOwner || 'None (Unpossessed)';
+        abilityText.textContent = description || 'No description available';
+        currentOwnerInfo.style.display = 'block';
     } else {
-        fruitDetails.style.display = 'none';
+        currentOwnerInfo.style.display = 'none';
     }
 });
 </script>

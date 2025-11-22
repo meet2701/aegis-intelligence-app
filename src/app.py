@@ -898,7 +898,7 @@ def log_devil_fruit():
 
 @app.route('/command/consume-fruit', methods=['GET', 'POST'])
 def consume_devil_fruit():
-    """Record Devil Fruit consumption by a person."""
+    """Update Devil Fruit possession - transfer fruit from current user to new user."""
     if 'username' not in session:
         return redirect(url_for('login'))
     
@@ -908,45 +908,79 @@ def consume_devil_fruit():
     if request.method == 'POST':
         try:
             # Get form data
-            person_id = request.form.get('person_id', '').strip()
             fruit_id = request.form.get('fruit_id', '').strip()
+            new_person_id = request.form.get('new_person_id', '').strip()
             
             # Validation
-            if not person_id or not fruit_id:
-                raise ValueError("Person and Devil Fruit are required")
+            if not fruit_id or not new_person_id:
+                raise ValueError("Devil Fruit and New Person are required")
             
-            person_id = int(person_id)
             fruit_id = int(fruit_id)
+            new_person_id = int(new_person_id)
             
-            # Check if person already has a fruit
+            # Check if new person already has a fruit
             check_person_sql = "SELECT Fruit_ID FROM Devil_Fruit_Possession WHERE Person_ID = %s"
-            existing_person = db.execute_query(check_person_sql, (person_id,))
+            existing_person = db.execute_query(check_person_sql, (new_person_id,))
             
             if existing_person:
-                raise ValueError("This person already possesses a Devil Fruit. One person can only have one fruit.")
+                raise ValueError("The new person already possesses a Devil Fruit. One person can only have one fruit.")
             
-            # Check if fruit is already possessed
-            check_fruit_sql = "SELECT Person_ID FROM Devil_Fruit_Possession WHERE Fruit_ID = %s"
-            existing_fruit = db.execute_query(check_fruit_sql, (fruit_id,))
-            
-            if existing_fruit:
-                raise ValueError("This Devil Fruit is already possessed by someone else.")
-            
-            # Insert possession record
-            possess_sql = """
-                INSERT INTO Devil_Fruit_Possession (Fruit_ID, Person_ID) 
-                VALUES (%s, %s)
+            # Get current owner info for message
+            current_owner_sql = """
+                SELECT dfp.Person_ID, 
+                       CONCAT(p.First_Name, ' ', COALESCE(p.Last_Name, '')) AS Person_Name,
+                       df.Fruit_Name
+                FROM Devil_Fruit_Possession dfp
+                JOIN Person p ON dfp.Person_ID = p.Person_ID
+                JOIN Devil_Fruit df ON dfp.Fruit_ID = df.Fruit_ID
+                WHERE dfp.Fruit_ID = %s
             """
-            db.execute_update(possess_sql, (fruit_id, person_id))
+            current_owner = db.execute_query(current_owner_sql, (fruit_id,))
             
-            message = f"✅ Successfully recorded Devil Fruit consumption"
+            # Get new owner info
+            new_owner_sql = """
+                SELECT CONCAT(First_Name, ' ', COALESCE(Last_Name, '')) AS Person_Name
+                FROM Person WHERE Person_ID = %s
+            """
+            new_owner = db.execute_query(new_owner_sql, (new_person_id,))
+            
+            if not new_owner:
+                raise ValueError("New person not found")
+            
+            # Update possession record - transfer fruit to new person
+            update_sql = """
+                UPDATE Devil_Fruit_Possession 
+                SET Person_ID = %s 
+                WHERE Fruit_ID = %s
+            """
+            db.execute_update(update_sql, (new_person_id, fruit_id))
+            
+            if current_owner:
+                message = f"✅ Successfully transferred {current_owner[0]['Fruit_Name']} from {current_owner[0]['Person_Name']} to {new_owner[0]['Person_Name']}"
+            else:
+                message = f"✅ Successfully assigned Devil Fruit to {new_owner[0]['Person_Name']}"
             message_type = 'success'
             
         except Exception as e:
             message = f"❌ Error: {str(e)}"
             message_type = 'danger'
     
-    # Get people without fruits
+    # Get only devil fruits that are already in the possession table (have been possessed at least once)
+    fruits_sql = """
+        SELECT df.Fruit_ID, 
+               df.Fruit_Name, 
+               df.Type, 
+               df.Description,
+               dfp.Person_ID AS Current_Owner_ID,
+               CONCAT(p.First_Name, ' ', COALESCE(p.Last_Name, '')) AS Current_Owner_Name
+        FROM Devil_Fruit df
+        INNER JOIN Devil_Fruit_Possession dfp ON df.Fruit_ID = dfp.Fruit_ID
+        LEFT JOIN Person p ON dfp.Person_ID = p.Person_ID
+        ORDER BY df.Fruit_Name
+    """
+    fruits = db.execute_query(fruits_sql)
+    
+    # Get people without fruits (potential new owners)
     people_sql = """
         SELECT p.Person_ID, 
                CONCAT(p.First_Name, ' ', COALESCE(p.Last_Name, '')) AS Person_Name,
@@ -957,18 +991,9 @@ def consume_devil_fruit():
     """
     people = db.execute_query(people_sql)
     
-    # Get unpossessed fruits
-    fruits_sql = """
-        SELECT df.Fruit_ID, df.Fruit_Name, df.Type, df.Description
-        FROM Devil_Fruit df
-        WHERE df.Fruit_ID NOT IN (SELECT Fruit_ID FROM Devil_Fruit_Possession)
-        ORDER BY df.Fruit_Name
-    """
-    fruits = db.execute_query(fruits_sql)
-    
     return render_template('operations/consume_fruit.html',
-                         people=people,
                          fruits=fruits,
+                         people=people,
                          message=message,
                          message_type=message_type)
 
@@ -1130,9 +1155,9 @@ def revoke_bounty():
                          message_type=message_type)
 
 
-@app.route('/command/remove-territory', methods=['GET', 'POST'])
-def remove_territory():
-    """Remove crew control over an island."""
+@app.route('/command/remove-log-entry', methods=['GET', 'POST'])
+def remove_log_entry():
+    """Remove/Delete ship log entry from the database."""
     if 'username' not in session:
         return redirect(url_for('login'))
     
@@ -1142,63 +1167,136 @@ def remove_territory():
     if request.method == 'POST':
         try:
             # Get form data
-            island_id = request.form.get('island_id', '').strip()
+            ship_id = request.form.get('ship_id', '').strip()
+            log_timestamp = request.form.get('log_timestamp', '').strip()
             
             # Validation
-            if not island_id:
-                raise ValueError("Island is required")
+            if not ship_id or not log_timestamp:
+                raise ValueError("Ship ID and Log Timestamp are required")
             
-            island_id = int(island_id)
+            ship_id = int(ship_id)
             
             # Get info before deletion
             info_sql = """
-                SELECT c.Crew_Name, i.Island_Name, f.Faction_Name
-                FROM Territory t
-                JOIN Island i ON t.Island_ID = i.Island_ID
-                LEFT JOIN Crew c ON t.Crew_ID = c.Crew_ID
-                LEFT JOIN Faction f ON t.Faction_ID = f.Faction_ID
-                WHERE t.Island_ID = %s
+                SELECT s.Ship_Name, 
+                       le.Log_Timestamp,
+                       le.Entry_Text,
+                       c.Crew_Name
+                FROM Log_Entry le
+                JOIN Ship s ON le.Ship_ID = s.Ship_ID
+                LEFT JOIN Crew c ON s.Owning_Crew_ID = c.Crew_ID
+                WHERE le.Ship_ID = %s AND le.Log_Timestamp = %s
             """
-            info = db.execute_query(info_sql, (island_id,))
+            info = db.execute_query(info_sql, (ship_id, log_timestamp))
             
             if not info:
-                raise ValueError("Territory control record not found")
+                raise ValueError("Log entry not found")
             
-            controller = info[0]['Crew_Name'] if info[0]['Crew_Name'] else info[0]['Faction_Name']
-            island_name = info[0]['Island_Name']
+            ship_name = info[0]['Ship_Name']
+            timestamp = info[0]['Log_Timestamp']
+            entry_preview = info[0]['Entry_Text'][:50] + "..." if len(info[0]['Entry_Text']) > 50 else info[0]['Entry_Text']
             
-            # Delete territory record
-            delete_sql = "DELETE FROM Territory WHERE Island_ID = %s"
-            db.execute_update(delete_sql, (island_id,))
+            # Delete log entry record (composite primary key)
+            delete_sql = "DELETE FROM Log_Entry WHERE Ship_ID = %s AND Log_Timestamp = %s"
+            db.execute_update(delete_sql, (ship_id, log_timestamp))
             
-            message = f"✅ Successfully removed {controller}'s control over {island_name}"
+            message = f"✅ Successfully removed log entry from {ship_name} at {timestamp}"
             message_type = 'success'
             
         except Exception as e:
             message = f"❌ Error: {str(e)}"
             message_type = 'danger'
     
-    # Get all territory controls
-    territories_sql = """
-        SELECT t.Island_ID, 
-               t.Crew_ID,
-               t.Faction_ID,
-               COALESCE(c.Crew_Name, f.Faction_Name) AS Controller_Name,
-               i.Island_Name, 
-               sr.Region_Name, 
-               t.Date_Acquired,
-               t.Control_Level
-        FROM Territory t
-        JOIN Island i ON t.Island_ID = i.Island_ID
-        JOIN Sea_Region sr ON i.Region_ID = sr.Region_ID
-        LEFT JOIN Crew c ON t.Crew_ID = c.Crew_ID
-        LEFT JOIN Faction f ON t.Faction_ID = f.Faction_ID
-        ORDER BY Controller_Name, i.Island_Name
+    # Get all log entries with ship information
+    logs_sql = """
+        SELECT le.Ship_ID,
+               le.Log_Timestamp,
+               s.Ship_Name,
+               c.Crew_Name,
+               le.Entry_Text,
+               le.Latitude,
+               le.Longitude
+        FROM Log_Entry le
+        JOIN Ship s ON le.Ship_ID = s.Ship_ID
+        LEFT JOIN Crew c ON s.Owning_Crew_ID = c.Crew_ID
+        ORDER BY le.Log_Timestamp DESC, s.Ship_Name
     """
-    territories = db.execute_query(territories_sql)
+    logs = db.execute_query(logs_sql)
     
-    return render_template('operations/remove_territory.html',
-                         territories=territories,
+    return render_template('operations/remove_log_entry.html',
+                         logs=logs,
+                         message=message,
+                         message_type=message_type)
+
+
+@app.route('/command/remove-fruit-possession', methods=['GET', 'POST'])
+def remove_fruit_possession():
+    """Remove/Delete Devil Fruit possession record."""
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    
+    message = None
+    message_type = 'success'
+    
+    if request.method == 'POST':
+        try:
+            # Get form data
+            fruit_id = request.form.get('fruit_id', '').strip()
+            
+            # Validation
+            if not fruit_id:
+                raise ValueError("Devil Fruit is required")
+            
+            fruit_id = int(fruit_id)
+            
+            # Get info before deletion
+            info_sql = """
+                SELECT df.Fruit_Name, 
+                       df.Type,
+                       p.Person_ID,
+                       CONCAT(p.First_Name, ' ', COALESCE(p.Last_Name, '')) AS Person_Name
+                FROM Devil_Fruit_Possession dfp
+                JOIN Devil_Fruit df ON dfp.Fruit_ID = df.Fruit_ID
+                LEFT JOIN Person p ON dfp.Person_ID = p.Person_ID
+                WHERE dfp.Fruit_ID = %s
+            """
+            info = db.execute_query(info_sql, (fruit_id,))
+            
+            if not info:
+                raise ValueError("Devil Fruit possession record not found")
+            
+            fruit_name = info[0]['Fruit_Name']
+            person_name = info[0]['Person_Name'] if info[0]['Person_Name'] else "Unknown"
+            
+            # Delete possession record
+            delete_sql = "DELETE FROM Devil_Fruit_Possession WHERE Fruit_ID = %s"
+            db.execute_update(delete_sql, (fruit_id,))
+            
+            message = f"✅ Successfully removed {fruit_name} possession from {person_name}"
+            message_type = 'success'
+            
+        except Exception as e:
+            message = f"❌ Error: {str(e)}"
+            message_type = 'danger'
+    
+    # Get all devil fruit possessions
+    possessions_sql = """
+        SELECT dfp.Fruit_ID,
+               df.Fruit_Name,
+               df.Type,
+               df.Description,
+               dfp.Person_ID,
+               CONCAT(p.First_Name, ' ', COALESCE(p.Last_Name, '')) AS Person_Name,
+               p.Status
+        FROM Devil_Fruit_Possession dfp
+        JOIN Devil_Fruit df ON dfp.Fruit_ID = df.Fruit_ID
+        LEFT JOIN Person p ON dfp.Person_ID = p.Person_ID
+        ORDER BY df.Fruit_Name
+    """
+    possessions = db.execute_query(possessions_sql)
+    
+    return render_template('operations/remove_fruit_possession.html',
+                         possessions=possessions,
                          message=message,
                          message_type=message_type)
 
