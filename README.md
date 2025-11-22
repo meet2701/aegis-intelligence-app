@@ -2,11 +2,7 @@
 
 
 
-**World Government Intelligence Terminal - One Piece Universe****World Government Intelligence Terminal - One Piece Universe**DnA Course Project, for application interface to interact with the data of our selected mini world "One Piece".
-
-
-
-**Team Big Three** | Phase 4 Final Submission | November 2025  # Aegis Intelligence Database (AID) - Phase 4
+**World Government Intelligence Terminal - One Piece Universe**DnA Course Project, for application interface to interact with the data of our selected mini world "One Piece".
 
 **Members:** Meet Parekh (2024101122), Jainam Modi (2024101057), Divya Padariya (2024113010)
 
@@ -14,16 +10,11 @@
 
 ---
 
-**Team:** Big Three  
-
 ## 🚀 Installation
-
----**Members:** Meet Parekh (2024101122), Jainam Modi (2024101057), Divya Padariya (2024113010)  
 
 ### Prerequisites
 
-- Python 3.8+**Submission Date:** November 21, 2025
-
+- Python 3.8+
 - MySQL Server 8.0+
 
 ## 🚀 Quick Start
@@ -34,60 +25,47 @@
 
 1. **Create Virtual Environment** (Optional but Recommended)
 
-   ```bash### Prerequisites
+   ```bash
 
    python3 -m venv venv
 
-   source venv/bin/activate  # On Windows: venv\Scripts\activate- Python 3.8+## 🎯 Project Overview
+   source venv/bin/activate  # On Windows: venv\Scripts\activate-
 
    ```
-
-- MySQL 8.0+
 
 2. **Install Dependencies**
+  ```bash
+  
+  pip install -r src/requirements.txt
 
-   ```bash- Libraries: `flask`, `pymysql`The **Aegis Intelligence Database (AID)** is a comprehensive intelligence management system for the World Government in the One Piece universe. This Flask-based application provides real-time access to pirate intelligence, territory control, Devil Fruit information, and operational data through an immersive military-grade terminal interface.
+  ```
 
-   pip install -r src/requirements.txt
+
+
+3. **Setup Database**
+
+   ```bash
+
+   mysql -u root -p < src/schema.sql
+   mysql -u root -p < src/populate.sql
 
    ```
 
 
 
-3. **Setup Database**### Installation---
+4. **Run Application**
 
    ```bash
 
-   mysql -u root -p < src/schema.sql```bash
-
-   mysql -u root -p < src/populate.sql
-
-   ```# Install dependencies## 🔐 User Credentials
-
-
-
-4. **Run Application**pip install flask pymysql
-
-   ```bash
-
-   cd src### Marine Officer (Standard User)
+    cd src
 
    python3 app.py
 
-   ```# Setup database- **Username:** `MARINE_HQ`
+   ```
 
 
 
-Access at: `http://127.0.0.1:5000`mysql -u root -p- **Password:** `SEAGULL`
-
-
-
----source src/schema.sql- **Access Level:** Read operations (5 queries) + Write operations (3 updates)
-
-
-
-## 🔐 Login Credentialssource src/populate.sql
-
+Access at: `http://127.0.0.1:5000`mysql -u root -p- **Password:** `<your mysql password>`
 
 
 | Role | Username | Password | Access |### CP0 Administrator (DBA)
