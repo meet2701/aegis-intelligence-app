@@ -235,6 +235,8 @@ aegis-intelligence-app/
 │   ├── schema.sql                      # Database schema creation (19 tables)
 │   ├── populate.sql                    # Database population (57 people, 20 islands)
 │   ├── requirements.txt                # Python dependencies
+│   ├── media/
+│   │   └── Marines_Logo.jpeg           # Logo image
 │   └── templates/
 │       ├── base.html                   # Base template with theme toggle
 │       ├── login.html                  # Login page
@@ -270,8 +272,9 @@ aegis-intelligence-app/
 │       └── admin/
 │           └── view_tables.html        # Admin DDL operations
 ├── README.md                           # This file
-└── media/
-    └── Marines_Logo.jpeg               # Logo image
+└── phase3.pdf
+└── team33.mp4
+
 ```
 
 ---
