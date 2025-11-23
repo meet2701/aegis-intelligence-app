@@ -568,53 +568,6 @@ def crew_valuation():
                          crew_id=crew_id)
 
 
-@app.route('/tactical/regional-average', methods=['GET', 'POST'])
-def regional_average():
-    """Calculate average bounty by region."""
-    if 'username' not in session:
-        return redirect(url_for('login'))
-    
-    # Get all regions for dropdown
-    regions_sql = "SELECT Region_ID, Region_Name FROM Sea_Region ORDER BY Region_Name"
-    regions = db.execute_query(regions_sql)
-    
-    results = None
-    region_id = ''
-    
-    if request.method == 'POST':
-        region_id = request.form.get('region_id', '')
-        
-        if region_id:
-            sql = """
-                SELECT 
-                    sr.Region_Name,
-                    COUNT(DISTINCT p.Person_ID) AS Total_Pirates,
-                    AVG(br.Amount) AS Average_Bounty,
-                    MIN(br.Amount) AS Minimum_Bounty,
-                    MAX(br.Amount) AS Maximum_Bounty,
-                    SUM(br.Amount) AS Total_Regional_Bounty
-                FROM Sea_Region sr
-                INNER JOIN Island i ON sr.Region_ID = i.Region_ID
-                INNER JOIN Person p ON i.Island_ID = p.Home_Island_ID
-                INNER JOIN Pirate pi ON p.Person_ID = pi.Person_ID
-                LEFT JOIN Bounty_Record br ON p.Person_ID = br.Person_ID
-                    AND br.Record_Version = (
-                        SELECT MAX(Record_Version)
-                        FROM Bounty_Record
-                        WHERE Person_ID = p.Person_ID
-                    )
-                WHERE sr.Region_ID = %s AND p.Status = 'Active'
-                GROUP BY sr.Region_ID, sr.Region_Name
-            """
-            results = db.execute_query(sql, (region_id,))
-            results = format_query_results(results)
-    
-    return render_template('tactical/regional_average.html', 
-                         results=results,
-                         regions=regions,
-                         region_id=region_id)
-
-
 @app.route('/tactical/island-census')
 def island_census():
     """Count islands per region."""
@@ -642,34 +595,17 @@ def island_census():
 
 @app.route('/tactical/most-wanted')
 def most_wanted():
-    """Display the highest bounty pirate."""
+    """Display the highest bounty pirate - simple name and bounty only."""
     if 'username' not in session:
         return redirect(url_for('login'))
     
     sql = """
         SELECT 
             CONCAT(p.First_Name, ' ', COALESCE(p.Last_Name, '')) AS Pirate_Name,
-            br.Amount,
-            c.Crew_Name,
-            i.Island_Name,
-            sr.Region_Name,
-            p.Status,
-            pi.Infamy_Level,
-            br.Issue_Date AS Date_Issued
+            br.Amount AS Bounty
         FROM Person p
-        INNER JOIN Pirate pi ON p.Person_ID = pi.Person_ID
         INNER JOIN Bounty_Record br ON p.Person_ID = br.Person_ID
-            AND br.Record_Version = (
-                SELECT MAX(Record_Version)
-                FROM Bounty_Record
-                WHERE Person_ID = p.Person_ID
-            )
-        LEFT JOIN Membership m ON p.Person_ID = m.Person_ID
-        LEFT JOIN Crew c ON m.Crew_ID = c.Crew_ID
-        LEFT JOIN Island i ON p.Home_Island_ID = i.Island_ID
-        LEFT JOIN Sea_Region sr ON i.Region_ID = sr.Region_ID
-        WHERE br.Amount > 0
-        ORDER BY br.Amount DESC
+        WHERE br.Amount = (SELECT MAX(Amount) FROM Bounty_Record)
         LIMIT 1
     """
     
@@ -1353,7 +1289,7 @@ def update_status():
     """
     people = db.execute_query(people_sql)
     
-    return render_template('updates/change_status.html', people=people, message=message, message_type=message_type)
+    return render_template('operations/change_status.html', people=people, message=message, message_type=message_type)
 
 
 # ============================================================================
