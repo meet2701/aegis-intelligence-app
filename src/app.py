@@ -9,6 +9,7 @@ Team: Big Three
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import pymysql
 import sys
+import os
 import json
 from datetime import datetime
 from db_utils import DatabaseConnection, format_query_results, get_db_password
@@ -67,13 +68,19 @@ def init_database():
     print("CLASSIFIED - AUTHORIZED PERSONNEL ONLY")
     print("="*70 + "\n")
     
-    db_password = get_db_password()
+    # --- Credential resolution ---
+    # On Railway (or any host): set DB_PASSWORD, DB_HOST, DB_USER, DB_NAME env vars.
+    # Locally without env vars: falls back to the interactive prompt so dev workflow is unchanged.
+    db_password = os.environ.get('DB_PASSWORD') or get_db_password()
+    db_host     = os.environ.get('DB_HOST', 'localhost')
+    db_user     = os.environ.get('DB_USER', 'root')
+    db_name     = os.environ.get('DB_NAME', 'mini_world_db')
     
     db = DatabaseConnection(
-        host='localhost',
-        user='root',  # Change if different
+        host=db_host,
+        user=db_user,
         password=db_password,
-        database='mini_world_db'  # Match the database name in schema.sql
+        database=db_name
     )
     
     if db.connect():
@@ -1542,12 +1549,14 @@ def internal_error(error):
 
 if __name__ == '__main__':
     if init_database():
+        port = int(os.environ.get('PORT', 5000))
+        debug = os.environ.get('FLASK_DEBUG', 'true').lower() == 'true'
         print("\n[SYSTEM] Starting Flask application...")
-        print("[SYSTEM] Access the terminal at: http://127.0.0.1:5000")
+        print(f"[SYSTEM] Access the terminal at: http://127.0.0.1:{port}")
         print("[SYSTEM] Press CTRL+C to terminate.\n")
         
         try:
-            app.run(debug=True, host='0.0.0.0', port=5000)
+            app.run(debug=debug, host='0.0.0.0', port=port)
         finally:
             if db:
                 db.disconnect()
