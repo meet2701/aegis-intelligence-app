@@ -17,9 +17,39 @@
     </p>
     
     {% if message %}
-        <div class="alert alert-{{ message_type }}" style="margin-bottom: 2rem;">
-            {{ message }}
-        </div>
+        {% if message_type == 'conflict' %}
+            {# OCC Conflict Banner — styled distinctly from generic errors #}
+            <div class="alert" style="
+                background: linear-gradient(135deg, rgba(255, 140, 0, 0.25), rgba(200, 80, 0, 0.25));
+                border: 2px solid #ff8c00;
+                border-radius: 12px;
+                padding: 1.5rem 2rem;
+                margin-bottom: 2rem;
+                display: flex;
+                align-items: flex-start;
+                gap: 1rem;
+            ">
+                <span style="font-size: 2rem; line-height: 1;">⚠️</span>
+                <div>
+                    <strong style="color: #ffaa00; font-size: 1.1rem; display: block; margin-bottom: 0.4rem;">
+                        CONCURRENT MODIFICATION DETECTED — Operation Aborted
+                    </strong>
+                    <span style="color: #ffcc80;">
+                        {{ message }}
+                    </span>
+                    <div style="margin-top: 0.8rem;">
+                        <button onclick="window.location.reload()" class="btn btn-custom"
+                                style="background: #cc6600; border-color: #ff8c00; padding: 0.4rem 1.2rem; font-size: 0.9rem;">
+                            🔄 Refresh &amp; Retry
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-{{ message_type }}" style="margin-bottom: 2rem;">
+                {{ message }}
+            </div>
+        {% endif %}
     {% endif %}
     
     {% if bounties %}
@@ -35,13 +65,18 @@
                         <select id="person_id" name="person_id" class="form-control" required>
                             <option value="">-- Choose a pirate --</option>
                             {% for bounty in bounties %}
-                                <option value="{{ bounty.Person_ID }}" data-current-amount="{{ bounty.Amount }}" data-versions="{{ bounty.version_count }}">
+                                <option value="{{ bounty.Person_ID }}"
+                                        data-current-amount="{{ bounty.Amount }}"
+                                        data-versions="{{ bounty.version_count }}"
+                                        data-pirate-version="{{ bounty.pirate_version }}">
                                     {{ bounty.Person_Name }} - 
                                     <strong>Current: ฿{{ "{:,}".format(bounty.Amount|int) }}</strong>
                                     ({{ bounty.Status }}, {{ bounty.version_count }} version{{ 's' if bounty.version_count != 1 else '' }})
                                 </option>
                             {% endfor %}
                         </select>
+                        {# OCC: hidden field populated by JS when a pirate is selected #}
+                        <input type="hidden" id="expected_version" name="expected_version" value="">
                     </div>
                 </div>
                 
@@ -185,21 +220,28 @@
 
 <script>
 // Show current bounty info when selected
+// OCC: also populate hidden expected_version field from data-pirate-version
 document.getElementById('person_id').addEventListener('change', function() {
     const selectedOption = this.options[this.selectedIndex];
     const currentInfo = document.getElementById('current_info');
     const currentAmount = document.getElementById('current_amount');
     const versionCount = document.getElementById('version_count');
+    const expectedVersionField = document.getElementById('expected_version');
     
     if (this.value) {
         const amount = selectedOption.getAttribute('data-current-amount');
         const versions = selectedOption.getAttribute('data-versions');
+        const pirateVersion = selectedOption.getAttribute('data-pirate-version');
         
         currentAmount.textContent = '฿' + parseInt(amount).toLocaleString();
         versionCount.textContent = versions + ' version' + (versions != 1 ? 's' : '');
         currentInfo.style.display = 'block';
+
+        // Embed the Pirate.version into the form for OCC check on submit
+        expectedVersionField.value = pirateVersion;
     } else {
         currentInfo.style.display = 'none';
+        expectedVersionField.value = '';
     }
 });
 </script>

@@ -68,6 +68,7 @@ CREATE TABLE Person_Abilities (
 CREATE TABLE Pirate (
     Person_ID INT PRIMARY KEY,
     Infamy_Level VARCHAR(50),
+    version INT NOT NULL DEFAULT 1,   -- OCC: incremented on each concurrent write; mismatch = conflict
     FOREIGN KEY (Person_ID) REFERENCES Person(Person_ID) ON DELETE CASCADE
 );
 

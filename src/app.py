@@ -9,8 +9,26 @@ Team: Big Three
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import pymysql
 import sys
+import json
 from datetime import datetime
 from db_utils import DatabaseConnection, format_query_results, get_db_password
+
+# ---------------------------------------------------------------------------
+# Redis Cache — graceful degradation: if Redis is unavailable the app keeps
+# running and falls back to a direct DB query on every request.
+# ---------------------------------------------------------------------------
+try:
+    import redis as _redis_lib
+    cache = _redis_lib.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+    cache.ping()          # Fail fast if Redis is not running
+    REDIS_AVAILABLE = True
+    print("[AID SYSTEM] Redis cache connected (TTL=300s).")
+except Exception:
+    REDIS_AVAILABLE = False
+    cache = None
+    print("[AID SYSTEM] Redis unavailable — cache disabled, falling back to DB.", file=sys.stderr)
+
+CACHE_TTL = 300  # 5 minutes
 
 app = Flask(__name__)
 app.secret_key = 'AEGIS_CLASSIFIED_KEY_DO_NOT_SHARE'  # Change in production
@@ -160,7 +178,11 @@ def command_operations():
 
 @app.route('/intel/devil-fruits', methods=['GET', 'POST'])
 def devil_fruit_encyclopedia():
-    """Devil Fruit Encyclopedia with sorting and filtering options."""
+    """Devil Fruit Encyclopedia with sorting and filtering options.
+    
+    Results are cached in Redis for CACHE_TTL seconds. The cache key encodes
+    all four filter parameters so each unique combination is cached separately.
+    """
     if 'username' not in session:
         return redirect(url_for('login'))
     
@@ -169,47 +191,63 @@ def devil_fruit_encyclopedia():
     sort_by = request.args.get('sort_by', 'type')  # type, fruit_id, name
     show_awakened = request.args.get('show_awakened', '')  # 'on' if checked
     show_active = request.args.get('show_active', '')  # 'on' if checked
-    
-    # Base query
-    sql = """
-        SELECT 
-            df.Fruit_ID,
-            df.Fruit_Name,
-            df.Type AS Fruit_Type,
-            df.Description,
-            df.is_Awakened AS Is_Awakened,
-            p.First_Name,
-            p.Last_Name,
-            p.Status
-        FROM Devil_Fruit df
-        LEFT JOIN Devil_Fruit_Possession dfp ON df.Fruit_ID = dfp.Fruit_ID
-        LEFT JOIN Person p ON dfp.Person_ID = p.Person_ID
-        WHERE 1=1
-    """
-    
-    params = []
-    
-    # Apply fruit type filter
-    if fruit_type != 'all':
-        sql += " AND df.Type = %s"
-        params.append(fruit_type)
-    
-    # Apply filters
-    if show_awakened == 'on':
-        sql += " AND df.is_Awakened = TRUE"
-    
-    if show_active == 'on':
-        sql += " AND (p.Status = 'Active' OR p.Status IS NULL)"
-    
-    # Apply sorting
-    if sort_by == 'fruit_id':
-        sql += " ORDER BY df.Fruit_ID"
-    elif sort_by == 'name':
-        sql += " ORDER BY df.Fruit_Name"
-    else:  # default: type
-        sql += " ORDER BY df.Type, df.Fruit_Name"
-    
-    results = db.execute_query(sql, tuple(params)) if params else db.execute_query(sql)
+
+    # --- Redis cache lookup ---
+    cache_key = f"cache:devil_fruits:{fruit_type}:{sort_by}:{show_awakened}:{show_active}"
+    results = None
+    cache_hit = False
+    if REDIS_AVAILABLE:
+        cached = cache.get(cache_key)
+        if cached:
+            results = json.loads(cached)
+            cache_hit = True
+
+    if not cache_hit:
+        # Base query
+        sql = """
+            SELECT 
+                df.Fruit_ID,
+                df.Fruit_Name,
+                df.Type AS Fruit_Type,
+                df.Description,
+                df.is_Awakened AS Is_Awakened,
+                p.First_Name,
+                p.Last_Name,
+                p.Status
+            FROM Devil_Fruit df
+            LEFT JOIN Devil_Fruit_Possession dfp ON df.Fruit_ID = dfp.Fruit_ID
+            LEFT JOIN Person p ON dfp.Person_ID = p.Person_ID
+            WHERE 1=1
+        """
+        
+        params = []
+        
+        # Apply fruit type filter
+        if fruit_type != 'all':
+            sql += " AND df.Type = %s"
+            params.append(fruit_type)
+        
+        # Apply filters
+        if show_awakened == 'on':
+            sql += " AND df.is_Awakened = TRUE"
+        
+        if show_active == 'on':
+            sql += " AND (p.Status = 'Active' OR p.Status IS NULL)"
+        
+        # Apply sorting
+        if sort_by == 'fruit_id':
+            sql += " ORDER BY df.Fruit_ID"
+        elif sort_by == 'name':
+            sql += " ORDER BY df.Fruit_Name"
+        else:  # default: type
+            sql += " ORDER BY df.Type, df.Fruit_Name"
+        
+        results = db.execute_query(sql, tuple(params)) if params else db.execute_query(sql)
+
+        # --- Store in Redis (default=str handles Decimal/datetime types) ---
+        if REDIS_AVAILABLE and results and isinstance(results, list):
+            cache.setex(cache_key, CACHE_TTL, json.dumps(results, default=str))
+
     results = format_query_results(results)
     
     return render_template('intel/devil_fruits.html', 
@@ -217,7 +255,8 @@ def devil_fruit_encyclopedia():
                          fruit_type=fruit_type,
                          sort_by=sort_by,
                          show_awakened=show_awakened,
-                         show_active=show_active)
+                         show_active=show_active,
+                         cache_hit=cache_hit)
 
 
 @app.route('/intel/marine-directory', methods=['GET', 'POST'])
@@ -595,28 +634,43 @@ def island_census():
 
 @app.route('/tactical/most-wanted')
 def most_wanted():
-    """Display the highest bounty pirate - simple name and bounty only."""
+    """Display the highest bounty pirate - simple name and bounty only.
+    
+    This is a pure MAX() aggregate with no user-specific parameters — an ideal
+    caching target. Results are cached in Redis for CACHE_TTL seconds.
+    """
     if 'username' not in session:
         return redirect(url_for('login'))
-    
-    sql = """
-        SELECT 
-            CONCAT(p.First_Name, ' ', COALESCE(p.Last_Name, '')) AS Pirate_Name,
-            br.Amount AS Bounty
-        FROM Person p
-        INNER JOIN Bounty_Record br ON p.Person_ID = br.Person_ID
-        WHERE br.Amount = (SELECT MAX(Amount) FROM Bounty_Record)
-        LIMIT 1
-    """
-    
-    results = db.execute_query(sql)
-    
-    # Extract single pirate if results exist
+
+    # --- Redis cache lookup ---
+    cache_key = "cache:most_wanted"
+    cache_hit = False
     pirate = None
-    if results and isinstance(results, list) and len(results) > 0:
-        pirate = results[0]
+    if REDIS_AVAILABLE:
+        cached = cache.get(cache_key)
+        if cached:
+            pirate = json.loads(cached)
+            cache_hit = True
+
+    if not cache_hit:
+        sql = """
+            SELECT 
+                CONCAT(p.First_Name, ' ', COALESCE(p.Last_Name, '')) AS Pirate_Name,
+                br.Amount AS Bounty
+            FROM Person p
+            INNER JOIN Bounty_Record br ON p.Person_ID = br.Person_ID
+            WHERE br.Amount = (SELECT MAX(Amount) FROM Bounty_Record)
+            LIMIT 1
+        """
+        results = db.execute_query(sql)
+
+        if results and isinstance(results, list) and len(results) > 0:
+            pirate = results[0]
+            # --- Store in Redis (default=str handles Decimal types) ---
+            if REDIS_AVAILABLE:
+                cache.setex(cache_key, CACHE_TTL, json.dumps(pirate, default=str))
     
-    return render_template('tactical/most_wanted.html', pirate=pirate)
+    return render_template('tactical/most_wanted.html', pirate=pirate, cache_hit=cache_hit)
 
 
 # ============================================================================
@@ -936,7 +990,15 @@ def consume_devil_fruit():
 
 @app.route('/command/update-bounty', methods=['GET', 'POST'])
 def update_bounty():
-    """Update bounty amount and create historical record."""
+    """Update bounty amount and create historical record.
+    
+    Implements Optimistic Concurrency Control (OCC) on the Pirate table.
+    On POST the backend performs a conditional UPDATE that atomically increments
+    the row's `version` only if it still matches the value the user read when
+    the form was loaded (expected_version).  Zero affected rows indicates a
+    concurrent write — the operation is aborted and a user-friendly error is
+    shown instead of silently overwriting the other agent's change.
+    """
     if 'username' not in session:
         return redirect(url_for('login'))
     
@@ -950,43 +1012,76 @@ def update_bounty():
             new_amount = request.form.get('new_amount', '').strip()
             date_issued = request.form.get('date_issued', '').strip()
             last_seen_location = request.form.get('last_seen_location', '').strip()
-            
+            # OCC: version the user had when the form was rendered
+            expected_version = request.form.get('expected_version', '').strip()
+
             # Validation
             if not person_id or not new_amount:
                 raise ValueError("Person and new amount are required")
-            
+            if not expected_version:
+                raise ValueError("Missing version token — please refresh the page and try again.")
+
             person_id = int(person_id)
             new_amount = int(new_amount)
-            
+            expected_version = int(expected_version)
+
             if new_amount < 0:
                 raise ValueError("Bounty amount must be positive")
-            
-            # Get current max version for this person
-            version_sql = """
-                SELECT COALESCE(MAX(Record_Version), 0) as max_version 
-                FROM Bounty_Record 
-                WHERE Person_ID = %s
+
+            # ----------------------------------------------------------------
+            # OCC Step 1: Conditionally increment the Pirate row version.
+            # If `version` has changed since the form loaded (another agent
+            # submitted first), rowcount will be 0 — detect and abort.
+            # ----------------------------------------------------------------
+            occ_sql = """
+                UPDATE Pirate
+                SET version = version + 1
+                WHERE Person_ID = %s AND version = %s
             """
-            version_result = db.execute_query(version_sql, (person_id,))
-            next_version = version_result[0]['max_version'] + 1
-            
-            # Insert new record into Bounty_Record with incremented version
-            record_sql = """
-                INSERT INTO Bounty_Record (Person_ID, Record_Version, Amount, Issue_Date, Last_Seen_Location)
-                VALUES (%s, %s, %s, %s, %s)
-            """
-            db.execute_update(record_sql, (person_id, next_version, new_amount, 
-                                         date_issued if date_issued else None,
-                                         last_seen_location if last_seen_location else None))
-            
-            message = f"✅ Successfully updated bounty to ฿{new_amount:,} (Version {next_version})"
-            message_type = 'success'
-            
+            affected = db.execute_update(occ_sql, (person_id, expected_version))
+
+            if affected == 0:
+                # Version mismatch — concurrent modification detected
+                message = (
+                    "⚠️ Conflict Detected: This bounty record was modified by another "
+                    "agent while you were submitting. Please refresh the page and try again."
+                )
+                message_type = 'conflict'
+                # Fall through to re-render the page with the conflict banner
+            else:
+                # OCC Step 2: Safe to proceed — insert new Bounty_Record version
+                version_sql = """
+                    SELECT COALESCE(MAX(Record_Version), 0) as max_version 
+                    FROM Bounty_Record 
+                    WHERE Person_ID = %s
+                """
+                version_result = db.execute_query(version_sql, (person_id,))
+                next_version = version_result[0]['max_version'] + 1
+
+                record_sql = """
+                    INSERT INTO Bounty_Record (Person_ID, Record_Version, Amount, Issue_Date, Last_Seen_Location)
+                    VALUES (%s, %s, %s, %s, %s)
+                """
+                db.execute_update(record_sql, (
+                    person_id, next_version, new_amount,
+                    date_issued if date_issued else None,
+                    last_seen_location if last_seen_location else None
+                ))
+
+                # Invalidate the most_wanted cache since top bounty may have changed
+                if REDIS_AVAILABLE:
+                    cache.delete("cache:most_wanted")
+
+                message = f"✅ Successfully updated bounty to ฿{new_amount:,} (Version {next_version})"
+                message_type = 'success'
+
         except Exception as e:
             message = f"❌ Error: {str(e)}"
             message_type = 'danger'
-    
-    # Get all active bounties
+
+    # -------------------------------------------------------------------------
+    # Fetch current bounties — include pi.version for OCC hidden field embedding
+    # -------------------------------------------------------------------------
     bounties_sql = """
         SELECT 
             br.Person_ID,
@@ -995,7 +1090,8 @@ def update_bounty():
             br.Amount,
             br.Issue_Date AS Date_Issued,
             p.Status,
-            br.Record_Version as version_count
+            br.Record_Version as version_count,
+            pi.version AS pirate_version
         FROM Bounty_Record br
         INNER JOIN Person p ON br.Person_ID = p.Person_ID
         INNER JOIN Pirate pi ON p.Person_ID = pi.Person_ID
