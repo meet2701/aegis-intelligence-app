@@ -17,10 +17,13 @@ from db_utils import DatabaseConnection, format_query_results, get_db_password
 # ---------------------------------------------------------------------------
 # Redis Cache — graceful degradation: if Redis is unavailable the app keeps
 # running and falls back to a direct DB query on every request.
+# Railway injects REDIS_URL automatically when you add a Redis plugin.
+# Locally falls back to localhost:6379.
 # ---------------------------------------------------------------------------
 try:
     import redis as _redis_lib
-    cache = _redis_lib.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+    _redis_url = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+    cache = _redis_lib.Redis.from_url(_redis_url, decode_responses=True)
     cache.ping()          # Fail fast if Redis is not running
     REDIS_AVAILABLE = True
     print("[AID SYSTEM] Redis cache connected (TTL=300s).")
