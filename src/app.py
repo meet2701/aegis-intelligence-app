@@ -1552,7 +1552,7 @@ def internal_error(error):
 
 if __name__ == '__main__':
     if init_database():
-        port = int(os.environ.get('PORT', 5000))
+        port = int(os.environ.get('PORT', 8080))
         debug = os.environ.get('FLASK_DEBUG', 'true').lower() == 'true'
         print("\n[SYSTEM] Starting Flask application...")
         print(f"[SYSTEM] Access the terminal at: http://127.0.0.1:{port}")
